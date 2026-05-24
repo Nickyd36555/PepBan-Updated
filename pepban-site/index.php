@@ -44,11 +44,12 @@ if (str_starts_with($path, '/admin')) {
 
 // ── Public routes ─────────────────────────────────────────────────────────────
 $routes = [
-	'/'                 => 'pages/signup.php',
+	'/'                 => 'pages/home.php',
 	'/signup'           => 'pages/signup.php',
 	'/login'            => 'pages/login.php',
 	'/logout'           => 'pages/logout.php',
 	'/portal'           => 'pages/portal.php',
+	'/faq'              => 'pages/faq.php',
 	'/forgot-password'  => 'pages/forgot-password.php',
 	'/reset-password'   => 'pages/reset-password.php',
 ];

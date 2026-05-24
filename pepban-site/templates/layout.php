@@ -2,30 +2,36 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= e($page_title ?? SITE_NAME) ?></title>
 <link rel="stylesheet" href="<?= url('assets/css/public.css') ?>">
 </head>
-<body class="pepban-body">
+<body>
 
-<nav class="pepban-nav">
-	<a href="<?= url('/') ?>" class="pepban-nav-brand">
-		<img src="<?= url('assets/images/logo.png') ?>" alt="PepBan" class="pepban-nav-logo">
-	</a>
-	<div class="pepban-nav-links">
-		<?php if (Auth::isClient()): ?>
-			<a href="<?= url('/portal') ?>" class="pepban-nav-link">My Portal</a>
-			<a href="<?= url('/logout') ?>" class="pepban-nav-link">Log out</a>
-		<?php else: ?>
-			<a href="<?= url('/login') ?>" class="pepban-nav-link">Log in</a>
-			<a href="<?= url('/signup') ?>" class="pepban-btn pepban-btn-primary">Sign Up</a>
-		<?php endif; ?>
-	</div>
+<nav class="pb-nav">
+  <div class="pb-nav-inner">
+    <a href="<?= url('/') ?>" class="pb-nav-brand">
+      <img src="<?= url('assets/images/logo.png') ?>" alt="PepBan" class="pb-nav-logo">
+    </a>
+    <div class="pb-nav-links">
+      <a href="<?= url('/') ?>" class="pb-nav-link">Home</a>
+      <a href="<?= url('/#features') ?>" class="pb-nav-link">Features</a>
+      <a href="<?= url('/faq') ?>" class="pb-nav-link">FAQ</a>
+      <a href="<?= url('/signup') ?>" class="pb-nav-link">Pricing</a>
+    </div>
+    <div class="pb-nav-actions">
+      <?php if (Auth::isClient()): ?>
+        <a href="<?= url('/portal') ?>" class="pb-btn pb-btn-ghost">My Portal</a>
+        <a href="<?= url('/logout') ?>" class="pb-btn pb-btn-ghost">Log out</a>
+      <?php else: ?>
+        <a href="<?= url('/login') ?>" class="pb-btn pb-btn-ghost">Log In</a>
+        <a href="<?= url('/signup') ?>" class="pb-btn pb-btn-primary">Sign Up</a>
+      <?php endif; ?>
+    </div>
+  </div>
 </nav>
 
-<main class="pepban-main">
+<main>
 <?php foreach (get_flashes() as $f): ?>
-<div class="pepban-alert pepban-alert-<?= e($f['type']) ?> pepban-alert-global">
-	<?= e($f['message']) ?>
-</div>
+<div class="pepban-alert pepban-alert-<?= e($f['type']) ?> pepban-alert-global"><?= e($f['message']) ?></div>
 <?php endforeach; ?>
