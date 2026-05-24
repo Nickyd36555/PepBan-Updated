@@ -36,6 +36,21 @@ a { color: var(--blue); text-decoration: none; }
 a:hover { text-decoration: underline; }
 code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: .875em; background: var(--gray-100); padding: 2px 6px; border-radius: 4px; }
 
+/* ── Logo ───────────────────────────────────────────────────────────────────── */
+.pepban-nav-logo {
+  height: 40px;
+  width: auto;
+  display: block;
+  border-radius: 6px;
+}
+.pepban-signup-logo {
+  height: 60px;
+  width: auto;
+  display: block;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
 /* ── Public nav ─────────────────────────────────────────────────────────────── */
 .pepban-nav {
   background: #fff;

@@ -10,8 +10,7 @@
 
 <nav class="pepban-nav">
 	<a href="<?= url('/') ?>" class="pepban-nav-brand">
-		<svg width="28" height="28" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="10" fill="#2563eb"/><path d="M18 6L8 10.5V19.5C8 24.747 12.477 29.223 18 30C23.523 29.223 28 24.747 28 19.5V10.5L18 6Z" fill="white" fill-opacity=".15" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 18L16.5 20.5L22 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-		PepBan
+		<img src="<?= url('assets/images/logo.png') ?>" alt="PepBan" class="pepban-nav-logo">
 	</a>
 	<div class="pepban-nav-links">
 		<?php if (Auth::isClient()): ?>
