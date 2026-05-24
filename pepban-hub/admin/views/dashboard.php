@@ -1,6 +1,6 @@
 <?php defined( 'ABSPATH' ) || exit; ?>
 <div class="wrap pepban-wrap">
-	<h1>PepBan Hub &mdash; Dashboard</h1>
+	<h1>&#128737; PepBan Hub</h1>
 
 	<div class="pepban-stats-grid">
 		<div class="pepban-stat-card pepban-stat-banned">
@@ -26,11 +26,11 @@
 		<a href="<?php echo esc_url( admin_url( 'admin.php?page=pepban-hub-banned' ) ); ?>" class="button button-primary">View Banned Customers</a>
 		<a href="<?php echo esc_url( admin_url( 'admin.php?page=pepban-hub-banned&action=add' ) ); ?>" class="button">+ Add Ban Manually</a>
 		<a href="<?php echo esc_url( admin_url( 'admin.php?page=pepban-hub-clients' ) ); ?>" class="button">Manage Clients</a>
+		<a href="<?php echo esc_url( admin_url( 'admin.php?page=pepban-hub-settings' ) ); ?>" class="button">Settings</a>
 	</div>
 
 	<div class="pepban-api-info">
-		<h2>API Endpoint</h2>
-		<p>Client sites connect to:</p>
+		<span>REST API Endpoint</span>
 		<code><?php echo esc_html( rest_url( 'pepban/v1' ) ); ?></code>
 	</div>
 </div>

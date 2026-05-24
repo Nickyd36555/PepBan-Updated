@@ -1,226 +1,523 @@
-/* ── PepBan public styles ─────────────────────────────────────────────────── */
+/* ── PepBan Public — Full Redesign ────────────────────────────────────────── */
 
-.pepban-signup-wrap,
-.pepban-portal-wrap {
-	max-width: 580px;
+:root {
+	--pb-blue:       #2563eb;
+	--pb-blue-dark:  #1d4ed8;
+	--pb-blue-light: #eff6ff;
+	--pb-green:      #16a34a;
+	--pb-green-light:#f0fdf4;
+	--pb-red:        #dc2626;
+	--pb-red-light:  #fef2f2;
+	--pb-yellow:     #d97706;
+	--pb-yellow-light:#fffbeb;
+	--pb-navy:       #0f172a;
+	--pb-slate:      #1e293b;
+	--pb-border:     #e2e8f0;
+	--pb-muted:      #64748b;
+	--pb-text:       #0f172a;
+	--pb-radius:     10px;
+	--pb-shadow:     0 4px 24px rgba(0,0,0,.08);
+	--pb-shadow-sm:  0 1px 6px rgba(0,0,0,.06);
+}
+
+/* ── Outer wrapper ── */
+.pepban-public {
+	font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+	color: var(--pb-text);
+	line-height: 1.6;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SIGN-UP PAGE
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pepban-signup-layout {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	min-height: 520px;
+	border-radius: var(--pb-radius);
+	overflow: hidden;
+	box-shadow: var(--pb-shadow);
+	max-width: 900px;
 	margin: 0 auto;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-	color: #1a1a1a;
+}
+
+/* Left panel */
+.pepban-signup-brand {
+	background: var(--pb-navy);
+	padding: 48px 40px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	color: #fff;
+}
+.pepban-brand-logo {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 32px;
+}
+.pepban-brand-logo svg { flex-shrink: 0; }
+.pepban-brand-logo span {
+	font-size: 22px;
+	font-weight: 700;
+	letter-spacing: -.5px;
+}
+.pepban-brand-tagline {
+	font-size: 26px;
+	font-weight: 700;
+	line-height: 1.3;
+	margin-bottom: 20px;
+	letter-spacing: -.4px;
+}
+.pepban-brand-sub {
+	font-size: 15px;
+	color: #94a3b8;
+	margin-bottom: 36px;
+}
+.pepban-benefit-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+.pepban-benefit-list li {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	font-size: 14px;
+	color: #cbd5e1;
+}
+.pepban-benefit-list li::before {
+	content: '';
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	background: var(--pb-blue);
+	border-radius: 50%;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+	background-size: 12px;
+	background-repeat: no-repeat;
+	background-position: center;
+	margin-top: 2px;
+}
+
+/* Right panel (form) */
+.pepban-signup-form-panel {
+	background: #fff;
+	padding: 48px 40px;
+}
+.pepban-signup-form-panel h2 {
+	font-size: 22px;
+	font-weight: 700;
+	margin: 0 0 6px;
+	letter-spacing: -.3px;
+}
+.pepban-signup-form-panel .pepban-panel-sub {
+	color: var(--pb-muted);
+	font-size: 14px;
+	margin-bottom: 28px;
 }
 
 /* ── Alerts ── */
 .pepban-alert {
-	border-radius: 6px;
-	padding: 14px 18px;
+	border-radius: 8px;
+	padding: 13px 16px;
 	margin-bottom: 22px;
+	font-size: 14px;
 	line-height: 1.5;
 }
-.pepban-alert p { margin: 4px 0; }
-.pepban-alert-error   { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
-.pepban-alert-success { background: #f0fdf4; border: 1px solid #86efac; color: #14532d; }
-.pepban-alert-warning { background: #fffbeb; border: 1px solid #fcd34d; color: #78350f; }
-.pepban-alert-info    { background: #eff6ff; border: 1px solid #93c5fd; color: #1e3a5f; }
+.pepban-alert p { margin: 3px 0; }
+.pepban-alert-error   { background: var(--pb-red-light);    border-left: 3px solid var(--pb-red);    color: #7f1d1d; }
+.pepban-alert-success { background: var(--pb-green-light);  border-left: 3px solid var(--pb-green);  color: #14532d; }
+.pepban-alert-warning { background: var(--pb-yellow-light); border-left: 3px solid var(--pb-yellow); color: #78350f; }
+.pepban-alert-info    { background: var(--pb-blue-light);   border-left: 3px solid var(--pb-blue);   color: #1e3a5f; }
 
-/* ── Sign-up form ── */
-.pepban-signup-intro {
-	color: #555;
-	margin-bottom: 24px;
+/* ── Form fields ── */
+.pepban-field {
+	margin-bottom: 18px;
 }
-
-.pepban-form .pepban-field {
-	margin-bottom: 20px;
-}
-.pepban-form label {
+.pepban-field label {
 	display: block;
+	font-size: 13px;
 	font-weight: 600;
 	margin-bottom: 6px;
-	font-size: 14px;
+	color: #374151;
 }
-.pepban-req { color: #e53e3e; }
-.pepban-form input[type="text"],
-.pepban-form input[type="email"],
-.pepban-form input[type="url"],
-.pepban-form input[type="password"] {
+.pepban-req { color: var(--pb-red); margin-left: 2px; }
+
+.pepban-field input[type="text"],
+.pepban-field input[type="email"],
+.pepban-field input[type="url"],
+.pepban-field input[type="password"] {
 	width: 100%;
 	padding: 10px 13px;
-	border: 1px solid #d1d5db;
-	border-radius: 5px;
-	font-size: 15px;
+	border: 1.5px solid var(--pb-border);
+	border-radius: 7px;
+	font-size: 14px;
+	color: var(--pb-text);
+	background: #fafafa;
 	box-sizing: border-box;
-	transition: border-color .15s;
+	transition: border-color .15s, box-shadow .15s, background .15s;
 }
-.pepban-form input:focus {
+.pepban-field input:focus {
 	outline: none;
-	border-color: #2563eb;
-	box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+	border-color: var(--pb-blue);
+	background: #fff;
+	box-shadow: 0 0 0 3px rgba(37,99,235,.12);
 }
-.pepban-form small {
+.pepban-field small {
 	display: block;
-	color: #6b7280;
+	color: var(--pb-muted);
 	font-size: 12px;
 	margin-top: 4px;
 }
 
 /* ── Buttons ── */
 .pepban-btn {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
 	padding: 11px 22px;
-	border-radius: 5px;
-	font-size: 15px;
+	border-radius: 8px;
+	font-size: 14px;
 	font-weight: 600;
 	cursor: pointer;
 	border: none;
-	text-decoration: none;
+	text-decoration: none !important;
 	line-height: 1.4;
-	transition: background .15s, opacity .15s;
+	transition: all .15s;
+	white-space: nowrap;
 }
-.pepban-btn:hover { opacity: .88; text-decoration: none; }
-
-.pepban-btn-primary  { background: #2563eb; color: #fff; }
-.pepban-btn-secondary{ background: #6b7280; color: #fff; }
-.pepban-btn-download { background: #16a34a; color: #fff; font-size: 16px; padding: 13px 26px; }
-.pepban-btn-full     { width: 100%; text-align: center; box-sizing: border-box; }
+.pepban-btn-primary  { background: var(--pb-blue);  color: #fff; }
+.pepban-btn-primary:hover  { background: var(--pb-blue-dark); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,.3); }
+.pepban-btn-secondary{ background: #f1f5f9; color: #475569; border: 1.5px solid var(--pb-border); }
+.pepban-btn-secondary:hover{ background: #e2e8f0; color: #334155; }
+.pepban-btn-danger   { background: var(--pb-red-light); color: var(--pb-red); border: 1.5px solid #fca5a5; }
+.pepban-btn-danger:hover { background: #fee2e2; }
+.pepban-btn-download {
+	background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+	color: #fff;
+	font-size: 15px;
+	padding: 14px 28px;
+	box-shadow: 0 4px 14px rgba(22,163,74,.3);
+}
+.pepban-btn-download:hover { color: #fff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(22,163,74,.4); }
+.pepban-btn-full { width: 100%; }
 
 .pepban-alt-link {
-	margin-top: 18px;
-	color: #6b7280;
-	font-size: 14px;
 	text-align: center;
-}
-
-/* ── API Key reveal box ── */
-.pepban-key-reveal {
-	background: #fffbeb;
-	border: 2px solid #f59e0b;
-	border-radius: 8px;
-	padding: 22px;
-	margin-bottom: 28px;
-}
-.pepban-key-reveal h3 {
-	margin: 0 0 10px;
-	font-size: 18px;
-}
-.pepban-key-box {
-	display: flex;
-	align-items: stretch;
-	background: #fff;
-	border: 1px solid #d1d5db;
-	border-radius: 5px;
-	overflow: hidden;
-	margin: 12px 0 10px;
-}
-.pepban-key-box code {
-	flex: 1;
-	padding: 12px 14px;
+	margin-top: 18px;
 	font-size: 13px;
-	word-break: break-all;
-	background: none;
-	border: none;
-	line-height: 1.5;
-	color: #1a1a1a;
+	color: var(--pb-muted);
 }
-.pepban-copy-btn {
-	background: #2563eb;
-	color: #fff;
-	border: none;
-	padding: 0 18px;
-	cursor: pointer;
-	font-size: 14px;
-	font-weight: 600;
-	white-space: nowrap;
-	transition: background .15s;
-}
-.pepban-copy-btn:hover  { background: #1d4ed8; }
-.pepban-copy-done       { background: #16a34a !important; }
-.pepban-key-note        { font-size: 13px; color: #6b7280; margin: 4px 0 0; }
+.pepban-alt-link a { color: var(--pb-blue); }
 
-/* ── Portal card ── */
-.pepban-portal-card {
-	background: #f9fafb;
-	border: 1px solid #e5e7eb;
-	border-radius: 8px;
-	padding: 24px;
+/* Responsive sign-up */
+@media (max-width: 680px) {
+	.pepban-signup-layout { grid-template-columns: 1fr; }
+	.pepban-signup-brand  { padding: 32px 24px; }
+	.pepban-brand-tagline { font-size: 20px; }
+	.pepban-signup-form-panel { padding: 32px 24px; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CLIENT PORTAL
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pepban-portal-wrap {
+	max-width: 720px;
+	margin: 0 auto;
+}
+
+/* Portal header */
+.pepban-portal-header {
+	background: var(--pb-navy);
+	border-radius: var(--pb-radius);
+	padding: 28px 32px;
 	margin-bottom: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 16px;
 }
-.pepban-portal-card h2 { margin: 0 0 16px; font-size: 20px; }
+.pepban-portal-header-left { display: flex; align-items: center; gap: 14px; }
+.pepban-portal-avatar {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: var(--pb-blue);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 20px;
+	font-weight: 700;
+	color: #fff;
+	flex-shrink: 0;
+}
+.pepban-portal-greeting { color: #fff; }
+.pepban-portal-greeting strong { display: block; font-size: 17px; font-weight: 700; }
+.pepban-portal-greeting span   { font-size: 13px; color: #94a3b8; }
+.pepban-portal-header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
-.pepban-info-table { width: 100%; border-collapse: collapse; }
-.pepban-info-table th {
-	text-align: left;
-	padding: 8px 14px 8px 0;
-	font-size: 13px;
-	font-weight: 600;
-	color: #6b7280;
-	width: 120px;
-	vertical-align: top;
-}
-.pepban-info-table td {
-	padding: 8px 0;
-	font-size: 15px;
-	vertical-align: top;
-}
-.pepban-info-table code {
-	background: #e5e7eb;
-	padding: 2px 7px;
-	border-radius: 3px;
-	font-size: 13px;
-}
-.pepban-key-hint { font-size: 12px; color: #9ca3af; margin-left: 4px; }
-.pepban-hint     { font-size: 13px; color: #9ca3af; }
-
-/* ── Status badges ── */
-.pepban-badge {
-	display: inline-block;
-	padding: 3px 11px;
+/* Status pill in header */
+.pepban-portal-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 5px 14px;
 	border-radius: 20px;
 	font-size: 12px;
 	font-weight: 700;
 	text-transform: uppercase;
-	letter-spacing: .4px;
+	letter-spacing: .5px;
 }
-.pepban-badge-active   { background: #dcfce7; color: #14532d; }
-.pepban-badge-inactive { background: #fee2e2; color: #7f1d1d; }
-.pepban-badge-pending  { background: #fef9c3; color: #713f12; }
+.pepban-portal-status::before {
+	content: '';
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: currentColor;
+}
+.pepban-status-active   { background: rgba(22,163,74,.15); color: #16a34a; }
+.pepban-status-inactive { background: rgba(220,38,38,.12); color: var(--pb-red); }
+.pepban-status-pending  { background: rgba(217,119,6,.12);  color: var(--pb-yellow); }
 
-/* ── Sections ── */
-.pepban-section {
+/* Portal grid */
+.pepban-portal-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 18px;
+	margin-bottom: 20px;
+}
+@media (max-width: 580px) { .pepban-portal-grid { grid-template-columns: 1fr; } }
+
+/* Cards */
+.pepban-card {
 	background: #fff;
-	border: 1px solid #e5e7eb;
+	border: 1px solid var(--pb-border);
+	border-radius: var(--pb-radius);
+	box-shadow: var(--pb-shadow-sm);
+}
+.pepban-card-inner { padding: 22px 24px; }
+.pepban-card-header {
+	padding: 16px 24px;
+	border-bottom: 1px solid var(--pb-border);
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.pepban-card-header h3 {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .5px;
+	color: var(--pb-muted);
+}
+.pepban-card-icon {
+	width: 32px;
+	height: 32px;
 	border-radius: 8px;
-	padding: 24px;
-	margin-bottom: 24px;
+	background: var(--pb-blue-light);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 15px;
 }
-.pepban-section h3 { margin: 0 0 10px; font-size: 18px; }
 
-.pepban-download-section .pepban-btn-download { margin-bottom: 20px; }
-
-/* ── Setup guide ── */
-.pepban-setup-guide {
-	background: #f9fafb;
-	border-radius: 6px;
-	padding: 18px 20px;
-	margin-top: 16px;
+/* Info rows inside cards */
+.pepban-info-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	padding: 10px 0;
+	border-bottom: 1px solid #f1f5f9;
+	font-size: 14px;
+	gap: 12px;
 }
-.pepban-setup-guide h4 { margin: 0 0 10px; font-size: 15px; }
-.pepban-setup-guide ol { margin: 0; padding-left: 20px; }
-.pepban-setup-guide li { margin-bottom: 9px; font-size: 14px; line-height: 1.5; }
-.pepban-setup-guide ul { margin: 6px 0 0 0; }
-.pepban-setup-guide code {
-	background: #e5e7eb;
-	padding: 1px 6px;
-	border-radius: 3px;
+.pepban-info-row:last-child { border-bottom: none; padding-bottom: 0; }
+.pepban-info-label { color: var(--pb-muted); flex-shrink: 0; }
+.pepban-info-value { font-weight: 500; text-align: right; word-break: break-all; }
+.pepban-info-value code {
+	background: #f1f5f9;
+	padding: 2px 8px;
+	border-radius: 4px;
 	font-size: 12px;
+	font-family: monospace;
 }
 
-/* ── Key actions ── */
-.pepban-key-actions p { font-size: 14px; color: #6b7280; margin-bottom: 14px; }
-
-/* ── Footer ── */
-.pepban-portal-footer {
-	border-top: 1px solid #e5e7eb;
-	padding-top: 16px;
-	margin-top: 8px;
+/* API Key reveal */
+.pepban-key-reveal {
+	background: #fff;
+	border: 2px solid #fbbf24;
+	border-radius: var(--pb-radius);
+	overflow: hidden;
+	margin-bottom: 20px;
+	box-shadow: var(--pb-shadow-sm);
+}
+.pepban-key-reveal-header {
+	background: #fef9c3;
+	padding: 14px 20px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.pepban-key-reveal-header .pepban-key-icon { font-size: 20px; }
+.pepban-key-reveal-header h3 {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 700;
+	color: #78350f;
+}
+.pepban-key-reveal-header p {
+	margin: 2px 0 0;
+	font-size: 12px;
+	color: #92400e;
+}
+.pepban-key-reveal-body { padding: 16px 20px; }
+.pepban-key-box {
+	display: flex;
+	align-items: stretch;
+	background: #f8fafc;
+	border: 1.5px solid #e2e8f0;
+	border-radius: 7px;
+	overflow: hidden;
+	margin-bottom: 10px;
+}
+.pepban-key-box code {
+	flex: 1;
+	padding: 12px 14px;
+	font-family: 'SFMono-Regular', Consolas, monospace;
 	font-size: 13px;
-	color: #9ca3af;
+	word-break: break-all;
+	background: none;
+	color: var(--pb-text);
+	line-height: 1.6;
 }
-.pepban-portal-footer a { color: #6b7280; }
+.pepban-copy-btn {
+	background: var(--pb-blue);
+	color: #fff;
+	border: none;
+	padding: 0 18px;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 600;
+	white-space: nowrap;
+	transition: background .15s;
+}
+.pepban-copy-btn:hover  { background: var(--pb-blue-dark); }
+.pepban-copy-done       { background: var(--pb-green) !important; }
+.pepban-key-note { font-size: 12px; color: var(--pb-muted); margin: 0; }
+
+/* Download section */
+.pepban-download-card {
+	background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+	border-radius: var(--pb-radius);
+	padding: 28px 28px 24px;
+	margin-bottom: 20px;
+	color: #fff;
+}
+.pepban-download-card h3 { margin: 0 0 6px; font-size: 18px; font-weight: 700; }
+.pepban-download-card p  { color: #94a3b8; font-size: 14px; margin: 0 0 20px; }
+
+/* Setup steps */
+.pepban-steps {
+	background: #f8fafc;
+	border: 1px solid var(--pb-border);
+	border-radius: var(--pb-radius);
+	padding: 20px 24px;
+	margin-top: 18px;
+}
+.pepban-steps h4 { margin: 0 0 14px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--pb-muted); }
+.pepban-steps ol { margin: 0; padding: 0; list-style: none; counter-reset: steps; }
+.pepban-steps li {
+	counter-increment: steps;
+	display: flex;
+	gap: 14px;
+	align-items: flex-start;
+	padding: 10px 0;
+	border-bottom: 1px solid #f1f5f9;
+	font-size: 14px;
+}
+.pepban-steps li:last-child { border-bottom: none; padding-bottom: 0; }
+.pepban-steps li::before {
+	content: counter(steps);
+	flex-shrink: 0;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: var(--pb-navy);
+	color: #fff;
+	font-size: 12px;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 1px;
+}
+.pepban-steps code {
+	background: #e2e8f0;
+	padding: 1px 7px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-family: monospace;
+}
+
+/* Pending state */
+.pepban-pending-block {
+	background: var(--pb-yellow-light);
+	border: 1px solid #fde68a;
+	border-radius: var(--pb-radius);
+	padding: 24px;
+	text-align: center;
+	margin-bottom: 20px;
+}
+.pepban-pending-block .pepban-pending-icon { font-size: 36px; display: block; margin-bottom: 10px; }
+.pepban-pending-block h3 { margin: 0 0 8px; font-size: 17px; font-weight: 700; color: #78350f; }
+.pepban-pending-block p  { color: #92400e; font-size: 14px; margin: 0; }
+
+/* Regen key section */
+.pepban-regen-section {
+	background: #fff;
+	border: 1px solid var(--pb-border);
+	border-radius: var(--pb-radius);
+	padding: 22px 24px;
+	margin-bottom: 20px;
+	box-shadow: var(--pb-shadow-sm);
+}
+.pepban-regen-section h3 { margin: 0 0 6px; font-size: 16px; font-weight: 700; }
+.pepban-regen-section p  { color: var(--pb-muted); font-size: 14px; margin: 0 0 16px; }
+
+/* Portal footer */
+.pepban-portal-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-top: 16px;
+	border-top: 1px solid var(--pb-border);
+	font-size: 13px;
+	color: var(--pb-muted);
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.pepban-portal-footer a { color: var(--pb-muted); text-decoration: none; }
+.pepban-portal-footer a:hover { color: var(--pb-blue); }
+.pepban-portal-footer-links { display: flex; gap: 16px; }
+
+/* Login prompt */
+.pepban-login-prompt {
+	background: #fff;
+	border: 1px solid var(--pb-border);
+	border-radius: var(--pb-radius);
+	padding: 48px 32px;
+	text-align: center;
+	box-shadow: var(--pb-shadow-sm);
+	max-width: 420px;
+	margin: 0 auto;
+}
+.pepban-login-prompt .pepban-lock-icon { font-size: 40px; display: block; margin-bottom: 14px; }
+.pepban-login-prompt h3 { margin: 0 0 8px; font-size: 20px; font-weight: 700; }
+.pepban-login-prompt p  { color: var(--pb-muted); margin: 0 0 20px; }

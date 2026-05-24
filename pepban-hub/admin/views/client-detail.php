@@ -16,10 +16,10 @@ if ( isset( $_GET['new_client'] ) ) {
 	</h1>
 
 	<?php if ( $new_key ) : ?>
-	<div class="notice notice-warning" style="padding:16px">
-		<h3 style="margin-top:0">&#128274; API Key — Copy Now</h3>
-		<p>This key will <strong>never be shown again</strong>. Copy it and give it to the client.</p>
-		<code style="font-size:16px;display:block;padding:10px;background:#fff;border:1px solid #ccc;word-break:break-all"><?php echo esc_html( $new_key ); ?></code>
+	<div class="pepban-key-reveal-admin">
+		<h3>&#128274; API Key — Copy Now</h3>
+		<p>This key will <strong>never be shown again</strong>. Copy it and share it with the client.</p>
+		<code><?php echo esc_html( $new_key ); ?></code>
 	</div>
 	<?php endif; ?>
 
