@@ -2,10 +2,12 @@ Options -Indexes
 
 RewriteEngine On
 
-# Block direct access to includes/templates/config
+# Block direct access to sensitive files/dirs
 RewriteRule ^(includes|templates|config\.php|config\.local\.php)(/|$) - [F,L]
 
-# Route everything through index.php
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+# Let real static files (css, js, images) serve directly
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Everything else (including real directories like /admin/) goes through index.php
 RewriteRule ^ index.php [QSA,L]
