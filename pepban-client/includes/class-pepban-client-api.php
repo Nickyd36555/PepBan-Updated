@@ -5,7 +5,7 @@ class PepBan_Client_API {
 
 	private static function base_url() {
 		$hub = PepBan_Client_Settings::get_hub_url();
-		return trailingslashit( $hub ) . 'wp-json/pepban/v1';
+		return trailingslashit( $hub ) . 'api/v1';
 	}
 
 	private static function headers() {
@@ -78,7 +78,7 @@ class PepBan_Client_API {
 		) ) );
 
 		if ( is_wp_error( $result ) ) return $result;
-		return $result['data'] ?? array( 'banned' => false );
+		return $result;
 	}
 
 	/**
@@ -87,7 +87,7 @@ class PepBan_Client_API {
 	public static function report_customer( $data ) {
 		$result = self::post( '/report', $data );
 		if ( is_wp_error( $result ) ) return $result;
-		return $result['data'] ?? array();
+		return $result;
 	}
 
 	/**
@@ -109,6 +109,6 @@ class PepBan_Client_API {
 	public static function whitelist_list() {
 		$result = self::get( '/whitelist' );
 		if ( is_wp_error( $result ) ) return array();
-		return $result['data'] ?? array();
+		return $result['whitelisted'] ?? array();
 	}
 }
