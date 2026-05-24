@@ -23,7 +23,6 @@ require_once PEPBAN_HUB_DIR . 'includes/class-pepban-hub-database.php';
 require_once PEPBAN_HUB_DIR . 'includes/class-pepban-hub-clients.php';
 require_once PEPBAN_HUB_DIR . 'includes/class-pepban-hub-api.php';
 require_once PEPBAN_HUB_DIR . 'includes/class-pepban-hub-admin.php';
-require_once PEPBAN_HUB_DIR . 'includes/class-pepban-hub-subscriptions.php';
 
 register_activation_hook( __FILE__, array( 'PepBan_Hub_Activator', 'activate' ) );
 
@@ -38,5 +37,4 @@ function pepban_hub_init() {
 
 	PepBan_Hub_API::init();
 	PepBan_Hub_Admin::init();
-	PepBan_Hub_Subscriptions::init();
 }

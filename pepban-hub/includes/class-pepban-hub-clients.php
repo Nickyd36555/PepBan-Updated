@@ -14,20 +14,12 @@ class PepBan_Hub_Clients {
 		) );
 	}
 
-	public static function activate( $client_id, $woo_subscription_id = 0 ) {
-		PepBan_Hub_Database::update_client_subscription( $client_id, 'active', $woo_subscription_id );
+	public static function activate( $client_id ) {
+		PepBan_Hub_Database::update_client_subscription( $client_id, 'active' );
 	}
 
 	public static function deactivate( $client_id ) {
 		PepBan_Hub_Database::update_client_subscription( $client_id, 'inactive' );
-	}
-
-	public static function get_client_by_woo_subscription( $subscription_id ) {
-		global $wpdb;
-		return $wpdb->get_row( $wpdb->prepare(
-			"SELECT * FROM {$wpdb->prefix}pepban_clients WHERE woo_subscription_id = %d",
-			absint( $subscription_id )
-		) );
 	}
 
 	public static function get_client_by_owner_email( $email ) {

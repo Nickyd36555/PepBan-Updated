@@ -23,16 +23,6 @@
 					</label>
 				</td>
 			</tr>
-			<tr>
-				<th>WooCommerce Subscription Product IDs</th>
-				<td>
-					<?php
-					$product_ids = get_option( 'pepban_subscription_product_ids', array() );
-					?>
-					<input type="text" name="subscription_product_ids" value="<?php echo esc_attr( implode( ',', (array) $product_ids ) ); ?>" class="regular-text">
-					<p class="description">Comma-separated WooCommerce product IDs that represent a PepBan subscription. Used to show the "site URL" field at checkout.</p>
-				</td>
-			</tr>
 		</table>
 
 		<p class="submit"><button type="submit" class="button button-primary">Save Settings</button></p>

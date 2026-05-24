@@ -8,11 +8,6 @@ class PepBan_Hub_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_action( 'admin_post_pepban_hub_action', array( __CLASS__, 'handle_post_action' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
-
-		// Checkout field to capture site URL when subscribing
-		add_action( 'woocommerce_after_order_notes', array( __CLASS__, 'checkout_site_url_field' ) );
-		add_action( 'woocommerce_checkout_process',  array( __CLASS__, 'checkout_site_url_validate' ) );
-		add_action( 'woocommerce_checkout_update_order_meta', array( __CLASS__, 'checkout_site_url_save' ) );
 	}
 
 	public static function register_menus() {
@@ -199,39 +194,4 @@ class PepBan_Hub_Admin {
 		}
 	}
 
-	// ── Checkout field for subscriber's site URL ─────────────────────────────
-
-	public static function checkout_site_url_field( $checkout ) {
-		// Only show on checkout if cart contains a PepBan subscription product
-		if ( ! self::cart_has_pepban_product() ) return;
-		woocommerce_form_field( 'pepban_site_url', array(
-			'type'        => 'url',
-			'class'       => array( 'form-row-wide' ),
-			'label'       => 'Your Peptide Website URL',
-			'placeholder' => 'https://your-peptide-site.com',
-			'required'    => true,
-		), $checkout->get_value( 'pepban_site_url' ) );
-	}
-
-	public static function checkout_site_url_validate() {
-		if ( ! self::cart_has_pepban_product() ) return;
-		if ( empty( $_POST['pepban_site_url'] ) ) {
-			wc_add_notice( 'Please enter your peptide website URL.', 'error' );
-		}
-	}
-
-	public static function checkout_site_url_save( $order_id ) {
-		if ( ! empty( $_POST['pepban_site_url'] ) ) {
-			update_post_meta( $order_id, 'pepban_site_url', esc_url_raw( wp_unslash( $_POST['pepban_site_url'] ) ) );
-		}
-	}
-
-	private static function cart_has_pepban_product() {
-		$product_ids = get_option( 'pepban_subscription_product_ids', array() );
-		if ( empty( $product_ids ) ) return false;
-		foreach ( WC()->cart->get_cart() as $item ) {
-			if ( in_array( $item['product_id'], (array) $product_ids, true ) ) return true;
-		}
-		return false;
-	}
 }

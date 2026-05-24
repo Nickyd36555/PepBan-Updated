@@ -32,8 +32,7 @@ if ( isset( $_GET['new_client'] ) ) {
 				<tr><th>Owner</th><td><?php echo esc_html( $client->owner_name ); ?></td></tr>
 				<tr><th>Owner Email</th><td><?php echo esc_html( $client->owner_email ); ?></td></tr>
 				<tr><th>API Key Prefix</th><td><code><?php echo esc_html( $client->api_key_prefix ); ?>…</code></td></tr>
-				<tr><th>Subscription</th><td><span class="pepban-status pepban-status-<?php echo esc_attr( $client->subscription_status ); ?>"><?php echo esc_html( ucfirst( $client->subscription_status ) ); ?></span></td></tr>
-				<tr><th>WooCommerce Sub ID</th><td><?php echo $client->woo_subscription_id ? esc_html( $client->woo_subscription_id ) : '—'; ?></td></tr>
+				<tr><th>Status</th><td><span class="pepban-status pepban-status-<?php echo esc_attr( $client->subscription_status ); ?>"><?php echo esc_html( ucfirst( $client->subscription_status ) ); ?></span></td></tr>
 				<tr><th>Registered</th><td><?php echo esc_html( $client->date_registered ); ?></td></tr>
 				<tr><th>Last API Call</th><td><?php echo $client->last_active ? esc_html( $client->last_active ) : '—'; ?></td></tr>
 			</table>

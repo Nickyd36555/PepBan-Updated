@@ -275,16 +275,13 @@ class PepBan_Hub_Database {
 		);
 	}
 
-	public static function update_client_subscription( $client_id, $status, $woo_subscription_id = 0 ) {
+	public static function update_client_subscription( $client_id, $status ) {
 		global $wpdb;
 		return $wpdb->update(
 			$wpdb->prefix . 'pepban_clients',
-			array(
-				'subscription_status' => sanitize_text_field( $status ),
-				'woo_subscription_id' => absint( $woo_subscription_id ),
-			),
+			array( 'subscription_status' => sanitize_text_field( $status ) ),
 			array( 'id' => absint( $client_id ) ),
-			array( '%s', '%d' ),
+			array( '%s' ),
 			array( '%d' )
 		);
 	}

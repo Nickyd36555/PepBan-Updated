@@ -64,7 +64,6 @@ class PepBan_Hub_Activator {
 			owner_email          varchar(200) NOT NULL,
 			owner_name           varchar(200) NOT NULL DEFAULT '',
 			subscription_status  varchar(20)  NOT NULL DEFAULT 'inactive',
-			woo_subscription_id  bigint(20)   NOT NULL DEFAULT 0,
 			date_registered      datetime     NOT NULL,
 			last_active          datetime     DEFAULT NULL,
 			PRIMARY KEY  (id),
