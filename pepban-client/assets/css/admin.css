@@ -1,0 +1,12 @@
+.pepban-wrap { max-width: 900px; }
+
+.pepban-connection-status {
+	display: inline-block;
+	padding: 8px 16px;
+	border-radius: 4px;
+	font-weight: 600;
+	margin-bottom: 20px;
+}
+.pepban-connection-connected { background: #d1e7dd; color: #0a3622; }
+.pepban-connection-error     { background: #f8d7da; color: #58151c; }
+.pepban-connection-unknown   { background: #fff3cd; color: #664d03; }
