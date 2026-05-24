@@ -264,15 +264,24 @@ class PepBan_Hub_Database {
 				'api_key_prefix'      => substr( $raw_key, 0, 8 ),
 				'owner_email'         => sanitize_email( $data['owner_email'] ),
 				'owner_name'          => sanitize_text_field( $data['owner_name'] ?? '' ),
+				'wp_user_id'          => absint( $data['wp_user_id'] ?? 0 ),
 				'subscription_status' => 'inactive',
 				'date_registered'     => current_time( 'mysql' ),
 			),
-			array( '%s','%s','%s','%s','%s','%s','%s' )
+			array( '%s','%s','%s','%s','%s','%d','%s','%s' )
 		);
 		return array(
 			'id'      => $wpdb->insert_id,
 			'api_key' => $raw_key,
 		);
+	}
+
+	public static function get_client_by_user_id( $user_id ) {
+		global $wpdb;
+		return $wpdb->get_row( $wpdb->prepare(
+			"SELECT * FROM {$wpdb->prefix}pepban_clients WHERE wp_user_id = %d ORDER BY date_registered DESC LIMIT 1",
+			absint( $user_id )
+		) );
 	}
 
 	public static function update_client_subscription( $client_id, $status ) {

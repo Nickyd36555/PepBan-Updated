@@ -169,11 +169,19 @@ class PepBan_Hub_Admin {
 
 			case 'save_settings':
 				update_option( 'pepban_hub_settings', array(
-					'require_https'        => ! empty( $_POST['require_https'] ),
 					'rate_limit_per_min'   => absint( $_POST['rate_limit_per_min'] ?? 60 ),
 					'auto_approve_clients' => ! empty( $_POST['auto_approve_clients'] ),
+					'client_plugin_path'   => sanitize_text_field( wp_unslash( $_POST['client_plugin_path'] ?? '' ) ),
 				) );
+				// Page ID options stored separately so get_option('pepban_portal_page_id') works directly
+				update_option( 'pepban_signup_page_id', absint( $_POST['signup_page_id'] ?? 0 ) );
+				update_option( 'pepban_portal_page_id', absint( $_POST['portal_page_id'] ?? 0 ) );
 				self::redirect_with_notice( admin_url( 'admin.php?page=pepban-hub-settings' ), 'Settings saved.' );
+				break;
+
+			case 'create_pages':
+				self::create_shortcode_pages();
+				self::redirect_with_notice( admin_url( 'admin.php?page=pepban-hub-settings' ), 'Pages created and selected.' );
 				break;
 		}
 
@@ -194,4 +202,34 @@ class PepBan_Hub_Admin {
 		}
 	}
 
+	private static function create_shortcode_pages() {
+		$pages = array(
+			array(
+				'title'   => 'PepBan — Sign Up',
+				'content' => '<!-- wp:shortcode -->[pepban_signup]<!-- /wp:shortcode -->',
+				'option'  => 'pepban_signup_page_id',
+			),
+			array(
+				'title'   => 'PepBan — My Portal',
+				'content' => '<!-- wp:shortcode -->[pepban_portal]<!-- /wp:shortcode -->',
+				'option'  => 'pepban_portal_page_id',
+			),
+		);
+
+		foreach ( $pages as $def ) {
+			$existing = get_option( $def['option'], 0 );
+			if ( $existing && get_post( $existing ) ) continue;
+
+			$page_id = wp_insert_post( array(
+				'post_title'   => $def['title'],
+				'post_content' => $def['content'],
+				'post_status'  => 'publish',
+				'post_type'    => 'page',
+			) );
+
+			if ( $page_id && ! is_wp_error( $page_id ) ) {
+				update_option( $def['option'], $page_id );
+			}
+		}
+	}
 }

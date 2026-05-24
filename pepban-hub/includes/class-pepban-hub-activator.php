@@ -63,6 +63,7 @@ class PepBan_Hub_Activator {
 			api_key_prefix       varchar(10)  NOT NULL,
 			owner_email          varchar(200) NOT NULL,
 			owner_name           varchar(200) NOT NULL DEFAULT '',
+			wp_user_id           bigint(20)   NOT NULL DEFAULT 0,
 			subscription_status  varchar(20)  NOT NULL DEFAULT 'inactive',
 			date_registered      datetime     NOT NULL,
 			last_active          datetime     DEFAULT NULL,

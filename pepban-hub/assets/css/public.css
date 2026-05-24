@@ -1,0 +1,226 @@
+/* ── PepBan public styles ─────────────────────────────────────────────────── */
+
+.pepban-signup-wrap,
+.pepban-portal-wrap {
+	max-width: 580px;
+	margin: 0 auto;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	color: #1a1a1a;
+}
+
+/* ── Alerts ── */
+.pepban-alert {
+	border-radius: 6px;
+	padding: 14px 18px;
+	margin-bottom: 22px;
+	line-height: 1.5;
+}
+.pepban-alert p { margin: 4px 0; }
+.pepban-alert-error   { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
+.pepban-alert-success { background: #f0fdf4; border: 1px solid #86efac; color: #14532d; }
+.pepban-alert-warning { background: #fffbeb; border: 1px solid #fcd34d; color: #78350f; }
+.pepban-alert-info    { background: #eff6ff; border: 1px solid #93c5fd; color: #1e3a5f; }
+
+/* ── Sign-up form ── */
+.pepban-signup-intro {
+	color: #555;
+	margin-bottom: 24px;
+}
+
+.pepban-form .pepban-field {
+	margin-bottom: 20px;
+}
+.pepban-form label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 6px;
+	font-size: 14px;
+}
+.pepban-req { color: #e53e3e; }
+.pepban-form input[type="text"],
+.pepban-form input[type="email"],
+.pepban-form input[type="url"],
+.pepban-form input[type="password"] {
+	width: 100%;
+	padding: 10px 13px;
+	border: 1px solid #d1d5db;
+	border-radius: 5px;
+	font-size: 15px;
+	box-sizing: border-box;
+	transition: border-color .15s;
+}
+.pepban-form input:focus {
+	outline: none;
+	border-color: #2563eb;
+	box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+}
+.pepban-form small {
+	display: block;
+	color: #6b7280;
+	font-size: 12px;
+	margin-top: 4px;
+}
+
+/* ── Buttons ── */
+.pepban-btn {
+	display: inline-block;
+	padding: 11px 22px;
+	border-radius: 5px;
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+	border: none;
+	text-decoration: none;
+	line-height: 1.4;
+	transition: background .15s, opacity .15s;
+}
+.pepban-btn:hover { opacity: .88; text-decoration: none; }
+
+.pepban-btn-primary  { background: #2563eb; color: #fff; }
+.pepban-btn-secondary{ background: #6b7280; color: #fff; }
+.pepban-btn-download { background: #16a34a; color: #fff; font-size: 16px; padding: 13px 26px; }
+.pepban-btn-full     { width: 100%; text-align: center; box-sizing: border-box; }
+
+.pepban-alt-link {
+	margin-top: 18px;
+	color: #6b7280;
+	font-size: 14px;
+	text-align: center;
+}
+
+/* ── API Key reveal box ── */
+.pepban-key-reveal {
+	background: #fffbeb;
+	border: 2px solid #f59e0b;
+	border-radius: 8px;
+	padding: 22px;
+	margin-bottom: 28px;
+}
+.pepban-key-reveal h3 {
+	margin: 0 0 10px;
+	font-size: 18px;
+}
+.pepban-key-box {
+	display: flex;
+	align-items: stretch;
+	background: #fff;
+	border: 1px solid #d1d5db;
+	border-radius: 5px;
+	overflow: hidden;
+	margin: 12px 0 10px;
+}
+.pepban-key-box code {
+	flex: 1;
+	padding: 12px 14px;
+	font-size: 13px;
+	word-break: break-all;
+	background: none;
+	border: none;
+	line-height: 1.5;
+	color: #1a1a1a;
+}
+.pepban-copy-btn {
+	background: #2563eb;
+	color: #fff;
+	border: none;
+	padding: 0 18px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 600;
+	white-space: nowrap;
+	transition: background .15s;
+}
+.pepban-copy-btn:hover  { background: #1d4ed8; }
+.pepban-copy-done       { background: #16a34a !important; }
+.pepban-key-note        { font-size: 13px; color: #6b7280; margin: 4px 0 0; }
+
+/* ── Portal card ── */
+.pepban-portal-card {
+	background: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	padding: 24px;
+	margin-bottom: 24px;
+}
+.pepban-portal-card h2 { margin: 0 0 16px; font-size: 20px; }
+
+.pepban-info-table { width: 100%; border-collapse: collapse; }
+.pepban-info-table th {
+	text-align: left;
+	padding: 8px 14px 8px 0;
+	font-size: 13px;
+	font-weight: 600;
+	color: #6b7280;
+	width: 120px;
+	vertical-align: top;
+}
+.pepban-info-table td {
+	padding: 8px 0;
+	font-size: 15px;
+	vertical-align: top;
+}
+.pepban-info-table code {
+	background: #e5e7eb;
+	padding: 2px 7px;
+	border-radius: 3px;
+	font-size: 13px;
+}
+.pepban-key-hint { font-size: 12px; color: #9ca3af; margin-left: 4px; }
+.pepban-hint     { font-size: 13px; color: #9ca3af; }
+
+/* ── Status badges ── */
+.pepban-badge {
+	display: inline-block;
+	padding: 3px 11px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .4px;
+}
+.pepban-badge-active   { background: #dcfce7; color: #14532d; }
+.pepban-badge-inactive { background: #fee2e2; color: #7f1d1d; }
+.pepban-badge-pending  { background: #fef9c3; color: #713f12; }
+
+/* ── Sections ── */
+.pepban-section {
+	background: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	padding: 24px;
+	margin-bottom: 24px;
+}
+.pepban-section h3 { margin: 0 0 10px; font-size: 18px; }
+
+.pepban-download-section .pepban-btn-download { margin-bottom: 20px; }
+
+/* ── Setup guide ── */
+.pepban-setup-guide {
+	background: #f9fafb;
+	border-radius: 6px;
+	padding: 18px 20px;
+	margin-top: 16px;
+}
+.pepban-setup-guide h4 { margin: 0 0 10px; font-size: 15px; }
+.pepban-setup-guide ol { margin: 0; padding-left: 20px; }
+.pepban-setup-guide li { margin-bottom: 9px; font-size: 14px; line-height: 1.5; }
+.pepban-setup-guide ul { margin: 6px 0 0 0; }
+.pepban-setup-guide code {
+	background: #e5e7eb;
+	padding: 1px 6px;
+	border-radius: 3px;
+	font-size: 12px;
+}
+
+/* ── Key actions ── */
+.pepban-key-actions p { font-size: 14px; color: #6b7280; margin-bottom: 14px; }
+
+/* ── Footer ── */
+.pepban-portal-footer {
+	border-top: 1px solid #e5e7eb;
+	padding-top: 16px;
+	margin-top: 8px;
+	font-size: 13px;
+	color: #9ca3af;
+}
+.pepban-portal-footer a { color: #6b7280; }
