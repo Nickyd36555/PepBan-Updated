@@ -1117,7 +1117,7 @@ code {
   border: none;
   cursor: pointer;
   padding: 6px;
-  margin-left: auto;
+  margin-right: 4px;
 }
 .pb-nav-burger span {
   display: block;

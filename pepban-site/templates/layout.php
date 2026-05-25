@@ -10,6 +10,9 @@
 
 <nav class="pb-nav">
   <div class="pb-nav-inner">
+    <button class="pb-nav-burger" id="pb-nav-burger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
     <a href="<?= url('/') ?>" class="pb-nav-brand">
       <img src="<?= url('assets/images/logo.png') ?>" alt="PepBan" class="pb-nav-logo">
     </a>
@@ -35,9 +38,6 @@
         <a href="<?= url('/signup') ?>" class="pb-btn pb-btn-primary">Sign Up</a>
       <?php endif; ?>
     </div>
-    <button class="pb-nav-burger" id="pb-nav-burger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
   </div>
 </nav>
 
