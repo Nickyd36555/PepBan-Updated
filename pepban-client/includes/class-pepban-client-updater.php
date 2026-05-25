@@ -54,8 +54,12 @@ class PepBan_Client_Updater {
 			'author'        => '<a href="https://pepban.com">PepBan</a>',
 			'homepage'      => 'https://pepban.com',
 			'download_link' => $info['download_url'] ?? '',
+			'requires'      => '6.0',
+			'requires_php'  => '7.4',
 			'sections'      => array(
-				'changelog' => $info['changelog'] ?? 'See pepban.com for release notes.',
+				'description'  => $info['description']  ?? '',
+				'installation' => $info['installation'] ?? '',
+				'changelog'    => $info['changelog']    ?? '',
 			),
 		);
 	}

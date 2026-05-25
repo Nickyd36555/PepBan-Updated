@@ -185,13 +185,28 @@ if ($segment === 'blocked-ips' && $method === 'GET') {
 
 // ── GET /api/v1/plugin/info ───────────────────────────────────────────────────
 if ($segment === 'plugin/info' && $method === 'GET') {
-	// Embed the API key in the download URL so WordPress can fetch it directly
 	$raw_key = $_SERVER['HTTP_X_PEPBAN_API_KEY'] ?? '';
 	ApiAuth::json([
 		'version'      => PEPBAN_VERSION,
 		'download_url' => rtrim(SITE_URL, '/') . '/download/client?api_key=' . urlencode($raw_key),
-		'details_url'  => rtrim(SITE_URL, '/') . '/changelog',
-		'changelog'    => 'See pepban.com for release notes.',
+		'details_url'  => rtrim(SITE_URL, '/'),
+		'description'  => '<p><strong>PepBan</strong> connects your WooCommerce store to the centralized PepBan ban database — shared across all member peptide stores.</p>'
+			. '<h4>Features</h4><ul>'
+			. '<li>Automatically blocks banned customers at checkout</li>'
+			. '<li>One-click reporting from the WooCommerce order screen</li>'
+			. '<li>Real-time email and phone checks against the shared ban list</li>'
+			. '<li>Per-site whitelisting — allow a banned customer on your store only</li>'
+			. '<li>IP blocking — prevent known bad actors from browsing your store</li>'
+			. '<li>Domain blocking — block all signups from suspicious email domains</li>'
+			. '<li>Automatic updates delivered directly from pepban.com</li>'
+			. '</ul>',
+		'installation' => '<ol>'
+			. '<li>Download the plugin ZIP from your <a href="' . rtrim(SITE_URL, '/') . '/portal">PepBan portal</a>.</li>'
+			. '<li>In WordPress go to <strong>Plugins → Add New → Upload Plugin</strong> and upload the ZIP.</li>'
+			. '<li>Activate the plugin.</li>'
+			. '<li>Go to <strong>PepBan → Settings</strong> and enter your API key.</li>'
+			. '</ol>',
+		'changelog'    => '<h4>' . PEPBAN_VERSION . '</h4><ul><li>Latest release — see pepban.com for full release notes.</li></ul>',
 	]);
 }
 
