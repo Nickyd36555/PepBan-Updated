@@ -103,7 +103,7 @@ class PepBan_Client_Settings {
 			return 'error';
 		}
 
-		$status = ( true === ( $result['success'] ?? false ) ) ? 'connected' : 'error';
+		$status = ( ( $result['status'] ?? '' ) === 'ok' || true === ( $result['success'] ?? false ) ) ? 'connected' : 'error';
 		if ( $status === 'error' ) {
 			update_option( 'pepban_last_connection_error', wp_json_encode( $result ) );
 		} else {
