@@ -106,7 +106,7 @@ function pepbanCopyKey(btn){var t=document.getElementById('pepban-key-text').tex
 	<h3>&#11015;&nbsp; Download Client Plugin</h3>
 	<p>Install this on your WooCommerce store to start blocking banned customers automatically.</p>
 	<a href="<?= url('/download/client') ?>" class="pepban-btn pepban-btn-download">
-		Download PepBan
+		Get PepBan Plugin
 	</a>
 </div>
 <div class="pepban-steps">
