@@ -65,4 +65,23 @@ $connection_status = PepBan_Client_Settings::test_connection();
 
 		<p class="submit"><button type="submit" class="button button-primary">Save Settings</button></p>
 	</form>
+
+	<hr>
+	<h2>Plugin Updates</h2>
+	<p>Current version: <strong><?php echo esc_html( PEPBAN_CLIENT_VERSION ); ?></strong><?php
+		$info = get_transient( 'pepban_plugin_update_info' );
+		if ( ! empty( $info['version'] ) && version_compare( $info['version'], PEPBAN_CLIENT_VERSION, '>' ) ) {
+			echo ' &mdash; <span style="color:#d63638">Version ' . esc_html( $info['version'] ) . ' available</span>';
+		} else {
+			echo ' &mdash; <span style="color:#00a32a">Up to date</span>';
+		}
+	?></p>
+	<?php if ( ! empty( $_GET['pepban_update_checked'] ) ) : ?>
+		<div class="notice notice-success inline"><p>Update check complete.</p></div>
+	<?php endif; ?>
+	<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+		<?php wp_nonce_field( 'pepban_force_update_check' ); ?>
+		<input type="hidden" name="action" value="pepban_client_check_for_update">
+		<button type="submit" class="button">Check for Updates</button>
+	</form>
 </div>

@@ -8,8 +8,20 @@ class PepBan_Client_Settings {
 	public static function init() {
 		add_action( 'admin_menu',            array( __CLASS__, 'register_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
-		add_action( 'admin_post_pepban_client_save_settings', array( __CLASS__, 'save_settings' ) );
+		add_action( 'admin_post_pepban_client_save_settings',    array( __CLASS__, 'save_settings' ) );
+		add_action( 'admin_post_pepban_client_check_for_update', array( __CLASS__, 'force_update_check' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
+	}
+
+	public static function force_update_check() {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) wp_die( 'Unauthorized' );
+		check_admin_referer( 'pepban_force_update_check' );
+		delete_transient( 'pepban_plugin_update_info' );
+		delete_transient( 'pepban_client_connection_status' );
+		delete_site_transient( 'update_plugins' );
+		wp_update_plugins();
+		wp_safe_redirect( admin_url( 'admin.php?page=pepban-client&pepban_update_checked=1' ) );
+		exit;
 	}
 
 	public static function get( $key = null, $default = null ) {
@@ -76,8 +88,10 @@ class PepBan_Client_Settings {
 
 		update_option( self::OPTION_KEY, $settings );
 
-		// Clear cached connection status
+		// Clear cached connection and update status
 		delete_transient( 'pepban_client_connection_status' );
+		delete_transient( 'pepban_plugin_update_info' );
+		delete_site_transient( 'update_plugins' );
 
 		set_transient( 'pepban_client_notice', 'Settings saved.', 60 );
 		wp_safe_redirect( admin_url( 'admin.php?page=pepban-client' ) );
