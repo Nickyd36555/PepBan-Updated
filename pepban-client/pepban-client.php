@@ -3,7 +3,7 @@
  * Plugin Name: PepBan Client
  * Plugin URI:  https://pepban.com
  * Description: Connects your WooCommerce store to the PepBan central ban database. Blocks banned customers at checkout and lets you report bad actors directly from orders.
- * Version:     1.0.8
+ * Version:     1.0.9
  * Author:      PepBan
  * License:     GPL-2.0+
  * Text Domain: pepban-client
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'PEPBAN_CLIENT_VERSION', '1.0.8' );
+define( 'PEPBAN_CLIENT_VERSION', '1.0.9' );
 define( 'PEPBAN_CLIENT_FILE',    __FILE__ );
 define( 'PEPBAN_CLIENT_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'PEPBAN_CLIENT_URL',     plugin_dir_url( __FILE__ ) );
@@ -25,6 +25,7 @@ require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-reporter.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-whitelist.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-ip-blocker.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-domains.php';
+require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-blacklist.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-updater.php';
 
 // Updater runs outside plugins_loaded so it catches WordPress's early update checks
@@ -45,4 +46,5 @@ function pepban_client_init() {
 	PepBan_Client_Whitelist::init();
 	PepBan_Client_IP_Blocker::init();
 	PepBan_Client_Domains::init();
+	PepBan_Client_Blacklist::init();
 }

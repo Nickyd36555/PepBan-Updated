@@ -101,6 +101,67 @@ jQuery(function ($) {
 		});
 	});
 
+	// ── Customer blacklist page ──────────────────────────────────────────────
+	$('#pepban-bl-add').on('click', function () {
+		var email   = $('#pepban-bl-email').val().trim();
+		var reason  = $('#pepban-bl-reason').val().trim();
+		var $result = $('#pepban-bl-result');
+		if (!email) { alert('Please enter an email address.'); return; }
+
+		var $btn = $(this);
+		$btn.prop('disabled', true).text('Adding…');
+		$result.hide();
+
+		$.post(ajaxurl, { action: 'pepban_blacklist_add', email: email, reason: reason, nonce: pepbanClient.nonce },
+		function (res) {
+			$result.show();
+			if (res.success) {
+				$result.html('<p style="color:#00a32a">&#10003; ' + res.data.message + '</p>');
+				$('#pepban-bl-email, #pepban-bl-reason').val('');
+				setTimeout(function () { location.reload(); }, 1200);
+			} else {
+				$result.html('<p style="color:#d63638">&#10007; ' + (res.data || 'Error.') + '</p>');
+			}
+		}).fail(function () {
+			$result.show().html('<p style="color:#d63638">&#10007; Request failed.</p>');
+		}).always(function () { $btn.prop('disabled', false).text('Add to Blacklist'); });
+	});
+
+	$(document).on('click', '.pepban-bl-report', function () {
+		var $btn   = $(this);
+		var email  = $btn.data('email');
+		var reason = $btn.data('reason');
+		if (!confirm('Report ' + email + ' to the global PepBan network? All member stores will see this customer as banned.')) return;
+
+		$btn.prop('disabled', true).text('Reporting…');
+
+		$.post(ajaxurl, { action: 'pepban_blacklist_report', email: email, reason: reason, nonce: pepbanClient.nonce },
+		function (res) {
+			if (res.success) {
+				$btn.replaceWith('<span style="color:#00a32a">&#10003; Reported</span>');
+			} else {
+				alert('Error: ' + (res.data || 'Unknown error.'));
+				$btn.prop('disabled', false).text('Report to PepBan');
+			}
+		});
+	});
+
+	$(document).on('click', '.pepban-bl-remove', function () {
+		var email = $(this).data('email');
+		if (!confirm('Remove ' + email + ' from the local blacklist?')) return;
+		var $btn = $(this);
+		$btn.prop('disabled', true).text('Removing…');
+		$.post(ajaxurl, { action: 'pepban_blacklist_remove', email: email, nonce: pepbanClient.nonce },
+		function (res) {
+			if (res.success) {
+				$('.pepban-bl-row[data-email="' + email + '"]').fadeOut(300, function () { $(this).remove(); });
+			} else {
+				alert('Error: ' + (res.data || 'Unknown error.'));
+				$btn.prop('disabled', false).text('Remove');
+			}
+		});
+	});
+
 	// ── Domain blacklist page ────────────────────────────────────────────────
 	$('#pepban-domain-add').on('click', function () {
 		var domain  = $('#pepban-domain-input').val().trim().replace(/^@/, '');

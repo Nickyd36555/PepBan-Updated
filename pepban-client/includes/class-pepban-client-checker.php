@@ -31,6 +31,14 @@ class PepBan_Client_Checker {
 
 		if ( empty( $email ) && empty( $phone ) ) return;
 
+		// Per-site customer blacklist check
+		if ( $email && PepBan_Client_Blacklist::is_blocked( $email ) ) {
+			$message = PepBan_Client_Settings::get( 'block_message', '' );
+			if ( empty( $message ) ) $message = 'We are unable to process your order at this time. Please contact us for assistance.';
+			wc_add_notice( $message, 'error' );
+			return;
+		}
+
 		// Per-site domain blacklist check (local, no API call needed)
 		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
 			$message = PepBan_Client_Settings::get( 'block_message', '' );
