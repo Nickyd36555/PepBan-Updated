@@ -24,6 +24,7 @@ require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-checker.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-reporter.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-whitelist.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-ip-blocker.php';
+require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-domains.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-updater.php';
 
 // Updater runs outside plugins_loaded so it catches WordPress's early update checks
@@ -43,4 +44,5 @@ function pepban_client_init() {
 	PepBan_Client_Reporter::init();
 	PepBan_Client_Whitelist::init();
 	PepBan_Client_IP_Blocker::init();
+	PepBan_Client_Domains::init();
 }

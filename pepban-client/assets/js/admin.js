@@ -101,6 +101,60 @@ jQuery(function ($) {
 		});
 	});
 
+	// ── Domain blacklist page ────────────────────────────────────────────────
+	$('#pepban-domain-add').on('click', function () {
+		var domain  = $('#pepban-domain-input').val().trim().replace(/^@/, '');
+		var reason  = $('#pepban-domain-reason').val().trim();
+		var $result = $('#pepban-domain-result');
+		if (!domain) { alert('Please enter a domain.'); return; }
+
+		var $btn = $(this);
+		$btn.prop('disabled', true).text('Blocking…');
+		$result.hide();
+
+		$.post(ajaxurl, {
+			action: 'pepban_domain_add',
+			domain: domain,
+			reason: reason,
+			nonce:  pepbanClient.nonce,
+		}, function (res) {
+			$result.show();
+			if (res.success) {
+				$result.html('<p style="color:#00a32a">&#10003; ' + res.data.message + '</p>');
+				$('#pepban-domain-input').val('');
+				$('#pepban-domain-reason').val('');
+				setTimeout(function () { location.reload(); }, 1200);
+			} else {
+				$result.html('<p style="color:#d63638">&#10007; ' + (res.data || 'Error.') + '</p>');
+			}
+		}).fail(function () {
+			$result.show().html('<p style="color:#d63638">&#10007; Request failed.</p>');
+		}).always(function () {
+			$btn.prop('disabled', false).text('Block Domain');
+		});
+	});
+
+	$(document).on('click', '.pepban-domain-remove', function () {
+		var domain = $(this).data('domain');
+		if (!confirm('Remove ' + domain + ' from the blacklist?')) return;
+
+		var $btn = $(this);
+		$btn.prop('disabled', true).text('Removing…');
+
+		$.post(ajaxurl, {
+			action: 'pepban_domain_remove',
+			domain: domain,
+			nonce:  pepbanClient.nonce,
+		}, function (res) {
+			if (res.success) {
+				$('#pepban-domain-row-' + domain).fadeOut(300, function () { $(this).remove(); });
+			} else {
+				alert('Error: ' + (res.data || 'Unknown error.'));
+				$btn.prop('disabled', false).text('Remove');
+			}
+		});
+	});
+
 	// ── Remove from whitelist page ───────────────────────────────────────────
 	$(document).on('click', '.pepban-remove-whitelist', function () {
 		if (!confirm('Remove this customer from your site whitelist? They will be blocked again at checkout.')) return;

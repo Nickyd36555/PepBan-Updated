@@ -176,6 +176,43 @@ if ($segment === 'status' && $method === 'GET') {
 	]);
 }
 
+// ── GET /api/v1/blocked-domains ──────────────────────────────────────────────
+if ($segment === 'blocked-domains' && $method === 'GET') {
+	$rows = $db->fetchAll('SELECT id, domain, reason, date_added FROM pepban_blocked_domains ORDER BY date_added DESC');
+	ApiAuth::json(['blocked_domains' => $rows]);
+}
+
+// ── POST /api/v1/blocked-domains/add ─────────────────────────────────────────
+if ($segment === 'blocked-domains/add' && $method === 'POST') {
+	$body   = ApiAuth::body();
+	$domain = strtolower(trim(ltrim($body->domain ?? '', '@')));
+	$reason = trim($body->reason ?? '');
+
+	if (!$domain) ApiAuth::error('domain is required', 422);
+
+	try {
+		$db->insert('pepban_blocked_domains', [
+			'domain'     => $domain,
+			'reason'     => $reason,
+			'date_added' => date('Y-m-d H:i:s'),
+		]);
+		ApiAuth::json(['success' => true, 'domain' => $domain]);
+	} catch (Exception $e) {
+		ApiAuth::error('Domain already blocked or invalid.', 409);
+	}
+}
+
+// ── POST /api/v1/blocked-domains/remove ──────────────────────────────────────
+if ($segment === 'blocked-domains/remove' && $method === 'POST') {
+	$body   = ApiAuth::body();
+	$domain = strtolower(trim(ltrim($body->domain ?? '', '@')));
+
+	if (!$domain) ApiAuth::error('domain is required', 422);
+
+	$db->query('DELETE FROM pepban_blocked_domains WHERE domain = ?', [$domain]);
+	ApiAuth::json(['success' => true]);
+}
+
 // ── GET /api/v1/blocked-ips ───────────────────────────────────────────────────
 if ($segment === 'blocked-ips' && $method === 'GET') {
 	$ips  = $db->fetchAll('SELECT ip_address FROM pepban_blocked_ips');
