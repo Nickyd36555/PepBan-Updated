@@ -1,8 +1,11 @@
 <?php
 if (Auth::isAdmin()) redirect('/admin/dashboard');
 
+$visitor_ip = trim(explode(',', $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1')[0]);
+$locked_out = !login_rate_limit($visitor_ip);
 $error = false;
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+if (!$locked_out && $_SERVER['REQUEST_METHOD'] === 'POST') {
 	verify_csrf();
 	$email = post('email');
 	$pass  = post('password');
@@ -10,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		Auth::loginAdmin();
 		redirect('/admin/dashboard');
 	}
+	login_rate_limit($visitor_ip, true); // record failure
 	$error = true;
 }
 ?>
@@ -26,10 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<div class="pb-login-logo">
 		<img src="<?= url('assets/images/logo.png') ?>" alt="PepBan" class="pb-login-logo-img">
 	</div>
-	<?php if ($error): ?>
+	<?php if ($locked_out): ?>
+	<div class="pb-alert pb-alert-error">Too many failed attempts. Please wait 15 minutes.</div>
+	<?php elseif ($error): ?>
 	<div class="pb-alert pb-alert-error">Incorrect email or password.</div>
 	<?php endif; ?>
-	<form method="post">
+	<form method="post" <?= $locked_out ? 'onsubmit="return false"' : '' ?>>
 		<?= csrf_field() ?>
 		<div class="pb-field">
 			<label for="email">Email</label>

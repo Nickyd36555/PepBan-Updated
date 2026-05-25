@@ -1,9 +1,11 @@
 <?php
 if (Auth::isClient()) redirect('/portal');
 
+$visitor_ip = trim(explode(',', $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1')[0]);
+$locked_out = !login_rate_limit($visitor_ip);
 $errors = [];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (!$locked_out && $_SERVER['REQUEST_METHOD'] === 'POST') {
 	verify_csrf();
 	$email = post('email');
 	$pass  = post('password');
@@ -12,10 +14,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if ($client && password_verify($pass, $client->password_hash)) {
 		Auth::loginClient($client);
 		$next = get_param('next', '/portal');
+		// Validate next is an internal path only
+		if (!str_starts_with($next, '/') || str_starts_with($next, '//')) $next = '/portal';
 		redirect($next);
 	} else {
+		login_rate_limit($visitor_ip, true); // record failure
 		$errors[] = 'Incorrect email or password.';
 	}
+} elseif ($locked_out) {
+	$errors[] = 'Too many failed attempts. Please wait 15 minutes.';
 }
 
 $page_title = 'Log In — ' . SITE_NAME;

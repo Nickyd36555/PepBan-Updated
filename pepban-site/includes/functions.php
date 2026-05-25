@@ -76,6 +76,18 @@ function generate_api_key(): string {
 
 // ── Rate limiting (file-based, no Redis needed) ───────────────────────────────
 
+// Login brute-force: max 10 failed attempts per 15 minutes per IP.
+// Call with $record=false to check, $record=true to count a failure.
+function login_rate_limit(string $ip, bool $record = false): bool {
+	$dir  = sys_get_temp_dir() . '/pepban_rl/';
+	if (!is_dir($dir)) mkdir($dir, 0700, true);
+	$file = $dir . 'login_' . md5($ip) . '_' . floor(time() / 900);
+	$count = file_exists($file) ? (int) file_get_contents($file) : 0;
+	if ($count >= 10) return false;
+	if ($record) file_put_contents($file, $count + 1, LOCK_EX);
+	return true;
+}
+
 function check_rate_limit(string $identifier): bool {
 	$dir  = sys_get_temp_dir() . '/pepban_rl/';
 	if (!is_dir($dir)) mkdir($dir, 0700, true);
