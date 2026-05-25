@@ -1,10 +1,26 @@
 <?php
-// Only logged-in active clients (or admin) can download the plugin.
-if (!Auth::isClient() && !Auth::isAdmin()) {
+// Allow API-key-authenticated downloads (used by WordPress auto-updater)
+$api_key_param = trim($_GET['api_key'] ?? '');
+if ($api_key_param) {
+	$prefix = substr($api_key_param, 0, 8);
+	$rows   = Database::get()->fetchAll(
+		'SELECT * FROM pepban_clients WHERE api_key_prefix = ?',
+		[$prefix]
+	);
+	$api_client = null;
+	foreach ($rows as $row) {
+		if (password_verify($api_key_param, $row->api_key_hash)) { $api_client = $row; break; }
+	}
+	if (!$api_client || $api_client->subscription_status !== 'active') {
+		http_response_code(403);
+		die('Invalid or inactive API key.');
+	}
+	// Authenticated via API key — skip session checks below
+} elseif (!Auth::isClient() && !Auth::isAdmin()) {
 	redirect('/login?next=/download/client');
 }
 
-if (Auth::isClient()) {
+if (!$api_key_param && Auth::isClient()) {
 	$client = Auth::client();
 	if ($client->subscription_status !== 'active') {
 		flash('error', 'Your account must be active to download the plugin.');

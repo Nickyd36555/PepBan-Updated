@@ -183,5 +183,17 @@ if ($segment === 'blocked-ips' && $method === 'GET') {
 	ApiAuth::json(['blocked_ips' => $list]);
 }
 
+// ── GET /api/v1/plugin/info ───────────────────────────────────────────────────
+if ($segment === 'plugin/info' && $method === 'GET') {
+	// Embed the API key in the download URL so WordPress can fetch it directly
+	$raw_key = $_SERVER['HTTP_X_PEPBAN_API_KEY'] ?? '';
+	ApiAuth::json([
+		'version'      => PEPBAN_VERSION,
+		'download_url' => rtrim(SITE_URL, '/') . '/download/client?api_key=' . urlencode($raw_key),
+		'details_url'  => rtrim(SITE_URL, '/') . '/changelog',
+		'changelog'    => 'See pepban.com for release notes.',
+	]);
+}
+
 // ── Fallback ──────────────────────────────────────────────────────────────────
 ApiAuth::error('Endpoint not found', 404);
