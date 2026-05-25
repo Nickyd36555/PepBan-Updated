@@ -74,7 +74,16 @@ $files = new RecursiveIteratorIterator(
 foreach ($files as $file) {
 	$real  = $file->getRealPath();
 	$local = 'pepban-client/' . ltrim(substr($real, strlen($base)), DIRECTORY_SEPARATOR);
-	$zip->addFile($real, $local);
+
+	// Dynamically stamp the hub version into the main plugin file
+	if (basename($real) === 'pepban-client.php' && dirname($real) === $base) {
+		$content = file_get_contents($real);
+		$content = preg_replace('/(\*\s*Version:\s*)[\d.]+/', '${1}' . PEPBAN_VERSION, $content);
+		$content = preg_replace("/(define\s*\(\s*'PEPBAN_CLIENT_VERSION'\s*,\s*')[^']+(')/", '${1}' . PEPBAN_VERSION . '${2}', $content);
+		$zip->addFromString($local, $content);
+	} else {
+		$zip->addFile($real, $local);
+	}
 }
 $zip->close();
 
