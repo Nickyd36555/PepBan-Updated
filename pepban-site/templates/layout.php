@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= e($page_title ?? SITE_NAME) ?></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="<?= url('assets/css/public.css') ?>?v=<?= PEPBAN_VERSION ?>">
 </head>
 <body>
@@ -20,6 +23,7 @@
       <a href="<?= url('/') ?>" class="pb-nav-link">Home</a>
       <a href="<?= url('/#features') ?>" class="pb-nav-link">Features</a>
       <a href="<?= url('/faq') ?>" class="pb-nav-link">FAQ</a>
+      <a href="<?= url('/changelog') ?>" class="pb-nav-link">Changelog</a>
       <a href="<?= url('/signup') ?>" class="pb-nav-link">Pricing</a>
       <?php if (Auth::isClient()): ?>
         <a href="<?= url('/portal') ?>" class="pb-nav-link pb-mobile-only">My Portal</a>
