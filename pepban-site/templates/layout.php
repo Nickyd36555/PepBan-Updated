@@ -13,11 +13,18 @@
     <a href="<?= url('/') ?>" class="pb-nav-brand">
       <img src="<?= url('assets/images/logo.png') ?>" alt="PepBan" class="pb-nav-logo">
     </a>
-    <div class="pb-nav-links">
+    <div class="pb-nav-links" id="pb-nav-links">
       <a href="<?= url('/') ?>" class="pb-nav-link">Home</a>
       <a href="<?= url('/#features') ?>" class="pb-nav-link">Features</a>
       <a href="<?= url('/faq') ?>" class="pb-nav-link">FAQ</a>
       <a href="<?= url('/signup') ?>" class="pb-nav-link">Pricing</a>
+      <?php if (Auth::isClient()): ?>
+        <a href="<?= url('/portal') ?>" class="pb-nav-link">My Portal</a>
+        <a href="<?= url('/logout') ?>" class="pb-nav-link">Log out</a>
+      <?php else: ?>
+        <a href="<?= url('/login') ?>" class="pb-nav-link">Log In</a>
+        <a href="<?= url('/signup') ?>" class="pb-nav-link">Sign Up</a>
+      <?php endif; ?>
     </div>
     <div class="pb-nav-actions">
       <?php if (Auth::isClient()): ?>
@@ -28,6 +35,9 @@
         <a href="<?= url('/signup') ?>" class="pb-btn pb-btn-primary">Sign Up</a>
       <?php endif; ?>
     </div>
+    <button class="pb-nav-burger" id="pb-nav-burger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 

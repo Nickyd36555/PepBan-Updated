@@ -17,6 +17,22 @@ document.querySelectorAll('.pb-faq-question').forEach(function(btn) {
     btn.closest('.pb-faq-item').classList.toggle('open');
   });
 });
+
+(function() {
+  var burger = document.getElementById('pb-nav-burger');
+  var links  = document.getElementById('pb-nav-links');
+  if (!burger) return;
+  burger.addEventListener('click', function() {
+    burger.classList.toggle('open');
+    links.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e) {
+    if (!burger.contains(e.target) && !links.contains(e.target)) {
+      burger.classList.remove('open');
+      links.classList.remove('open');
+    }
+  });
+})();
 </script>
 
 </body>
