@@ -9,9 +9,13 @@ defined( 'ABSPATH' ) || exit;
 class PepBan_Client_Checker {
 
 	public static function init() {
+		// Classic checkout
 		add_action( 'woocommerce_checkout_process', array( __CLASS__, 'check_at_checkout' ) );
 
-		// Also block payment attempts from the block-based checkout
+		// FunnelKit / most third-party checkout builders use this validation hook
+		add_action( 'woocommerce_after_checkout_validation', array( __CLASS__, 'check_after_validation' ), 10, 2 );
+
+		// Block-based checkout (WooCommerce Blocks)
 		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( __CLASS__, 'check_block_checkout' ), 10, 2 );
 
 		// Show a warning banner on the order edit page for already-placed orders
@@ -63,6 +67,41 @@ class PepBan_Client_Checker {
 				$message = 'We are unable to process your order at this time. Please contact us for assistance.';
 			}
 			wc_add_notice( $message, 'error' );
+		}
+	}
+
+	// Fires on FunnelKit and most checkout builders — receives $data array and $errors WP_Error
+	public static function check_after_validation( $data, $errors ) {
+		if ( ! PepBan_Client_Settings::is_configured() ) return;
+
+		$email = sanitize_email( $data['billing_email'] ?? '' );
+		$phone = sanitize_text_field( $data['billing_phone'] ?? '' );
+
+		if ( empty( $email ) && empty( $phone ) ) return;
+
+		$message = PepBan_Client_Settings::get( 'block_message', '' );
+		if ( empty( $message ) ) $message = 'We are unable to process your order at this time. Please contact us for assistance.';
+
+		if ( $email && PepBan_Client_Blacklist::is_blocked( $email ) ) {
+			$errors->add( 'pepban_blocked', $message );
+			return;
+		}
+
+		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
+			$errors->add( 'pepban_blocked', $message );
+			return;
+		}
+
+		$result = PepBan_Client_API::check_customer(
+			$email,
+			$phone,
+			sanitize_text_field( $data['billing_first_name'] ?? '' ),
+			sanitize_text_field( $data['billing_last_name'] ?? '' ),
+			self::get_customer_ip()
+		);
+
+		if ( ! is_wp_error( $result ) && ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
+			$errors->add( 'pepban_banned', $message );
 		}
 	}
 
