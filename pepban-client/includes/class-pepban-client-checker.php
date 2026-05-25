@@ -9,10 +9,11 @@ defined( 'ABSPATH' ) || exit;
 class PepBan_Client_Checker {
 
 	public static function init() {
-		// Classic checkout
-		add_action( 'woocommerce_checkout_process', array( __CLASS__, 'check_at_checkout' ) );
+		// Universal: fires for every checkout type before the order is saved
+		add_action( 'woocommerce_checkout_order_created',    array( __CLASS__, 'check_order_and_cancel' ), 1, 1 );
 
-		// FunnelKit / most third-party checkout builders use this validation hook
+		// Classic checkout + FunnelKit validation (adds user-facing error message)
+		add_action( 'woocommerce_checkout_process',          array( __CLASS__, 'check_at_checkout' ) );
 		add_action( 'woocommerce_after_checkout_validation', array( __CLASS__, 'check_after_validation' ), 10, 2 );
 
 		// Block-based checkout (WooCommerce Blocks)
@@ -67,6 +68,44 @@ class PepBan_Client_Checker {
 				$message = 'We are unable to process your order at this time. Please contact us for assistance.';
 			}
 			wc_add_notice( $message, 'error' );
+		}
+	}
+
+	// Universal safety net — fires for EVERY checkout type after order object is created.
+	// Cancels and deletes the order if the customer is banned.
+	public static function check_order_and_cancel( $order ) {
+		if ( ! PepBan_Client_Settings::is_configured() ) return;
+
+		$email = $order->get_billing_email();
+		$phone = $order->get_billing_phone();
+
+		if ( empty( $email ) && empty( $phone ) ) return;
+
+		$blocked = false;
+
+		if ( $email && PepBan_Client_Blacklist::is_blocked( $email ) ) {
+			$blocked = true;
+		} elseif ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
+			$blocked = true;
+		} else {
+			$result = PepBan_Client_API::check_customer( $email, $phone );
+			if ( ! is_wp_error( $result ) && ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
+				$blocked = true;
+			}
+		}
+
+		if ( $blocked ) {
+			// Cancel and trash the order immediately
+			$order->update_status( 'cancelled', 'Blocked by PepBan — banned customer.' );
+			$order->save();
+			wp_trash_post( $order->get_id() );
+
+			$message = PepBan_Client_Settings::get( 'block_message', '' );
+			if ( empty( $message ) ) $message = 'We are unable to process your order at this time. Please contact us for assistance.';
+
+			// Show error to customer and halt execution
+			wc_add_notice( $message, 'error' );
+			throw new Exception( $message );
 		}
 	}
 
