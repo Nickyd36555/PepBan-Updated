@@ -4,21 +4,51 @@ defined( 'ABSPATH' ) || exit;
 class PepBan_Client_Blacklist {
 
 	const OPTION_KEY = 'pepban_client_customer_blacklist';
+	const VALID_TYPES = array( 'email', 'ip', 'address' );
 
 	public static function init() {
-		add_action( 'wp_ajax_pepban_blacklist_add',         array( __CLASS__, 'ajax_add' ) );
-		add_action( 'wp_ajax_pepban_blacklist_remove',      array( __CLASS__, 'ajax_remove' ) );
-		add_action( 'wp_ajax_pepban_blacklist_report',      array( __CLASS__, 'ajax_report_to_hub' ) );
+		add_action( 'wp_ajax_pepban_blacklist_add',    array( __CLASS__, 'ajax_add' ) );
+		add_action( 'wp_ajax_pepban_blacklist_remove', array( __CLASS__, 'ajax_remove' ) );
+		add_action( 'wp_ajax_pepban_blacklist_report', array( __CLASS__, 'ajax_report_to_hub' ) );
 	}
 
 	public static function get_all(): array {
 		return get_option( self::OPTION_KEY, array() );
 	}
 
+	// Backwards-compat: old entries used 'email' key instead of type/value
+	private static function entry_type( array $e ): string {
+		return $e['type'] ?? 'email';
+	}
+	private static function entry_value( array $e ): string {
+		return $e['value'] ?? $e['email'] ?? '';
+	}
+
 	public static function is_blocked( string $email ): bool {
 		$email = strtolower( trim( $email ) );
-		foreach ( self::get_all() as $entry ) {
-			if ( strtolower( $entry['email'] ) === $email ) return true;
+		foreach ( self::get_all() as $e ) {
+			if ( self::entry_type( $e ) === 'email' && strtolower( self::entry_value( $e ) ) === $email ) return true;
+		}
+		return false;
+	}
+
+	public static function is_blocked_ip( string $ip ): bool {
+		$ip = trim( $ip );
+		foreach ( self::get_all() as $e ) {
+			if ( self::entry_type( $e ) === 'ip' && self::entry_value( $e ) === $ip ) return true;
+		}
+		return false;
+	}
+
+	// $address should be the full billing address concatenated (lowercased by caller).
+	// Stored value is matched as a case-insensitive substring so admins can block by zip, city, etc.
+	public static function is_blocked_address( string $address ): bool {
+		if ( empty( $address ) ) return false;
+		$address = strtolower( $address );
+		foreach ( self::get_all() as $e ) {
+			if ( self::entry_type( $e ) !== 'address' ) continue;
+			$val = strtolower( trim( self::entry_value( $e ) ) );
+			if ( $val && strpos( $address, $val ) !== false ) return true;
 		}
 		return false;
 	}
@@ -36,28 +66,41 @@ class PepBan_Client_Blacklist {
 			wp_send_json_error( 'Unauthorized.' );
 		}
 
-		$email  = strtolower( trim( sanitize_email( wp_unslash( $_POST['email'] ?? '' ) ) ) );
+		$type   = sanitize_text_field( wp_unslash( $_POST['type']   ?? 'email' ) );
+		$value  = trim( sanitize_text_field( wp_unslash( $_POST['value']  ?? '' ) ) );
 		$reason = sanitize_text_field( wp_unslash( $_POST['reason'] ?? '' ) );
 
-		if ( ! $email ) wp_send_json_error( 'Email is required.' );
-		if ( ! is_email( $email ) ) wp_send_json_error( 'Invalid email address.' );
+		if ( ! in_array( $type, self::VALID_TYPES, true ) ) {
+			wp_send_json_error( 'Invalid type.' );
+		}
+		if ( empty( $value ) ) {
+			wp_send_json_error( 'Value is required.' );
+		}
+
+		if ( $type === 'email' ) {
+			$value = strtolower( $value );
+			if ( ! is_email( $value ) ) wp_send_json_error( 'Invalid email address.' );
+		} elseif ( $type === 'ip' ) {
+			if ( ! filter_var( $value, FILTER_VALIDATE_IP ) ) wp_send_json_error( 'Invalid IP address.' );
+		}
 
 		$customers = self::get_all();
-		foreach ( $customers as $entry ) {
-			if ( strtolower( $entry['email'] ) === $email ) {
-				wp_send_json_error( 'This customer is already blacklisted.' );
+		foreach ( $customers as $e ) {
+			if ( self::entry_type( $e ) === $type && strtolower( self::entry_value( $e ) ) === strtolower( $value ) ) {
+				wp_send_json_error( 'This entry is already blacklisted.' );
 			}
 		}
 
 		$customers[] = array(
-			'email'          => $email,
-			'reason'         => $reason,
-			'date_added'     => current_time( 'mysql' ),
-			'reported_to_hub'=> false,
+			'type'             => $type,
+			'value'            => $value,
+			'reason'           => $reason,
+			'date_added'       => current_time( 'mysql' ),
+			'reported_to_hub'  => false,
 		);
 		update_option( self::OPTION_KEY, $customers );
 
-		wp_send_json_success( array( 'message' => 'Customer blacklisted on this site.', 'email' => $email ) );
+		wp_send_json_success( array( 'message' => 'Added to blacklist.', 'value' => $value, 'type' => $type ) );
 	}
 
 	public static function ajax_remove() {
@@ -68,13 +111,17 @@ class PepBan_Client_Blacklist {
 			wp_send_json_error( 'Unauthorized.' );
 		}
 
-		$email = strtolower( trim( sanitize_email( wp_unslash( $_POST['email'] ?? '' ) ) ) );
-		if ( ! $email ) wp_send_json_error( 'Email is required.' );
+		$type  = sanitize_text_field( wp_unslash( $_POST['type']  ?? 'email' ) );
+		$value = strtolower( trim( sanitize_text_field( wp_unslash( $_POST['value'] ?? '' ) ) ) );
 
-		$customers = array_values( array_filter( self::get_all(), fn( $e ) => strtolower( $e['email'] ) !== $email ) );
+		if ( empty( $value ) ) wp_send_json_error( 'Value is required.' );
+
+		$customers = array_values( array_filter( self::get_all(), function( $e ) use ( $type, $value ) {
+			return ! ( self::entry_type( $e ) === $type && strtolower( self::entry_value( $e ) ) === $value );
+		} ) );
 		update_option( self::OPTION_KEY, $customers );
 
-		wp_send_json_success( 'Customer removed from blacklist.' );
+		wp_send_json_success( 'Removed from blacklist.' );
 	}
 
 	public static function ajax_report_to_hub() {
@@ -99,11 +146,10 @@ class PepBan_Client_Blacklist {
 			wp_send_json_error( $result->get_error_message() );
 		}
 
-		// Mark as reported in local list
 		$customers = self::get_all();
-		foreach ( $customers as &$entry ) {
-			if ( strtolower( $entry['email'] ) === $email ) {
-				$entry['reported_to_hub'] = true;
+		foreach ( $customers as &$e ) {
+			if ( self::entry_type( $e ) === 'email' && strtolower( self::entry_value( $e ) ) === $email ) {
+				$e['reported_to_hub'] = true;
 			}
 		}
 		update_option( self::OPTION_KEY, $customers );

@@ -36,21 +36,20 @@ class PepBan_Client_Checker {
 
 		if ( empty( $email ) && empty( $phone ) ) return;
 
-		// Per-site customer blacklist check
-		if ( $email && PepBan_Client_Blacklist::is_blocked( $email ) ) {
-			$message = PepBan_Client_Settings::get( 'block_message', '' );
-			if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
-			wc_add_notice( $message, 'error' );
-			return;
-		}
+		$address = strtolower( implode( ' ', array_filter( array(
+			sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ?? '' ) ),
+			sanitize_text_field( wp_unslash( $_POST['billing_city']      ?? '' ) ),
+			sanitize_text_field( wp_unslash( $_POST['billing_state']     ?? '' ) ),
+			sanitize_text_field( wp_unslash( $_POST['billing_postcode']  ?? '' ) ),
+		) ) ) );
 
-		// Per-site domain blacklist check (local, no API call needed)
-		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
-			$message = PepBan_Client_Settings::get( 'block_message', '' );
-			if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
-			wc_add_notice( $message, 'error' );
-			return;
-		}
+		$message = PepBan_Client_Settings::get( 'block_message', '' );
+		if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
+
+		if ( $email   && PepBan_Client_Blacklist::is_blocked( $email ) )            { wc_add_notice( $message, 'error' ); return; }
+		if ( $ip      && PepBan_Client_Blacklist::is_blocked_ip( $ip ) )            { wc_add_notice( $message, 'error' ); return; }
+		if ( $address && PepBan_Client_Blacklist::is_blocked_address( $address ) )  { wc_add_notice( $message, 'error' ); return; }
+		if ( $email   && PepBan_Client_Domains::is_blocked( $email ) )              { wc_add_notice( $message, 'error' ); return; }
 
 		$result = PepBan_Client_API::check_customer( $email, $phone, $first_name, $last_name, $ip );
 
@@ -81,13 +80,21 @@ class PepBan_Client_Checker {
 
 		if ( empty( $email ) && empty( $phone ) ) return;
 
+		$ip      = self::get_customer_ip();
+		$address = strtolower( implode( ' ', array_filter( array(
+			$order->get_billing_address_1(),
+			$order->get_billing_city(),
+			$order->get_billing_state(),
+			$order->get_billing_postcode(),
+		) ) ) );
+
 		$blocked = false;
 
-		if ( $email && PepBan_Client_Blacklist::is_blocked( $email ) ) {
-			$blocked = true;
-		} elseif ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
-			$blocked = true;
-		} else {
+		if ( $email   && PepBan_Client_Blacklist::is_blocked( $email ) )           { $blocked = true; }
+		elseif ( $ip  && PepBan_Client_Blacklist::is_blocked_ip( $ip ) )           { $blocked = true; }
+		elseif ( $address && PepBan_Client_Blacklist::is_blocked_address( $address ) ) { $blocked = true; }
+		elseif ( $email && PepBan_Client_Domains::is_blocked( $email ) )           { $blocked = true; }
+		else {
 			$result = PepBan_Client_API::check_customer( $email, $phone );
 			if ( ! is_wp_error( $result ) && ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
 				$blocked = true;

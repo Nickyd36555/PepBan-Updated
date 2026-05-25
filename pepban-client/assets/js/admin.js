@@ -102,22 +102,39 @@ jQuery(function ($) {
 	});
 
 	// ── Customer blacklist page ──────────────────────────────────────────────
+	var blHints = {
+		email:   'Block a specific email address at checkout.',
+		ip:      'Block a specific IP address (e.g. 192.168.1.1).',
+		address: 'Block by billing address — partial match works (zip code, city, etc.).'
+	};
+	var blPlaceholders = {
+		email:   'customer@example.com',
+		ip:      '192.168.1.1',
+		address: 'e.g. Austin TX  or  78701'
+	};
+	$('#pepban-bl-type').on('change', function () {
+		var t = $(this).val();
+		$('#pepban-bl-hint').text(blHints[t] || '');
+		$('#pepban-bl-value').attr('placeholder', blPlaceholders[t] || 'Enter value…');
+	});
+
 	$('#pepban-bl-add').on('click', function () {
-		var email   = $('#pepban-bl-email').val().trim();
+		var type    = $('#pepban-bl-type').val();
+		var value   = $('#pepban-bl-value').val().trim();
 		var reason  = $('#pepban-bl-reason').val().trim();
 		var $result = $('#pepban-bl-result');
-		if (!email) { alert('Please enter an email address.'); return; }
+		if (!value) { alert('Please enter a value.'); return; }
 
 		var $btn = $(this);
 		$btn.prop('disabled', true).text('Adding…');
 		$result.hide();
 
-		$.post(ajaxurl, { action: 'pepban_blacklist_add', email: email, reason: reason, nonce: pepbanClient.nonce },
+		$.post(ajaxurl, { action: 'pepban_blacklist_add', type: type, value: value, reason: reason, nonce: pepbanClient.nonce },
 		function (res) {
 			$result.show();
 			if (res.success) {
 				$result.html('<p style="color:#00a32a">&#10003; ' + res.data.message + '</p>');
-				$('#pepban-bl-email, #pepban-bl-reason').val('');
+				$('#pepban-bl-value, #pepban-bl-reason').val('');
 				setTimeout(function () { location.reload(); }, 1200);
 			} else {
 				$result.html('<p style="color:#d63638">&#10007; ' + (res.data || 'Error.') + '</p>');
@@ -147,14 +164,15 @@ jQuery(function ($) {
 	});
 
 	$(document).on('click', '.pepban-bl-remove', function () {
-		var email = $(this).data('email');
-		if (!confirm('Remove ' + email + ' from the local blacklist?')) return;
-		var $btn = $(this);
+		var $btn  = $(this);
+		var type  = $btn.data('type') || 'email';
+		var value = String($btn.data('value') || $btn.data('email') || '');
+		if (!confirm('Remove "' + value + '" from the local blacklist?')) return;
 		$btn.prop('disabled', true).text('Removing…');
-		$.post(ajaxurl, { action: 'pepban_blacklist_remove', email: email, nonce: pepbanClient.nonce },
+		$.post(ajaxurl, { action: 'pepban_blacklist_remove', type: type, value: value, nonce: pepbanClient.nonce },
 		function (res) {
 			if (res.success) {
-				$('.pepban-bl-row[data-email="' + email + '"]').fadeOut(300, function () { $(this).remove(); });
+				$('.pepban-bl-row[data-type="' + type + '"][data-value="' + value + '"]').fadeOut(300, function () { $(this).remove(); });
 			} else {
 				alert('Error: ' + (res.data || 'Unknown error.'));
 				$btn.prop('disabled', false).text('Remove');
