@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= e($page_title ?? SITE_NAME) ?></title>
-<link rel="stylesheet" href="<?= url('assets/css/public.css') ?>">
+<link rel="stylesheet" href="<?= url('assets/css/public.css') ?>?v=<?= PEPBAN_VERSION ?>">
 </head>
 <body>
 
