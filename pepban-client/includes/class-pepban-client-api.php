@@ -112,17 +112,4 @@ class PepBan_Client_API {
 		return $result['whitelisted'] ?? array();
 	}
 
-	public static function blocked_domains_list() {
-		$result = self::get( '/blocked-domains' );
-		if ( is_wp_error( $result ) ) return array();
-		return $result['blocked_domains'] ?? array();
-	}
-
-	public static function blocked_domain_add( $domain, $reason = '' ) {
-		return self::post( '/blocked-domains/add', array( 'domain' => $domain, 'reason' => $reason ) );
-	}
-
-	public static function blocked_domain_remove( $domain ) {
-		return self::post( '/blocked-domains/remove', array( 'domain' => $domain ) );
-	}
 }

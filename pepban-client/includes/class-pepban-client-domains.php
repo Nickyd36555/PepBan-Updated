@@ -3,13 +3,28 @@ defined( 'ABSPATH' ) || exit;
 
 class PepBan_Client_Domains {
 
+	const OPTION_KEY = 'pepban_client_blocked_domains';
+
 	public static function init() {
 		add_action( 'wp_ajax_pepban_domain_add',    array( __CLASS__, 'ajax_add' ) );
 		add_action( 'wp_ajax_pepban_domain_remove', array( __CLASS__, 'ajax_remove' ) );
 	}
 
+	public static function get_all(): array {
+		return get_option( self::OPTION_KEY, array() );
+	}
+
+	public static function is_blocked( string $email ): bool {
+		$domain = strtolower( substr( strrchr( $email, '@' ), 1 ) );
+		if ( ! $domain ) return false;
+		foreach ( self::get_all() as $entry ) {
+			if ( strtolower( $entry['domain'] ) === $domain ) return true;
+		}
+		return false;
+	}
+
 	public static function render_page() {
-		$domains = PepBan_Client_API::blocked_domains_list();
+		$domains = self::get_all();
 		include PEPBAN_CLIENT_DIR . 'admin/views/domains.php';
 	}
 
@@ -21,17 +36,26 @@ class PepBan_Client_Domains {
 			wp_send_json_error( 'Unauthorized.' );
 		}
 
-		$domain = sanitize_text_field( wp_unslash( $_POST['domain'] ?? '' ) );
+		$domain = strtolower( trim( ltrim( sanitize_text_field( wp_unslash( $_POST['domain'] ?? '' ) ), '@' ) ) );
 		$reason = sanitize_text_field( wp_unslash( $_POST['reason'] ?? '' ) );
 
 		if ( ! $domain ) wp_send_json_error( 'Domain is required.' );
 
-		$result = PepBan_Client_API::blocked_domain_add( $domain, $reason );
-		if ( is_wp_error( $result ) ) {
-			wp_send_json_error( $result->get_error_message() );
+		$domains = self::get_all();
+		foreach ( $domains as $entry ) {
+			if ( $entry['domain'] === $domain ) {
+				wp_send_json_error( 'Domain is already blocked.' );
+			}
 		}
 
-		wp_send_json_success( array( 'message' => 'Domain blocked successfully.', 'domain' => $domain ) );
+		$domains[] = array(
+			'domain'     => $domain,
+			'reason'     => $reason,
+			'date_added' => current_time( 'mysql' ),
+		);
+		update_option( self::OPTION_KEY, $domains );
+
+		wp_send_json_success( array( 'message' => 'Domain blocked.', 'domain' => $domain ) );
 	}
 
 	public static function ajax_remove() {
@@ -42,13 +66,11 @@ class PepBan_Client_Domains {
 			wp_send_json_error( 'Unauthorized.' );
 		}
 
-		$domain = sanitize_text_field( wp_unslash( $_POST['domain'] ?? '' ) );
+		$domain  = strtolower( trim( sanitize_text_field( wp_unslash( $_POST['domain'] ?? '' ) ) ) );
 		if ( ! $domain ) wp_send_json_error( 'Domain is required.' );
 
-		$result = PepBan_Client_API::blocked_domain_remove( $domain );
-		if ( is_wp_error( $result ) ) {
-			wp_send_json_error( $result->get_error_message() );
-		}
+		$domains = array_values( array_filter( self::get_all(), fn( $e ) => $e['domain'] !== $domain ) );
+		update_option( self::OPTION_KEY, $domains );
 
 		wp_send_json_success( 'Domain removed.' );
 	}

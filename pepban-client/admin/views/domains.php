@@ -3,7 +3,7 @@
 	<h1>PepBan Domain Blacklist</h1>
 
 	<div class="notice notice-info" style="padding:10px 12px">
-		<strong>Note:</strong> Blocked domains are <em>global</em> — any email from a blocked domain will be flagged as banned across <strong>all</strong> sites in the PepBan network.
+		<strong>Note:</strong> Blocked domains only apply to <strong>this site</strong>. Customers using a blocked domain email will be prevented from checking out here, but other PepBan sites are not affected.
 	</div>
 
 	<div class="pepban-domain-add-form" style="margin:16px 0;padding:16px;background:#fff;border:1px solid #ccd0d4;border-radius:4px;max-width:520px">

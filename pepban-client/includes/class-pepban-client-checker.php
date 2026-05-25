@@ -31,6 +31,14 @@ class PepBan_Client_Checker {
 
 		if ( empty( $email ) && empty( $phone ) ) return;
 
+		// Per-site domain blacklist check (local, no API call needed)
+		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
+			$message = PepBan_Client_Settings::get( 'block_message', '' );
+			if ( empty( $message ) ) $message = 'We are unable to process your order at this time. Please contact us for assistance.';
+			wc_add_notice( $message, 'error' );
+			return;
+		}
+
 		$result = PepBan_Client_API::check_customer( $email, $phone, $first_name, $last_name, $ip );
 
 		if ( is_wp_error( $result ) ) {
@@ -56,6 +64,11 @@ class PepBan_Client_Checker {
 		$email = $order->get_billing_email();
 		$phone = $order->get_billing_phone();
 		if ( empty( $email ) && empty( $phone ) ) return;
+
+		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
+			$message = PepBan_Client_Settings::get( 'block_message', 'We are unable to process your order at this time.' );
+			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', $message, 400 );
+		}
 
 		$result = PepBan_Client_API::check_customer(
 			$email,
