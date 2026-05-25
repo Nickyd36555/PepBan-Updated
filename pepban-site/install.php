@@ -95,6 +95,24 @@ CREATE TABLE IF NOT EXISTS pepban_password_resets (
 	KEY token_hash (token_hash)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS pepban_blocked_domains (
+	id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	domain     VARCHAR(255) NOT NULL,
+	reason     TEXT         NOT NULL DEFAULT '',
+	date_added DATETIME     NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE KEY domain (domain)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS pepban_blocked_ips (
+	id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	ip_address VARCHAR(45)  NOT NULL,
+	reason     TEXT         NOT NULL DEFAULT '',
+	date_added DATETIME     NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE KEY ip_address (ip_address)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 SQL;
 
 	foreach (array_filter(array_map('trim', explode(';', $sql))) as $statement) {

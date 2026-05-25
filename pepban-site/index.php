@@ -8,6 +8,27 @@ require_once __DIR__ . '/includes/functions.php';
 
 Auth::start();
 
+// ── IP blocking (before any routing) ─────────────────────────────────────────
+$visitor_ip = $_SERVER['HTTP_CF_CONNECTING_IP']
+    ?? $_SERVER['HTTP_X_FORWARDED_FOR']
+    ?? $_SERVER['REMOTE_ADDR']
+    ?? '';
+if ($visitor_ip) {
+    $visitor_ip = trim(explode(',', $visitor_ip)[0]);
+    // Skip IP check for admin routes so admin can always access
+    if (!str_starts_with(current_path(), '/admin') && !str_starts_with(current_path(), '/api/')) {
+        $blocked = Database::get()->fetch(
+            'SELECT id FROM pepban_blocked_ips WHERE ip_address = ?',
+            [$visitor_ip]
+        );
+        if ($blocked) {
+            http_response_code(403);
+            echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Access Denied</title><style>body{background:#080810;color:#e8e8f5;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}.box{text-align:center;padding:48px}.box h1{font-size:2rem;margin-bottom:12px}.box p{color:#7070a0}</style></head><body><div class="box"><h1>Access Denied</h1><p>You are not authorized to access this site.</p></div></body></html>';
+            exit;
+        }
+    }
+}
+
 $path = current_path();
 
 // ── API routes (JSON, no session needed) ──────────────────────────────────────

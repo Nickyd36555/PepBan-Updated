@@ -23,6 +23,7 @@ require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-api.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-checker.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-reporter.php';
 require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-whitelist.php';
+require_once PEPBAN_CLIENT_DIR . 'includes/class-pepban-client-ip-blocker.php';
 
 add_action( 'plugins_loaded', 'pepban_client_init' );
 function pepban_client_init() {
@@ -37,4 +38,5 @@ function pepban_client_init() {
 	PepBan_Client_Checker::init();
 	PepBan_Client_Reporter::init();
 	PepBan_Client_Whitelist::init();
+	PepBan_Client_IP_Blocker::init();
 }

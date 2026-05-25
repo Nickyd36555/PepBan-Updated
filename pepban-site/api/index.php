@@ -22,6 +22,16 @@ if ($segment === 'check' && $method === 'POST') {
 		[$email]
 	);
 
+	// Check blocked domain even if not in banned_customers
+	$email_domain = strtolower(substr(strrchr($email, '@'), 1));
+	$blocked_domain = $db->fetch(
+		'SELECT id FROM pepban_blocked_domains WHERE domain = ?',
+		[$email_domain]
+	);
+	if ($blocked_domain) {
+		ApiAuth::json(['banned' => true, 'whitelisted' => false, 'reason' => 'blocked_domain', 'customer' => null]);
+	}
+
 	if (!$customer) {
 		ApiAuth::json(['banned' => false, 'whitelisted' => false]);
 	}
@@ -164,6 +174,13 @@ if ($segment === 'status' && $method === 'GET') {
 			'subscription_status' => $auth->subscription_status,
 		],
 	]);
+}
+
+// ── GET /api/v1/blocked-ips ───────────────────────────────────────────────────
+if ($segment === 'blocked-ips' && $method === 'GET') {
+	$ips  = $db->fetchAll('SELECT ip_address FROM pepban_blocked_ips');
+	$list = array_map(fn($r) => $r->ip_address, $ips);
+	ApiAuth::json(['blocked_ips' => $list]);
 }
 
 // ── Fallback ──────────────────────────────────────────────────────────────────

@@ -19,6 +19,7 @@
 			'dashboard' => 'Dashboard',
 			'banned'    => 'Banned Customers',
 			'clients'   => 'Clients',
+			'security'  => 'Security',
 			'settings'  => 'Settings',
 		];
 		foreach ($nav_items as $slug => $label):
