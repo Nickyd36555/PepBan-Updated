@@ -53,7 +53,7 @@ class PepBan_Client_Settings {
 			57
 		);
 		add_submenu_page( 'pepban-client', 'Settings',  'Settings',  'manage_woocommerce', 'pepban-client',          array( __CLASS__, 'render_settings_page' ) );
-		add_submenu_page( 'pepban-client', 'Whitelist',        'Whitelist',        'manage_woocommerce', 'pepban-client-whitelist', array( 'PepBan_Client_Whitelist', 'render_page' ) );
+		add_submenu_page( 'pepban-client', 'Customer Whitelist', 'Customer Whitelist', 'manage_woocommerce', 'pepban-client-whitelist', array( 'PepBan_Client_Whitelist', 'render_page' ) );
 		add_submenu_page( 'pepban-client', 'Domain Blacklist', 'Domain Blacklist', 'manage_woocommerce', 'pepban-client-domains',   array( 'PepBan_Client_Domains',   'render_page' ) );
 	}
 
