@@ -21,21 +21,12 @@ $connection_status = PepBan_Client_Settings::test_connection();
 		<h2>Connection</h2>
 		<table class="form-table">
 			<tr>
-				<th><label for="hub_url">Hub URL *</label></th>
-				<td>
-					<input type="url" name="hub_url" id="hub_url" class="regular-text"
-						value="<?php echo esc_attr( $settings['hub_url'] ?? '' ); ?>"
-						placeholder="https://yourhubsite.com">
-					<p class="description">The WordPress site where PepBan Hub is installed.</p>
-				</td>
-			</tr>
-			<tr>
 				<th><label for="api_key">API Key *</label></th>
 				<td>
 					<input type="password" name="api_key" id="api_key" class="regular-text"
 						value="<?php echo esc_attr( $settings['api_key'] ?? '' ); ?>"
 						placeholder="pbk_…" autocomplete="off">
-					<p class="description">Your API key from the PepBan subscription confirmation email.</p>
+					<p class="description">Your API key from your <a href="https://pepban.com/portal" target="_blank">PepBan portal</a>.</p>
 				</td>
 			</tr>
 		</table>

@@ -23,11 +23,11 @@ class PepBan_Client_Settings {
 	}
 
 	public static function get_hub_url() {
-		return rtrim( self::get( 'hub_url', '' ), '/' );
+		return 'https://pepban.com';
 	}
 
 	public static function is_configured() {
-		return ! empty( self::get_api_key() ) && ! empty( self::get_hub_url() );
+		return ! empty( self::get_api_key() );
 	}
 
 	public static function register_menu() {
@@ -64,7 +64,6 @@ class PepBan_Client_Settings {
 		check_admin_referer( 'pepban_client_save_settings' );
 
 		$settings = array(
-			'hub_url'              => esc_url_raw( wp_unslash( $_POST['hub_url'] ?? '' ) ),
 			'api_key'              => sanitize_text_field( wp_unslash( $_POST['api_key'] ?? '' ) ),
 			'block_on_ban'         => ! empty( $_POST['block_on_ban'] ),
 			'block_message'        => sanitize_textarea_field( wp_unslash( $_POST['block_message'] ?? '' ) ),
