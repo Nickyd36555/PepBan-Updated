@@ -1134,6 +1134,18 @@ code {
 
 /* ── Responsive ──────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  .pb-nav-inner {
+    justify-content: space-between;
+    position: relative;
+  }
+  .pb-nav-brand {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .pb-nav-logo {
+    height: 52px;
+  }
   .pb-hero-title { font-size: 2.4rem; }
   .pb-hero { padding: 70px 24px 60px; }
   .pb-section-title { font-size: 1.75rem; }
