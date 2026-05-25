@@ -22,11 +22,11 @@
       <a href="<?= url('/faq') ?>" class="pb-nav-link">FAQ</a>
       <a href="<?= url('/signup') ?>" class="pb-nav-link">Pricing</a>
       <?php if (Auth::isClient()): ?>
-        <a href="<?= url('/portal') ?>" class="pb-nav-link">My Portal</a>
-        <a href="<?= url('/logout') ?>" class="pb-nav-link">Log out</a>
+        <a href="<?= url('/portal') ?>" class="pb-nav-link pb-mobile-only">My Portal</a>
+        <a href="<?= url('/logout') ?>" class="pb-nav-link pb-mobile-only">Log out</a>
       <?php else: ?>
-        <a href="<?= url('/login') ?>" class="pb-nav-link">Log In</a>
-        <a href="<?= url('/signup') ?>" class="pb-nav-link">Sign Up</a>
+        <a href="<?= url('/login') ?>" class="pb-nav-link pb-mobile-only">Log In</a>
+        <a href="<?= url('/signup') ?>" class="pb-nav-link pb-mobile-only">Sign Up</a>
       <?php endif; ?>
     </div>
     <div class="pb-nav-actions">
