@@ -71,6 +71,36 @@ jQuery(function ($) {
 		});
 	});
 
+	// ── Add to whitelist by email (whitelist page) ──────────────────────────
+	$('#pepban-whitelist-lookup').on('click', function () {
+		var email   = $('#pepban-whitelist-email').val().trim();
+		var $result = $('#pepban-whitelist-result');
+		if (!email) { alert('Please enter an email address.'); return; }
+
+		var $btn = $(this);
+		$btn.prop('disabled', true).text('Looking up…');
+		$result.hide();
+
+		$.post(ajaxurl, {
+			action: 'pepban_whitelist_add_by_email',
+			email:  email,
+			nonce:  pepbanClient.nonce,
+		}, function (res) {
+			$result.show();
+			if (res.success) {
+				$result.html('<p style="color:#00a32a">&#10003; ' + res.data.message + ' — ' + res.data.email + ' (' + (res.data.name || 'Unknown') + ')</p>');
+				$('#pepban-whitelist-email').val('');
+				setTimeout(function () { location.reload(); }, 1500);
+			} else {
+				$result.html('<p style="color:#d63638">&#10007; ' + (res.data || 'Unknown error.') + '</p>');
+			}
+		}).fail(function () {
+			$result.show().html('<p style="color:#d63638">&#10007; Request failed. Please try again.</p>');
+		}).always(function () {
+			$btn.prop('disabled', false).text('Look Up & Whitelist');
+		});
+	});
+
 	// ── Remove from whitelist page ───────────────────────────────────────────
 	$(document).on('click', '.pepban-remove-whitelist', function () {
 		if (!confirm('Remove this customer from your site whitelist? They will be blocked again at checkout.')) return;
