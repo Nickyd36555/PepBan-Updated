@@ -7,8 +7,9 @@ $connection_status = PepBan_Client_Settings::test_connection();
 	<div class="pepban-connection-status pepban-connection-<?php echo esc_attr( $connection_status ); ?>">
 		<?php if ( 'connected' === $connection_status ) : ?>
 			&#10003; Connected to PepBan Hub
-		<?php elseif ( PepBan_Client_Settings::is_configured() ) : ?>
-			&#10007; Cannot reach hub — check URL and API key
+		<?php elseif ( PepBan_Client_Settings::is_configured() ) :
+			$last_error = get_option( 'pepban_last_connection_error', '' ); ?>
+			&#10007; Cannot reach hub — <?php echo esc_html( $last_error ?: 'check API key' ); ?>
 		<?php else : ?>
 			&#9888; Not configured — enter your hub URL and API key below
 		<?php endif; ?>

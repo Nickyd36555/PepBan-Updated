@@ -96,7 +96,19 @@ class PepBan_Client_Settings {
 		if ( $cached ) return $cached;
 
 		$result = PepBan_Client_API::get( '/status' );
-		$status = ( ! is_wp_error( $result ) && true === ( $result['success'] ?? false ) ) ? 'connected' : 'error';
+
+		if ( is_wp_error( $result ) ) {
+			update_option( 'pepban_last_connection_error', $result->get_error_message() );
+			set_transient( 'pepban_client_connection_status', 'error', 60 );
+			return 'error';
+		}
+
+		$status = ( true === ( $result['success'] ?? false ) ) ? 'connected' : 'error';
+		if ( $status === 'error' ) {
+			update_option( 'pepban_last_connection_error', wp_json_encode( $result ) );
+		} else {
+			delete_option( 'pepban_last_connection_error' );
+		}
 
 		set_transient( 'pepban_client_connection_status', $status, 300 );
 		return $status;
