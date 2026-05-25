@@ -2,7 +2,6 @@
 
 <footer class="pb-footer">
   <div class="pb-footer-inner">
-    <img src="<?= url('assets/images/logo.png') ?>" alt="PepBan" style="height:36px;border-radius:4px">
     <p>&copy; <?= date('Y') ?> PepBan. All rights reserved.</p>
     <div class="pb-footer-links">
       <a href="<?= url('/faq') ?>">FAQ</a>
