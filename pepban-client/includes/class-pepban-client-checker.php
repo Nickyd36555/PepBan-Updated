@@ -39,7 +39,7 @@ class PepBan_Client_Checker {
 		// Per-site customer blacklist check
 		if ( $email && PepBan_Client_Blacklist::is_blocked( $email ) ) {
 			$message = PepBan_Client_Settings::get( 'block_message', '' );
-			if ( empty( $message ) ) $message = 'We are unable to process your order at this time. Please contact us for assistance.';
+			if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
 			wc_add_notice( $message, 'error' );
 			return;
 		}
@@ -47,7 +47,7 @@ class PepBan_Client_Checker {
 		// Per-site domain blacklist check (local, no API call needed)
 		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
 			$message = PepBan_Client_Settings::get( 'block_message', '' );
-			if ( empty( $message ) ) $message = 'We are unable to process your order at this time. Please contact us for assistance.';
+			if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
 			wc_add_notice( $message, 'error' );
 			return;
 		}
@@ -65,7 +65,7 @@ class PepBan_Client_Checker {
 		if ( ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
 			$message = PepBan_Client_Settings::get( 'block_message', '' );
 			if ( empty( $message ) ) {
-				$message = 'We are unable to process your order at this time. Please contact us for assistance.';
+				$message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
 			}
 			wc_add_notice( $message, 'error' );
 		}
@@ -101,7 +101,7 @@ class PepBan_Client_Checker {
 			wp_trash_post( $order->get_id() );
 
 			$message = PepBan_Client_Settings::get( 'block_message', '' );
-			if ( empty( $message ) ) $message = 'We are unable to process your order at this time. Please contact us for assistance.';
+			if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
 
 			// Show error to customer and halt execution
 			wc_add_notice( $message, 'error' );
@@ -119,7 +119,7 @@ class PepBan_Client_Checker {
 		if ( empty( $email ) && empty( $phone ) ) return;
 
 		$message = PepBan_Client_Settings::get( 'block_message', '' );
-		if ( empty( $message ) ) $message = 'We are unable to process your order at this time. Please contact us for assistance.';
+		if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
 
 		if ( $email && PepBan_Client_Blacklist::is_blocked( $email ) ) {
 			$errors->add( 'pepban_blocked', $message );
@@ -152,7 +152,7 @@ class PepBan_Client_Checker {
 		if ( empty( $email ) && empty( $phone ) ) return;
 
 		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
-			$message = PepBan_Client_Settings::get( 'block_message', 'We are unable to process your order at this time.' );
+			$message = PepBan_Client_Settings::get( 'block_message', 'You have been reported as a scammer. Please contact site admin or admin@pepban.com' );
 			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', $message, 400 );
 		}
 
@@ -165,7 +165,7 @@ class PepBan_Client_Checker {
 		);
 
 		if ( ! is_wp_error( $result ) && ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
-			$message = PepBan_Client_Settings::get( 'block_message', 'We are unable to process your order at this time.' );
+			$message = PepBan_Client_Settings::get( 'block_message', 'You have been reported as a scammer. Please contact site admin or admin@pepban.com' );
 			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException(
 				'pepban_banned',
 				$message,
