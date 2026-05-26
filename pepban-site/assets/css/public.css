@@ -849,7 +849,7 @@ code {
   gap: 16px;
   margin-bottom: 24px;
 }
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .pepban-portal-grid { grid-template-columns: 1fr; }
 }
 
@@ -1189,11 +1189,12 @@ code {
 }
 
 @media (max-width: 500px) {
-  .pepban-auth-card { padding: 28px 20px; }
-  .pepban-signup-form-panel { padding: 20px; }
+  .pepban-auth-card { padding: 24px 16px; }
+  .pepban-signup-form-panel { padding: 16px; }
   .pb-hero-title { font-size: 1.85rem; }
   .pb-section { padding: 40px 16px; }
   .pb-hero-badge { font-size: .68rem; padding: 5px 12px; }
+  .pepban-page-wrap { padding: 24px 16px 48px; }
 }
 
 /* ── Typography — Space Grotesk headings ─────────────────────────────────────── */
@@ -1640,17 +1641,60 @@ h1, h2, h3, h4 {
   .pb-contact-form .pb-btn { width: 100%; text-align: center; }
 }
 @media (max-width: 480px) {
+  /* Nav */
+  .pb-nav-inner { padding: 0 16px; }
+
+  /* Hero */
   .pb-hero-v2 { padding: 36px 16px 32px; }
   .pb-hero-v2 .pb-hero-title { font-size: 1.75rem; }
-  .pb-feat-header h2, .pb-steps-heading h2 { font-size: 1.5rem; }
-  .pb-cta-title { font-size: 1.5rem; }
+  .pb-hero-metrics { gap: 12px; }
   .pb-metric-div { display: none; }
   .pb-metric-num { font-size: 1rem; }
-  .pb-changelog-header h1, .pb-contact-info h1 { font-size: 1.6rem; }
-  .pb-cta-box { padding: 28px 18px; }
+
+  /* Features — collapse to 1 column */
+  .pb-feat-grid { grid-template-columns: 1fr; }
+  .pb-feat-header h2, .pb-steps-heading h2 { font-size: 1.5rem; }
   .pb-feat-item { padding: 20px 16px; }
+
+  /* Steps */
+  .pb-step-v2 { padding: 0 0 4px; }
+
+  /* CTA */
+  .pb-cta-title { font-size: 1.5rem; }
+  .pb-cta-box { padding: 28px 18px; }
+
+  /* Changelog */
+  .pb-changelog-header h1, .pb-contact-info h1 { font-size: 1.6rem; }
+  .pb-cl-version { flex-wrap: wrap; gap: 6px; }
+  .pb-cl-entry { padding-left: 20px; }
+  .pb-cl-tag { font-size: .65rem; padding: 2px 6px; }
+
+  /* Contact */
   .pb-contact-form-wrap { padding: 20px 16px; }
+
+  /* General */
   .pb-section { padding: 40px 16px; }
+  .pb-section-title { font-size: 1.45rem; }
+
+  /* Portal */
+  .pepban-card-inner { padding: 14px 16px; }
+  .pepban-card-header { padding: 13px 16px; }
+  .pepban-info-row { flex-direction: column; gap: 4px; }
+  .pepban-info-value { text-align: left; }
+
+  /* FAQ */
+  .pb-faq-question { padding: 16px; font-size: .9rem; }
+  .pb-faq-answer { padding: 0 16px 16px; font-size: .88rem; }
+}
+
+@media (max-width: 375px) {
+  .pb-hero-v2 .pb-hero-title { font-size: 1.55rem; }
+  .pb-hero-v2 .pb-hero-sub { font-size: .88rem; }
+  .pb-feat-header h2, .pb-steps-heading h2, .pb-cta-title { font-size: 1.35rem; }
+  .pb-changelog-header h1, .pb-contact-info h1 { font-size: 1.4rem; }
+  .pb-btn-lg { padding: 13px 20px; font-size: .9rem; }
+  .pb-hero-badge { font-size: .62rem; padding: 4px 10px; }
+  .pb-metric { min-width: 0; }
 }
 
 /* ── Contact page ────────────────────────────────────────────────────────────── */
