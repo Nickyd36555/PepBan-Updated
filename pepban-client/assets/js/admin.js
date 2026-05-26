@@ -103,12 +103,19 @@ jQuery(function ($) {
 
 	// ── Customer blacklist page ──────────────────────────────────────────────
 	function buildAddress(prefix) {
-		var parts = [
-			$('#' + prefix + '-street').val().trim(),
-			$('#' + prefix + '-city').val().trim(),
-			($('#' + prefix + '-state').val().trim() + ' ' + $('#' + prefix + '-zip').val().trim()).trim(),
-		].filter(Boolean);
-		return parts.join(', ');
+		var street = $('#' + prefix + '-street').val().trim();
+		var city   = $('#' + prefix + '-city').val().trim();
+		var state  = $('#' + prefix + '-state').val().trim();
+		var zip    = $('#' + prefix + '-zip').val().trim();
+		// If any address field is filled, all four are required
+		if (street || city || state || zip) {
+			if (!street || !city || !state || !zip) {
+				alert('All four address fields (Street, City, State, ZIP) are required.');
+				return null;
+			}
+		}
+		if (!street) return '';
+		return [street, city, state, zip].join(' ');
 	}
 
 	function submitEntries(entries, action, reason, $btn, $result, btnText, clearIds) {
@@ -140,6 +147,7 @@ jQuery(function ($) {
 
 	$('#pepban-bl-add').on('click', function () {
 		var addr    = buildAddress('pepban-bl');
+		if (addr === null) return;
 		var entries = [
 			{ type: 'email',   value: $('#pepban-bl-email').val().trim() },
 			{ type: 'ip',      value: $('#pepban-bl-ip').val().trim() },
@@ -153,6 +161,7 @@ jQuery(function ($) {
 	// ── Customer whitelist page ──────────────────────────────────────────────
 	$('#pepban-wl-add').on('click', function () {
 		var addr    = buildAddress('pepban-wl');
+		if (addr === null) return;
 		var entries = [
 			{ type: 'email',   value: $('#pepban-wl-email').val().trim() },
 			{ type: 'ip',      value: $('#pepban-wl-ip').val().trim() },

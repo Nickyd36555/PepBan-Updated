@@ -35,7 +35,7 @@ $type_labels     = array( 'email' => 'Email', 'ip' => 'IP Address', 'address' =>
 						<input type="text" id="pepban-wl-state" style="flex:1;min-width:60px;max-width:80px" placeholder="State">
 						<input type="text" id="pepban-wl-zip"   style="flex:1;min-width:80px;max-width:100px" placeholder="ZIP">
 					</div>
-					<p class="description" style="margin-top:4px">Fill any combination — partial match is used at checkout.</p>
+					<p class="description" style="margin-top:4px">All four fields are required for address whitelisting.</p>
 				</td>
 			</tr>
 			<tr>
