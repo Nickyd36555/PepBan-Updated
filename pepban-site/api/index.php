@@ -264,7 +264,11 @@ if ($segment === 'plugin/info' && $method === 'GET') {
 			. '<li>Activate the plugin.</li>'
 			. '<li>Go to <strong>PepBan → Settings</strong> and enter your API key.</li>'
 			. '</ol>',
-		'changelog'    => '<h4>v1.2.0</h4><ul>'
+		'changelog'    => '<h4>v1.2.1</h4><ul>'
+			. '<li>Fix: "Check by Phone" label corrected in settings</li>'
+			. '<li>Improved plugin description and changelog shown in WordPress plugin details</li>'
+			. '</ul>'
+			. '<h4>v1.2.0</h4><ul>'
 			. '<li>Bulk CSV import on the local blacklist page — add emails, IPs, or addresses in bulk</li>'
 			. '<li>Order admin notice now shows total reports and stores that reported the customer</li>'
 			. '<li>Check IP Address and Check Billing Address are now separate toggles in settings</li>'

@@ -12,8 +12,20 @@ require __DIR__ . '/../templates/layout.php';
   <div class="pb-cl-entry">
     <div class="pb-cl-dot"></div>
     <div class="pb-cl-version">
-      <h2>v1.2.0</h2>
+      <h2>v1.2.1</h2>
       <span class="pb-cl-latest">Latest</span>
+      <span class="pb-cl-date">May 2025</span>
+    </div>
+    <ul class="pb-cl-items">
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-fix">Fix</span> "Check by Phone" label corrected in plugin settings</li>
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-improvement">Improved</span> Plugin description and changelog updated in WordPress plugin details popup</li>
+    </ul>
+  </div>
+
+  <div class="pb-cl-entry">
+    <div class="pb-cl-dot"></div>
+    <div class="pb-cl-version">
+      <h2>v1.2.0</h2>
       <span class="pb-cl-date">May 2025</span>
     </div>
     <ul class="pb-cl-items">
