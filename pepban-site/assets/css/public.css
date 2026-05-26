@@ -94,6 +94,17 @@ code {
   display: block;
   mix-blend-mode: lighten;
 }
+.pb-nav-wordmark {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--text);
+  line-height: 1;
+}
+.pb-nav-wordmark span {
+  color: var(--red);
+}
 .pb-nav-links {
   display: flex;
   align-items: center;
@@ -1153,7 +1164,8 @@ code {
     left: 50%;
     transform: translateX(-50%);
   }
-  .pb-nav-logo { height: 56px; }
+  .pb-nav-logo { height: 48px; }
+  .pb-nav-wordmark { font-size: 1.35rem; }
   .pb-nav-links { display: none; }
   .pb-nav-links.open {
     display: flex;
