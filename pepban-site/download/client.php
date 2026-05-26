@@ -1,4 +1,5 @@
 <?php
+ob_start(); // capture any stray output so it doesn't corrupt the binary ZIP response
 // Allow API-key-authenticated downloads (used by WordPress auto-updater)
 $api_key_param = trim($_GET['api_key'] ?? '');
 if ($api_key_param) {
@@ -87,7 +88,8 @@ foreach ($files as $file) {
 }
 $zip->close();
 
-// Stream the ZIP
+// Stream the ZIP — discard any buffered output before sending binary headers
+ob_end_clean();
 header('Content-Type: application/zip');
 header('Content-Disposition: attachment; filename="pepban-client-' . PEPBAN_PLUGIN_VERSION . '.zip"');
 header('Content-Length: ' . filesize($zip_path));
