@@ -102,46 +102,43 @@ jQuery(function ($) {
 	});
 
 	// ── Customer blacklist page ──────────────────────────────────────────────
-	var blHints = {
-		email:   'Block a specific email address at checkout.',
-		ip:      'Block a specific IP address (e.g. 192.168.1.1).',
-		address: 'Block by billing address — partial match works (zip code, city, etc.).'
-	};
-	var blPlaceholders = {
-		email:   'customer@example.com',
-		ip:      '192.168.1.1',
-		address: 'e.g. Austin TX  or  78701'
-	};
-	$('#pepban-bl-type').on('change', function () {
-		var t = $(this).val();
-		$('#pepban-bl-hint').text(blHints[t] || '');
-		$('#pepban-bl-value').attr('placeholder', blPlaceholders[t] || 'Enter value…');
-	});
-
 	$('#pepban-bl-add').on('click', function () {
-		var type    = $('#pepban-bl-type').val();
-		var value   = $('#pepban-bl-value').val().trim();
 		var reason  = $('#pepban-bl-reason').val().trim();
 		var $result = $('#pepban-bl-result');
-		if (!value) { alert('Please enter a value.'); return; }
+		var entries = [
+			{ type: 'email',   value: $('#pepban-bl-email').val().trim() },
+			{ type: 'ip',      value: $('#pepban-bl-ip').val().trim() },
+			{ type: 'address', value: $('#pepban-bl-address').val().trim() },
+		].filter(function (e) { return e.value !== ''; });
+
+		if (!entries.length) { alert('Please fill in at least one field.'); return; }
 
 		var $btn = $(this);
 		$btn.prop('disabled', true).text('Adding…');
 		$result.hide();
 
-		$.post(ajaxurl, { action: 'pepban_blacklist_add', type: type, value: value, reason: reason, nonce: pepbanClient.nonce },
-		function (res) {
-			$result.show();
-			if (res.success) {
-				$result.html('<p style="color:#00a32a">&#10003; ' + res.data.message + '</p>');
-				$('#pepban-bl-value, #pepban-bl-reason').val('');
-				setTimeout(function () { location.reload(); }, 1200);
-			} else {
-				$result.html('<p style="color:#d63638">&#10007; ' + (res.data || 'Error.') + '</p>');
-			}
-		}).fail(function () {
-			$result.show().html('<p style="color:#d63638">&#10007; Request failed.</p>');
-		}).always(function () { $btn.prop('disabled', false).text('Add to Blacklist'); });
+		var done = 0, succeeded = 0, errors = [];
+
+		entries.forEach(function (entry) {
+			$.post(ajaxurl, { action: 'pepban_blacklist_add', type: entry.type, value: entry.value, reason: reason, nonce: pepbanClient.nonce },
+			function (res) {
+				if (res.success) { succeeded++; } else { errors.push(res.data || 'Error'); }
+			}).fail(function () {
+				errors.push('Request failed for ' + entry.type);
+			}).always(function () {
+				done++;
+				if (done < entries.length) return;
+				$result.show();
+				if (errors.length) {
+					$result.html('<p style="color:#d63638">&#10007; ' + errors.join('; ') + '</p>');
+					$btn.prop('disabled', false).text('Add to Blacklist');
+				} else {
+					$result.html('<p style="color:#00a32a">&#10003; Added ' + succeeded + ' entr' + (succeeded === 1 ? 'y' : 'ies') + ' to the blacklist.</p>');
+					$('#pepban-bl-email, #pepban-bl-ip, #pepban-bl-address, #pepban-bl-reason').val('');
+					setTimeout(function () { location.reload(); }, 1200);
+				}
+			});
+		});
 	});
 
 	$(document).on('click', '.pepban-bl-report', function () {

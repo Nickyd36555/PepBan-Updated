@@ -20,23 +20,26 @@ $type_labels = array( 'email' => 'Email', 'ip' => 'IP Address', 'address' => 'Ad
 	</div>
 
 	<div style="margin:16px 0;padding:20px 24px;background:#fff;border:1px solid #ccd0d4;border-radius:4px;max-width:520px">
-		<h3 style="margin-top:0;margin-bottom:16px">Add to Blacklist</h3>
+		<h3 style="margin-top:0;margin-bottom:4px">Add to Blacklist</h3>
+		<p class="description" style="margin-top:0;margin-bottom:16px">Fill in any combination — each field you fill will block the customer.</p>
 		<table class="form-table" style="margin:0">
 			<tr>
-				<th style="width:100px;padding:8px 0"><label for="pepban-bl-type">Block by</label></th>
+				<th style="width:120px;padding:8px 0"><label for="pepban-bl-email">Email Address</label></th>
 				<td style="padding:8px 0">
-					<select id="pepban-bl-type">
-						<option value="email">Email Address</option>
-						<option value="ip">IP Address</option>
-						<option value="address">Billing Address</option>
-					</select>
+					<input type="email" id="pepban-bl-email" class="regular-text" placeholder="customer@example.com">
 				</td>
 			</tr>
 			<tr>
-				<th style="padding:8px 0"><label for="pepban-bl-value">Value</label></th>
+				<th style="padding:8px 0"><label for="pepban-bl-ip">IP Address</label></th>
 				<td style="padding:8px 0">
-					<input type="text" id="pepban-bl-value" class="regular-text" placeholder="customer@example.com">
-					<p id="pepban-bl-hint" class="description" style="margin-top:4px">Block a specific email address at checkout.</p>
+					<input type="text" id="pepban-bl-ip" class="regular-text" placeholder="192.168.1.1">
+				</td>
+			</tr>
+			<tr>
+				<th style="padding:8px 0"><label for="pepban-bl-address">Billing Address</label></th>
+				<td style="padding:8px 0">
+					<input type="text" id="pepban-bl-address" class="regular-text" placeholder="e.g. Austin TX  or  78701">
+					<p class="description" style="margin-top:4px">Partial match — city, zip code, or full address.</p>
 				</td>
 			</tr>
 			<tr>
