@@ -70,15 +70,19 @@ $connection_status = PepBan_Client_Settings::test_connection();
 				<td>
 					<input type="number" name="risk_score_threshold" id="risk_score_threshold"
 					       min="0" max="100" step="1" class="small-text"
-					       value="<?php echo esc_attr( $settings['risk_score_threshold'] ?? 40 ); ?>">
+					       value="<?php echo esc_attr( $settings['risk_score_threshold'] ?? 0 ); ?>">
 					<span style="margin-left:8px;color:#666">/ 100</span>
-					<p class="description">Customers with a risk score at or above this value will be blocked. Score is calculated from report count, number of stores that reported, and recency. Default: 40.</p>
+					<p class="description">
+						Customers with a risk score <strong>at or above</strong> this value are blocked. Default is <strong>0</strong> — blocks everyone in the database (original behavior).<br>
+						Raise it only if you want to require broader network consensus before blocking (e.g. set to 14 = require 2+ stores, 42 = require 3+ stores).
+					</p>
 					<p class="description">
 						<strong>Score guide:</strong>
-						<span style="color:#00a32a">0–39 Low</span> &mdash;
-						<span style="color:#f0a500">40–59 Medium</span> &mdash;
-						<span style="color:#d63638">60–79 High</span> &mdash;
-						<span style="color:#8b0000">80–100 Very High</span>
+						<span style="color:#888">0 = 1 store</span> &mdash;
+						<span style="color:#f0a500">14 = 1 store</span> &mdash;
+						<span style="color:#e07800">28 = 2 stores</span> &mdash;
+						<span style="color:#d63638">42 = 3 stores</span> &mdash;
+						<span style="color:#8b0000">70+ = 5 stores</span>
 					</p>
 				</td>
 			</tr>

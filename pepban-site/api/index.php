@@ -10,13 +10,16 @@ $auth    = ApiAuth::authenticate();
 $db      = Database::get();
 
 function pepban_calc_risk(int $reports, int $stores, string $last_updated): array {
-	$score  = 20;
-	$score += min($stores,  5) * 8;                   // up to +40 for 5 stores
-	$score += min(max($reports - 1, 0), 5) * 4;       // up to +20 for 6+ reports
+	// Score reflects breadth of evidence — starts at 0 and grows with network consensus.
+	// A store's threshold of 0 (default) blocks everyone in the DB regardless of score.
+	// Raising the threshold lets stores require stronger consensus before blocking.
+	$score  = min($stores,  5) * 14;                  // up to 70 — each new store is a strong signal
+	$score += min(max($reports - $stores, 0), 3) * 5; // up to +15 for repeat reports beyond store count
 	$days   = max(0, (time() - strtotime($last_updated)) / 86400);
-	$score -= (int) min($days / 30, 20);               // decay up to -20 over ~2 years
+	$score += min((int)($days / 0), 0);               // no recency bonus — time only decays
+	$score -= (int) min($days / 60, 15);              // slow decay over ~2 years
 	$score  = max(0, min(100, $score));
-	$conf   = $score >= 80 ? 'very_high' : ($score >= 60 ? 'high' : ($score >= 40 ? 'medium' : 'low'));
+	$conf   = $score >= 70 ? 'very_high' : ($score >= 42 ? 'high' : ($score >= 14 ? 'medium' : 'low'));
 	return ['score' => $score, 'confidence' => $conf];
 }
 

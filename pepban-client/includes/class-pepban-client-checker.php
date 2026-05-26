@@ -67,7 +67,7 @@ class PepBan_Client_Checker {
 
 		if ( ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
 			$risk_score = (int) ( $result['risk_score'] ?? 100 );
-			$threshold  = (int) PepBan_Client_Settings::get( 'risk_score_threshold', 40 );
+			$threshold  = (int) PepBan_Client_Settings::get( 'risk_score_threshold', 0 );
 			if ( $risk_score < $threshold ) return; // Below store's threshold — allow through
 			$message = PepBan_Client_Settings::get( 'block_message', '' );
 			if ( empty( $message ) ) {
@@ -109,7 +109,7 @@ class PepBan_Client_Checker {
 			$result = PepBan_Client_API::check_customer( $email, $phone );
 			if ( ! is_wp_error( $result ) && ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
 				$risk_score = (int) ( $result['risk_score'] ?? 100 );
-				$threshold  = (int) PepBan_Client_Settings::get( 'risk_score_threshold', 40 );
+				$threshold  = (int) PepBan_Client_Settings::get( 'risk_score_threshold', 0 );
 				if ( $risk_score >= $threshold ) $blocked = true;
 			}
 		}
@@ -209,7 +209,7 @@ class PepBan_Client_Checker {
 		$confidence   = $result['confidence']  ?? 'unknown';
 		$report_count = (int) ( $result['report_count'] ?? 1 );
 		$store_count  = (int) ( $result['store_count']  ?? 1 );
-		$threshold    = (int) PepBan_Client_Settings::get( 'risk_score_threshold', 40 );
+		$threshold    = (int) PepBan_Client_Settings::get( 'risk_score_threshold', 0 );
 
 		$conf_colors  = array( 'low' => '#f0a500', 'medium' => '#e07800', 'high' => '#d63638', 'very_high' => '#8b0000' );
 		$conf_color   = $conf_colors[ $confidence ] ?? '#d63638';
