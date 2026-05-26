@@ -40,7 +40,7 @@ $connection_status = PepBan_Client_Settings::test_connection();
 			</tr>
 			<tr>
 				<th>Check by Phone</th>
-				<td><label><input type="checkbox" name="check_phone" value="1" <?php checked( $settings['check_phone'] ?? true ); ?>> Also check customer phone number</label></td>
+				<td><label><input type="checkbox" name="check_phone" value="1" <?php checked( $settings['check_phone'] ?? true ); ?>> Check customer phone number against the ban database</label></td>
 			</tr>
 			<tr>
 				<th>Check IP Address</th>

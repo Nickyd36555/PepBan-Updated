@@ -12,8 +12,21 @@ require __DIR__ . '/../templates/layout.php';
   <div class="pb-cl-entry">
     <div class="pb-cl-dot"></div>
     <div class="pb-cl-version">
-      <h2>v1.1.4</h2>
+      <h2>v1.2.0</h2>
       <span class="pb-cl-latest">Latest</span>
+      <span class="pb-cl-date">May 2025</span>
+    </div>
+    <ul class="pb-cl-items">
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-new">New</span> Bulk CSV import — add multiple banned customers to the hub or local blacklist via CSV upload</li>
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-new">New</span> Order admin notice now shows total reports and number of stores that have reported the customer</li>
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-improvement">Improved</span> Check IP Address and Check Billing Address are now separate toggles in plugin settings</li>
+    </ul>
+  </div>
+
+  <div class="pb-cl-entry">
+    <div class="pb-cl-dot"></div>
+    <div class="pb-cl-version">
+      <h2>v1.1.4</h2>
       <span class="pb-cl-date">May 2025</span>
     </div>
     <ul class="pb-cl-items">
