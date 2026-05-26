@@ -195,9 +195,9 @@ code {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--red-dim);
-  border: 1px solid var(--red-border);
-  color: var(--red-hover);
+  background: var(--green-dim);
+  border: 1px solid rgba(34,197,94,0.3);
+  color: var(--green);
   font-size: .75rem;
   font-weight: 700;
   letter-spacing: .1em;
@@ -206,14 +206,22 @@ code {
   border-radius: 100px;
   margin-bottom: 28px;
 }
+.pb-hero-badge.pb-badge-down {
+  background: var(--red-dim);
+  border-color: var(--red-border);
+  color: var(--red-hover);
+}
 .pb-hero-badge::before {
   content: '';
   display: block;
   width: 6px;
   height: 6px;
-  background: var(--red);
+  background: var(--green);
   border-radius: 50%;
   animation: pulse-dot 2s infinite;
+}
+.pb-hero-badge.pb-badge-down::before {
+  background: var(--red);
 }
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
