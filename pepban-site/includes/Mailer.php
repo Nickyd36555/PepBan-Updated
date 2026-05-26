@@ -4,13 +4,96 @@ defined('PEPBAN_VERSION') || die;
 class Mailer {
 
 	public static function send(string $to, string $subject, string $body): bool {
+		if (defined('SMTP_HOST') && SMTP_HOST) {
+			return self::smtp($to, $subject, $body);
+		}
 		$headers = implode("\r\n", [
 			'From: ' . MAIL_FROM_NAME . ' <' . MAIL_FROM . '>',
 			'Reply-To: ' . MAIL_FROM,
 			'Content-Type: text/plain; charset=UTF-8',
-			'X-Mailer: PepBan/' . PEPBAN_VERSION,
 		]);
 		return mail($to, $subject, $body, $headers);
+	}
+
+	// Minimal SMTP client — handles STARTTLS and AUTH LOGIN.
+	// No external libraries required.
+	private static function smtp(string $to, string $subject, string $body): bool {
+		$host   = SMTP_HOST;
+		$port   = (int) SMTP_PORT;
+		$secure = SMTP_SECURE; // 'tls' = STARTTLS on port 587, 'ssl' = implicit TLS on port 465
+
+		$ctx = stream_context_create(['ssl' => [
+			'verify_peer'      => true,
+			'verify_peer_name' => true,
+		]]);
+
+		$addr   = $secure === 'ssl' ? "ssl://{$host}:{$port}" : "tcp://{$host}:{$port}";
+		$socket = stream_socket_client($addr, $errno, $errstr, 15, STREAM_CLIENT_CONNECT, $ctx);
+		if (!$socket) return false;
+
+		stream_set_timeout($socket, 15);
+
+		$read = fn() => fgets($socket, 1024);
+		$cmd  = function(string $line) use ($socket, $read): string {
+			fwrite($socket, $line . "\r\n");
+			$resp = '';
+			// Read until we get a line without a dash after the code (single or last line)
+			while ($r = fgets($socket, 1024)) {
+				$resp = $r;
+				if (strlen($r) < 4 || $r[3] !== '-') break;
+			}
+			return $resp;
+		};
+
+		$read(); // 220 greeting
+
+		// EHLO
+		$cmd('EHLO ' . (gethostname() ?: 'localhost'));
+
+		// Upgrade to TLS if STARTTLS
+		if ($secure === 'tls') {
+			$r = $cmd('STARTTLS');
+			if ((int)$r !== 220) { fclose($socket); return false; }
+			if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+				fclose($socket); return false;
+			}
+			$cmd('EHLO ' . (gethostname() ?: 'localhost'));
+		}
+
+		// AUTH LOGIN
+		$r = $cmd('AUTH LOGIN');
+		if ((int)$r !== 334) { fclose($socket); return false; }
+		$cmd(base64_encode(SMTP_USER));
+		$r = $cmd(base64_encode(SMTP_PASS));
+		if ((int)$r !== 235) { fclose($socket); return false; }
+
+		// Envelope
+		$cmd('MAIL FROM:<' . MAIL_FROM . '>');
+		$r = $cmd('RCPT TO:<' . $to . '>');
+		if ((int)$r > 299) { fclose($socket); return false; }
+
+		// Headers + body
+		$cmd('DATA');
+		$date    = date('r');
+		$msgId   = '<' . time() . '.' . rand(1000, 9999) . '@pepban.com>';
+		$headers =
+			"Date: {$date}\r\n" .
+			"Message-ID: {$msgId}\r\n" .
+			"From: " . MAIL_FROM_NAME . " <" . MAIL_FROM . ">\r\n" .
+			"To: {$to}\r\n" .
+			"Subject: {$subject}\r\n" .
+			"Content-Type: text/plain; charset=UTF-8\r\n" .
+			"MIME-Version: 1.0\r\n";
+
+		// Dot-stuffing: lines starting with '.' must be doubled
+		$escaped = preg_replace('/^\.$/m', '..', $body);
+		fwrite($socket, $headers . "\r\n" . $escaped . "\r\n.\r\n");
+
+		$r = $read(); // 250 queued
+		$cmd('QUIT');
+		fclose($socket);
+
+		return (int)$r === 250;
 	}
 
 	public static function welcome(object $client, string $raw_key): void {
@@ -33,7 +116,6 @@ class Mailer {
 			"  2. Download the PepBan Client plugin\n" .
 			"  3. Install it on {$client->site_url} via Plugins > Add New > Upload Plugin\n" .
 			"  4. Go to PepBan > Settings and enter:\n" .
-			"       Hub URL:  " . SITE_URL . "\n" .
 			"       API Key:  {$raw_key}\n\n" .
 			"— PepBan"
 		);

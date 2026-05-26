@@ -28,6 +28,13 @@ if (!defined('ADMIN_PASSWORD_HASH')) define('ADMIN_PASSWORD_HASH', '$2y$10$chang
 if (!defined('MAIL_FROM'))      define('MAIL_FROM',      'noreply@your-domain.com');
 if (!defined('MAIL_FROM_NAME')) define('MAIL_FROM_NAME', 'PepBan');
 
+// SMTP — set these in config.local.php to enable SMTP sending (required on most hosts)
+if (!defined('SMTP_HOST'))   define('SMTP_HOST',   '');
+if (!defined('SMTP_PORT'))   define('SMTP_PORT',   587);
+if (!defined('SMTP_USER'))   define('SMTP_USER',   '');
+if (!defined('SMTP_PASS'))   define('SMTP_PASS',   '');
+if (!defined('SMTP_SECURE')) define('SMTP_SECURE', 'tls'); // 'tls' (STARTTLS) or 'ssl'
+
 if (!defined('SECRET_KEY'))            define('SECRET_KEY',            'change-this-to-64-hex-chars');
 if (!defined('RATE_LIMIT_PER_MINUTE')) define('RATE_LIMIT_PER_MINUTE', 60);
 if (!defined('AUTO_APPROVE_CLIENTS'))  define('AUTO_APPROVE_CLIENTS',  false);
