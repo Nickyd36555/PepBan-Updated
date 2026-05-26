@@ -5,9 +5,17 @@ require __DIR__ . '/../templates/layout.php';
 
 <!-- ── Hero ──────────────────────────────────────────────────────────────────── -->
 <section class="pb-hero pb-hero-v2">
+  <?php
+  $logo_file = null;
+  foreach (['logo.png','logo.jpg','logo.webp','logo.svg'] as $_lf) {
+    if (file_exists(__DIR__ . '/../assets/images/' . $_lf)) { $logo_file = $_lf; break; }
+  }
+  ?>
+  <?php if ($logo_file): ?>
   <div class="pb-hero-logo-wrap">
-    <img src="<?= url('assets/images/logo.png') ?>" alt="PepBan" class="pb-hero-logo-img">
+    <img src="<?= url('assets/images/' . $logo_file) ?>" alt="PepBan" class="pb-hero-logo-img">
   </div>
+  <?php endif; ?>
   <div class="pb-hero-split">
 
     <div class="pb-hero-content">

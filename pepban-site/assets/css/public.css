@@ -92,7 +92,6 @@ code {
   height: 44px;
   width: auto;
   display: block;
-  mix-blend-mode: lighten;
 }
 .pb-nav-wordmark {
   font-family: 'Space Grotesk', sans-serif;
