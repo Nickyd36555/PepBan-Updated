@@ -23,7 +23,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 			"Message:\n{$message}\n\n" .
 			"---\nSent from pepban.com/contact";
 
-		$ok = Mailer::send( ADMIN_EMAIL, $subject_line, $body );
+		$ok = Mailer::send( SUPPORT_EMAIL, $subject_line, $body );
 		if ( $ok ) {
 			$sent = true;
 		} else {
