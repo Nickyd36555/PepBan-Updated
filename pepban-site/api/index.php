@@ -234,10 +234,12 @@ if ($segment === 'blocked-ips' && $method === 'GET') {
 
 // ── GET /api/v1/plugin/info ───────────────────────────────────────────────────
 if ($segment === 'plugin/info' && $method === 'GET') {
-	$raw_key = $_SERVER['HTTP_X_PEPBAN_API_KEY'] ?? '';
+	// Generate a time-based HMAC token valid for 24 h (two 12-hour buckets checked at download)
+	$bucket = (string) floor(time() / (12 * 3600));
+	$token  = hash_hmac('sha256', 'dl:' . $bucket, SECRET_KEY);
 	ApiAuth::json([
 		'version'      => PEPBAN_PLUGIN_VERSION,
-		'download_url' => rtrim(SITE_URL, '/') . '/download/client?api_key=' . urlencode($raw_key),
+		'download_url' => rtrim(SITE_URL, '/') . '/download/client?token=' . $token,
 		'details_url'  => rtrim(SITE_URL, '/') . '/changelog',
 		'description'  => '<p><strong>PepBan</strong> connects your WooCommerce store to the centralized PepBan ban database — shared across all member peptide stores.</p>'
 			. '<h4>Features</h4><ul>'

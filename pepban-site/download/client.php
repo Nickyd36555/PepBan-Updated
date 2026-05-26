@@ -1,31 +1,21 @@
 <?php
-// Allow API-key-authenticated downloads (used by WordPress auto-updater)
-$api_key_param = trim($_GET['api_key'] ?? '');
-if ($api_key_param) {
-	$prefix = substr($api_key_param, 0, 8);
-	$rows   = Database::get()->fetchAll(
-		'SELECT * FROM pepban_clients WHERE api_key_prefix = ?',
-		[$prefix]
-	);
-	$api_client = null;
-	foreach ($rows as $row) {
-		if (password_verify($api_key_param, $row->api_key_hash)) { $api_client = $row; break; }
+// Authenticate download: accept a short-lived HMAC token (auto-updater) or a session (portal)
+$token = trim($_GET['token'] ?? '');
+$authenticated = false;
+
+if ($token) {
+	// Valid for the current and previous 12-hour bucket (~24 h window covers any transient TTL)
+	$now  = (string) floor(time() / (12 * 3600));
+	$prev = (string) floor((time() - 12 * 3600) / (12 * 3600));
+	if (hash_equals(hash_hmac('sha256', 'dl:' . $now,  SECRET_KEY), $token) ||
+		hash_equals(hash_hmac('sha256', 'dl:' . $prev, SECRET_KEY), $token)) {
+		$authenticated = true;
 	}
-	if (!$api_client || $api_client->subscription_status !== 'active') {
-		http_response_code(403);
-		die('Invalid or inactive API key.');
-	}
-	// Authenticated via API key — skip session checks below
-} elseif (!Auth::isClient() && !Auth::isAdmin()) {
-	redirect('/login?next=/download/client');
 }
 
-if (!$api_key_param && Auth::isClient()) {
-	$client = Auth::client();
-	if ($client->subscription_status !== 'active') {
-		flash('error', 'Your account must be active to download the plugin.');
-		redirect('/portal');
-	}
+if (!$authenticated && !Auth::isClient() && !Auth::isAdmin()) {
+	http_response_code(403);
+	die('Access denied.');
 }
 
 // Locate the plugin source directory (pepban-client/)
