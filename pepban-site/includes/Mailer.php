@@ -20,7 +20,7 @@ class Mailer {
 	private static function smtp(string $to, string $subject, string $body): bool {
 		$host   = SMTP_HOST;
 		$port   = (int) SMTP_PORT;
-		$secure = SMTP_SECURE; // 'tls' = STARTTLS on port 587, 'ssl' = implicit TLS on port 465
+		$secure = SMTP_SECURE;
 
 		$ctx = stream_context_create(['ssl' => [
 			'verify_peer'      => true,
@@ -29,7 +29,7 @@ class Mailer {
 
 		$addr   = $secure === 'ssl' ? "ssl://{$host}:{$port}" : "tcp://{$host}:{$port}";
 		$socket = stream_socket_client($addr, $errno, $errstr, 15, STREAM_CLIENT_CONNECT, $ctx);
-		if (!$socket) return false;
+		if (!$socket) { error_log("PepBan SMTP: connect failed — {$errstr}"); return false; }
 
 		stream_set_timeout($socket, 15);
 
@@ -37,40 +37,37 @@ class Mailer {
 		$cmd  = function(string $line) use ($socket, $read): string {
 			fwrite($socket, $line . "\r\n");
 			$resp = '';
-			// Read until we get a line without a dash after the code (single or last line)
 			while ($r = fgets($socket, 1024)) {
 				$resp = $r;
 				if (strlen($r) < 4 || $r[3] !== '-') break;
 			}
+			error_log("PepBan SMTP: >> {$line} | << " . trim($resp));
 			return $resp;
 		};
 
-		$read(); // 220 greeting
+		$greeting = $read();
+		error_log("PepBan SMTP: greeting — " . trim($greeting));
 
-		// EHLO
 		$cmd('EHLO ' . (gethostname() ?: 'localhost'));
 
-		// Upgrade to TLS if STARTTLS
 		if ($secure === 'tls') {
 			$r = $cmd('STARTTLS');
-			if ((int)$r !== 220) { fclose($socket); return false; }
+			if ((int)$r !== 220) { error_log("PepBan SMTP: STARTTLS failed — {$r}"); fclose($socket); return false; }
 			if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-				fclose($socket); return false;
+				error_log("PepBan SMTP: TLS upgrade failed"); fclose($socket); return false;
 			}
 			$cmd('EHLO ' . (gethostname() ?: 'localhost'));
 		}
 
-		// AUTH LOGIN
 		$r = $cmd('AUTH LOGIN');
-		if ((int)$r !== 334) { fclose($socket); return false; }
+		if ((int)$r !== 334) { error_log("PepBan SMTP: AUTH LOGIN failed — {$r}"); fclose($socket); return false; }
 		$cmd(base64_encode(SMTP_USER));
 		$r = $cmd(base64_encode(SMTP_PASS));
-		if ((int)$r !== 235) { fclose($socket); return false; }
+		if ((int)$r !== 235) { error_log("PepBan SMTP: AUTH failed — {$r}"); fclose($socket); return false; }
 
-		// Envelope
 		$cmd('MAIL FROM:<' . MAIL_FROM . '>');
 		$r = $cmd('RCPT TO:<' . $to . '>');
-		if ((int)$r > 299) { fclose($socket); return false; }
+		if ((int)$r > 299) { error_log("PepBan SMTP: RCPT failed — {$r}"); fclose($socket); return false; }
 
 		// Headers + body
 		$cmd('DATA');
