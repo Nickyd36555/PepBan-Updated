@@ -12,8 +12,22 @@ require __DIR__ . '/../templates/layout.php';
   <div class="pb-cl-entry">
     <div class="pb-cl-dot"></div>
     <div class="pb-cl-version">
-      <h2>v1.1.2</h2>
+      <h2>v1.1.3</h2>
       <span class="pb-cl-latest">Latest</span>
+      <span class="pb-cl-date">May 2025</span>
+    </div>
+    <ul class="pb-cl-items">
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-new">New</span> Local blacklist now supports Email, IP Address, and Billing Address blocking — not just email</li>
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-new">New</span> Global IP blocking — IPs banned at the hub level are now also checked at checkout via the API (in addition to the existing site-wide visitor block)</li>
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-improvement">Improved</span> Billing address blocking uses partial/substring match — block by city, zip code, or full address</li>
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-improvement">Improved</span> All four checkout hooks now check IP and address against the local blacklist</li>
+    </ul>
+  </div>
+
+  <div class="pb-cl-entry">
+    <div class="pb-cl-dot"></div>
+    <div class="pb-cl-version">
+      <h2>v1.1.2</h2>
       <span class="pb-cl-date">May 2025</span>
     </div>
     <ul class="pb-cl-items">

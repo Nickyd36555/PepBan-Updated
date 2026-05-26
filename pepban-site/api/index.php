@@ -13,8 +13,20 @@ $db      = Database::get();
 if ($segment === 'check' && $method === 'POST') {
 	$body  = ApiAuth::body();
 	$email = strtolower(trim($body->email ?? ''));
+	$ip    = trim($body->ip_address ?? '');
 
 	if (!$email) ApiAuth::error('email is required', 422);
+
+	// Check global IP block list first — fastest bail-out
+	if ($ip && filter_var($ip, FILTER_VALIDATE_IP)) {
+		$blocked_ip = $db->fetch(
+			'SELECT id FROM pepban_blocked_ips WHERE ip_address = ?',
+			[$ip]
+		);
+		if ($blocked_ip) {
+			ApiAuth::json(['banned' => true, 'whitelisted' => false, 'reason' => 'blocked_ip', 'customer' => null]);
+		}
+	}
 
 	$customer = $db->fetch(
 		"SELECT id, email, first_name, last_name, phone, status, reason
