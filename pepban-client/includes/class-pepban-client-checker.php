@@ -32,16 +32,18 @@ class PepBan_Client_Checker {
 		$phone      = sanitize_text_field( wp_unslash( $_POST['billing_phone'] ?? '' ) );
 		$first_name = sanitize_text_field( wp_unslash( $_POST['billing_first_name'] ?? '' ) );
 		$last_name  = sanitize_text_field( wp_unslash( $_POST['billing_last_name'] ?? '' ) );
-		$ip         = self::get_customer_ip();
+		$ip         = PepBan_Client_Settings::get( 'check_ip', true ) ? self::get_customer_ip() : '';
 
 		if ( empty( $email ) && empty( $phone ) ) return;
 
-		$address = strtolower( implode( ' ', array_filter( array(
-			sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ?? '' ) ),
-			sanitize_text_field( wp_unslash( $_POST['billing_city']      ?? '' ) ),
-			sanitize_text_field( wp_unslash( $_POST['billing_state']     ?? '' ) ),
-			sanitize_text_field( wp_unslash( $_POST['billing_postcode']  ?? '' ) ),
-		) ) ) );
+		$address = PepBan_Client_Settings::get( 'check_billing_address', true )
+			? strtolower( implode( ' ', array_filter( array(
+				sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ?? '' ) ),
+				sanitize_text_field( wp_unslash( $_POST['billing_city']      ?? '' ) ),
+				sanitize_text_field( wp_unslash( $_POST['billing_state']     ?? '' ) ),
+				sanitize_text_field( wp_unslash( $_POST['billing_postcode']  ?? '' ) ),
+			) ) ) )
+			: '';
 
 		$message = PepBan_Client_Settings::get( 'block_message', '' );
 		if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
@@ -82,13 +84,15 @@ class PepBan_Client_Checker {
 
 		if ( empty( $email ) && empty( $phone ) ) return;
 
-		$ip      = self::get_customer_ip();
-		$address = strtolower( implode( ' ', array_filter( array(
-			$order->get_billing_address_1(),
-			$order->get_billing_city(),
-			$order->get_billing_state(),
-			$order->get_billing_postcode(),
-		) ) ) );
+		$ip      = PepBan_Client_Settings::get( 'check_ip', true ) ? self::get_customer_ip() : '';
+		$address = PepBan_Client_Settings::get( 'check_billing_address', true )
+			? strtolower( implode( ' ', array_filter( array(
+				$order->get_billing_address_1(),
+				$order->get_billing_city(),
+				$order->get_billing_state(),
+				$order->get_billing_postcode(),
+			) ) ) )
+			: '';
 
 		$blocked = false;
 

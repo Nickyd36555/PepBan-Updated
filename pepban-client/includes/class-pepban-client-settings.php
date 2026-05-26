@@ -83,6 +83,8 @@ class PepBan_Client_Settings {
 			'block_message'        => sanitize_textarea_field( wp_unslash( $_POST['block_message'] ?? '' ) ),
 			'check_email'          => ! empty( $_POST['check_email'] ),
 			'check_phone'          => ! empty( $_POST['check_phone'] ),
+			'check_ip'             => ! empty( $_POST['check_ip'] ),
+			'check_billing_address'=> ! empty( $_POST['check_billing_address'] ),
 			'auto_report_on_flag'  => ! empty( $_POST['auto_report_on_flag'] ),
 			'show_ban_notice_admin'=> ! empty( $_POST['show_ban_notice_admin'] ),
 		);

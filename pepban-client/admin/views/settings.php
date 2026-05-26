@@ -43,6 +43,14 @@ $connection_status = PepBan_Client_Settings::test_connection();
 				<td><label><input type="checkbox" name="check_phone" value="1" <?php checked( $settings['check_phone'] ?? true ); ?>> Also check customer phone number</label></td>
 			</tr>
 			<tr>
+				<th>Check IP Address</th>
+				<td><label><input type="checkbox" name="check_ip" value="1" <?php checked( $settings['check_ip'] ?? true ); ?>> Check customer IP against global and local IP block lists</label></td>
+			</tr>
+			<tr>
+				<th>Check Billing Address</th>
+				<td><label><input type="checkbox" name="check_billing_address" value="1" <?php checked( $settings['check_billing_address'] ?? true ); ?>> Check billing address against the local blacklist and whitelist</label></td>
+			</tr>
+			<tr>
 				<th>Block Banned Customers</th>
 				<td><label><input type="checkbox" name="block_on_ban" value="1" <?php checked( $settings['block_on_ban'] ?? true ); ?>> Prevent banned customers from completing checkout</label></td>
 			</tr>
