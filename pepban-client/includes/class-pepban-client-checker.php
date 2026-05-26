@@ -66,9 +66,6 @@ class PepBan_Client_Checker {
 		}
 
 		if ( ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
-			$risk_score = (int) ( $result['risk_score'] ?? 100 );
-			$threshold  = (int) PepBan_Client_Settings::get( 'risk_score_threshold', 0 );
-			if ( $risk_score < $threshold ) return; // Below store's threshold — allow through
 			$message = PepBan_Client_Settings::get( 'block_message', '' );
 			if ( empty( $message ) ) {
 				$message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
@@ -108,9 +105,7 @@ class PepBan_Client_Checker {
 		else {
 			$result = PepBan_Client_API::check_customer( $email, $phone );
 			if ( ! is_wp_error( $result ) && ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
-				$risk_score = (int) ( $result['risk_score'] ?? 100 );
-				$threshold  = (int) PepBan_Client_Settings::get( 'risk_score_threshold', 0 );
-				if ( $risk_score >= $threshold ) $blocked = true;
+				$blocked = true;
 			}
 		}
 
@@ -205,15 +200,8 @@ class PepBan_Client_Checker {
 
 		$customer     = $result['customer']    ?? array();
 		$is_wl        = ! empty( $result['whitelisted'] );
-		$risk_score   = (int) ( $result['risk_score']   ?? 0 );
-		$confidence   = $result['confidence']  ?? 'unknown';
 		$report_count = (int) ( $result['report_count'] ?? 1 );
 		$store_count  = (int) ( $result['store_count']  ?? 1 );
-		$threshold    = (int) PepBan_Client_Settings::get( 'risk_score_threshold', 0 );
-
-		$conf_colors  = array( 'low' => '#f0a500', 'medium' => '#e07800', 'high' => '#d63638', 'very_high' => '#8b0000' );
-		$conf_color   = $conf_colors[ $confidence ] ?? '#d63638';
-		$score_color  = $risk_score >= 80 ? '#d63638' : ( $risk_score >= 60 ? '#e07800' : ( $risk_score >= 40 ? '#f0a500' : '#00a32a' ) );
 		?>
 		<div class="notice notice-<?php echo $is_wl ? 'warning' : 'error'; ?>" style="margin:10px 0;padding:14px 16px">
 			<strong>&#128683; PepBan Alert</strong><?php echo $is_wl ? ' &mdash; <em>Whitelisted on this site (allowed through)</em>' : ''; ?>
@@ -221,20 +209,11 @@ class PepBan_Client_Checker {
 			<p style="margin:4px 0"><strong>Reason:</strong> <?php echo esc_html( $customer['reason'] ?? 'N/A' ); ?></p>
 			<div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.1)">
 				<div>
-					<span style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#666">Risk Score</span><br>
-					<strong style="font-size:1.4rem;color:<?php echo esc_attr( $score_color ); ?>"><?php echo esc_html( $risk_score ); ?>/100</strong>
-					<?php if ( $risk_score < $threshold ) echo '<br><span style="font-size:11px;color:#00a32a">Below your threshold (' . esc_html( $threshold ) . ')</span>'; ?>
-				</div>
-				<div>
-					<span style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#666">Confidence</span><br>
-					<strong style="color:<?php echo esc_attr( $conf_color ); ?>"><?php echo esc_html( ucwords( str_replace( '_', ' ', $confidence ) ) ); ?></strong>
-				</div>
-				<div>
-					<span style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#666">Reports</span><br>
+					<span style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#666">Total Reports</span><br>
 					<strong><?php echo esc_html( $report_count ); ?></strong>
 				</div>
 				<div>
-					<span style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#666">Stores Affected</span><br>
+					<span style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#666">Stores Reported</span><br>
 					<strong><?php echo esc_html( $store_count ); ?></strong>
 				</div>
 			</div>
