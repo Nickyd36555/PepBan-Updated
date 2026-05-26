@@ -72,6 +72,7 @@ $routes = [
 	'/portal'           => 'pages/portal.php',
 	'/faq'              => 'pages/faq.php',
 	'/changelog'        => 'pages/changelog.php',
+	'/contact'          => 'pages/contact.php',
 	'/forgot-password'  => 'pages/forgot-password.php',
 	'/reset-password'   => 'pages/reset-password.php',
 ];

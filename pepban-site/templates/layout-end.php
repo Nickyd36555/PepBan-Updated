@@ -6,6 +6,7 @@
     <div class="pb-footer-links">
       <a href="<?= url('/faq') ?>">FAQ</a>
       <a href="<?= url('/changelog') ?>">Changelog</a>
+      <a href="<?= url('/contact') ?>">Contact</a>
       <a href="<?= url('/login') ?>">Login</a>
       <a href="<?= url('/signup') ?>">Sign Up</a>
     </div>

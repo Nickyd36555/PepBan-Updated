@@ -24,6 +24,7 @@
       <a href="<?= url('/#features') ?>" class="pb-nav-link">Features</a>
       <a href="<?= url('/faq') ?>" class="pb-nav-link">FAQ</a>
       <a href="<?= url('/changelog') ?>" class="pb-nav-link">Changelog</a>
+      <a href="<?= url('/contact') ?>" class="pb-nav-link">Contact</a>
       <a href="<?= url('/signup') ?>" class="pb-nav-link">Pricing</a>
       <?php if (Auth::isClient()): ?>
         <a href="<?= url('/portal') ?>" class="pb-nav-link pb-mobile-only">My Portal</a>
