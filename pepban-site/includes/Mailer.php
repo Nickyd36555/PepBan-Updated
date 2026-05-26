@@ -18,14 +18,9 @@ class Mailer {
 	// Minimal SMTP client — handles STARTTLS and AUTH LOGIN.
 	// No external libraries required.
 	private static function smtp(string $to, string $subject, string $body): bool {
-		$logfile = '/tmp/pepban_smtp.log';
-		$log = fn(string $msg) => file_put_contents($logfile, date('H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
-
 		$host   = SMTP_HOST;
 		$port   = (int) SMTP_PORT;
 		$secure = SMTP_SECURE;
-
-		$log("START host={$host} port={$port} secure={$secure} user=" . SMTP_USER);
 
 		$ctx = stream_context_create(['ssl' => [
 			'verify_peer'      => true,
@@ -34,48 +29,43 @@ class Mailer {
 
 		$addr   = $secure === 'ssl' ? "ssl://{$host}:{$port}" : "tcp://{$host}:{$port}";
 		$socket = stream_socket_client($addr, $errno, $errstr, 15, STREAM_CLIENT_CONNECT, $ctx);
-		if (!$socket) { $log("CONNECT FAILED: {$errstr}"); return false; }
+		if (!$socket) return false;
 
 		stream_set_timeout($socket, 15);
 
 		$read = fn() => fgets($socket, 1024);
-		$cmd  = function(string $line) use ($socket, $read, $log): string {
-			$display = (str_starts_with($line, 'dm')) ? '(credential)' : $line;
+		$cmd  = function(string $line) use ($socket, $read): string {
 			fwrite($socket, $line . "\r\n");
 			$resp = '';
 			while ($r = fgets($socket, 1024)) {
 				$resp = $r;
 				if (strlen($r) < 4 || $r[3] !== '-') break;
 			}
-			$log(">> {$display} | << " . trim($resp));
 			return $resp;
 		};
 
-		$greeting = $read();
-		$log("greeting: " . trim($greeting));
+		$read(); // 220 greeting
 
 		$cmd('EHLO ' . (gethostname() ?: 'localhost'));
 
 		if ($secure === 'tls') {
 			$r = $cmd('STARTTLS');
-			if ((int)$r !== 220) { $log("STARTTLS FAILED: {$r}"); fclose($socket); return false; }
+			if ((int)$r !== 220) { fclose($socket); return false; }
 			if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-				$log("TLS UPGRADE FAILED"); fclose($socket); return false;
+				fclose($socket); return false;
 			}
-			$log("TLS OK");
 			$cmd('EHLO ' . (gethostname() ?: 'localhost'));
 		}
 
 		$r = $cmd('AUTH LOGIN');
-		if ((int)$r !== 334) { $log("AUTH LOGIN FAILED: {$r}"); fclose($socket); return false; }
+		if ((int)$r !== 334) { fclose($socket); return false; }
 		$cmd(base64_encode(SMTP_USER));
 		$r = $cmd(base64_encode(SMTP_PASS));
-		if ((int)$r !== 235) { $log("AUTH FAILED: {$r}"); fclose($socket); return false; }
+		if ((int)$r !== 235) { fclose($socket); return false; }
 
-		$log("AUTH OK");
 		$cmd('MAIL FROM:<' . MAIL_FROM . '>');
 		$r = $cmd('RCPT TO:<' . $to . '>');
-		if ((int)$r > 299) { $log("RCPT FAILED: {$r}"); fclose($socket); return false; }
+		if ((int)$r > 299) { fclose($socket); return false; }
 
 		// Headers + body
 		$cmd('DATA');
@@ -95,13 +85,10 @@ class Mailer {
 		fwrite($socket, $headers . "\r\n" . $escaped . "\r\n.\r\n");
 
 		$r = $read(); // 250 queued
-		$log("DATA response: " . trim($r));
 		$cmd('QUIT');
 		fclose($socket);
 
-		$ok = (int)$r === 250;
-		$log($ok ? "SENT OK" : "SEND FAILED: {$r}");
-		return $ok;
+		return (int)$r === 250;
 	}
 
 	public static function welcome(object $client, string $raw_key): void {
