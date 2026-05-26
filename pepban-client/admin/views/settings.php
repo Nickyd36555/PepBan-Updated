@@ -63,6 +63,27 @@ $connection_status = PepBan_Client_Settings::test_connection();
 			</tr>
 		</table>
 
+		<h2>Risk Score</h2>
+		<table class="form-table">
+			<tr>
+				<th><label for="risk_score_threshold">Block Threshold</label></th>
+				<td>
+					<input type="number" name="risk_score_threshold" id="risk_score_threshold"
+					       min="0" max="100" step="1" class="small-text"
+					       value="<?php echo esc_attr( $settings['risk_score_threshold'] ?? 40 ); ?>">
+					<span style="margin-left:8px;color:#666">/ 100</span>
+					<p class="description">Customers with a risk score at or above this value will be blocked. Score is calculated from report count, number of stores that reported, and recency. Default: 40.</p>
+					<p class="description">
+						<strong>Score guide:</strong>
+						<span style="color:#00a32a">0–39 Low</span> &mdash;
+						<span style="color:#f0a500">40–59 Medium</span> &mdash;
+						<span style="color:#d63638">60–79 High</span> &mdash;
+						<span style="color:#8b0000">80–100 Very High</span>
+					</p>
+				</td>
+			</tr>
+		</table>
+
 		<h2>Admin Notices</h2>
 		<table class="form-table">
 			<tr>

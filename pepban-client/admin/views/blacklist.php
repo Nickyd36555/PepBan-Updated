@@ -60,6 +60,18 @@ $type_labels = array( 'email' => 'Email', 'ip' => 'IP Address', 'address' => 'Ad
 		<div id="pepban-bl-result" style="margin-top:10px;display:none"></div>
 	</div>
 
+	<div style="margin:16px 0;padding:20px 24px;background:#fff;border:1px solid #ccd0d4;border-radius:4px;max-width:520px">
+		<h3 style="margin-top:0;margin-bottom:4px">Bulk Import via CSV</h3>
+		<p class="description" style="margin-top:0;margin-bottom:12px">
+			CSV columns: <code>type, value, reason</code> &mdash; or single-column list of emails.<br>
+			Valid types: <code>email</code>, <code>ip</code>, <code>address</code>
+		</p>
+		<input type="file" id="pepban-bl-csv-file" accept=".csv,text/csv"
+		       style="display:block;margin-bottom:10px">
+		<button id="pepban-bl-csv-import" class="button button-secondary">Import CSV</button>
+		<div id="pepban-bl-csv-result" style="margin-top:10px;display:none"></div>
+	</div>
+
 	<?php if ( empty( $entries ) ) : ?>
 		<p>No entries on this site's blacklist yet.</p>
 	<?php else : ?>

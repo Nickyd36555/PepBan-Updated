@@ -59,4 +59,20 @@ class Database {
 		$conds = implode(' AND ', array_map(fn($k) => "{$k} = ?", array_keys($where)));
 		return $this->query("DELETE FROM {$table} WHERE {$conds}", array_values($where))->rowCount();
 	}
+
+	public static function maybe_migrate(): void {
+		$db   = self::get();
+		$rows = $db->fetchAll(
+			"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+			 WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pepban_banned_customers'"
+		);
+		$existing = array_map(fn($r) => (array)$r, $rows);
+		$cols     = array_column($existing, 'COLUMN_NAME');
+		if (!in_array('risk_score', $cols, true)) {
+			$db->query("ALTER TABLE pepban_banned_customers ADD COLUMN risk_score TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER reports_count");
+		}
+		if (!in_array('store_count', $cols, true)) {
+			$db->query("ALTER TABLE pepban_banned_customers ADD COLUMN store_count SMALLINT UNSIGNED NOT NULL DEFAULT 1 AFTER risk_score");
+		}
+	}
 }

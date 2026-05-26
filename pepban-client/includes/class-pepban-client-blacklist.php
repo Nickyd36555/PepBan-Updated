@@ -8,10 +8,11 @@ class PepBan_Client_Blacklist {
 	const VALID_TYPES         = array( 'email', 'ip', 'address' );
 
 	public static function init() {
-		add_action( 'wp_ajax_pepban_blacklist_add',       array( __CLASS__, 'ajax_add' ) );
-		add_action( 'wp_ajax_pepban_blacklist_remove',    array( __CLASS__, 'ajax_remove' ) );
-		add_action( 'wp_ajax_pepban_blacklist_report',    array( __CLASS__, 'ajax_report_to_hub' ) );
-		add_action( 'wp_ajax_pepban_whitelist_local_add', array( __CLASS__, 'ajax_whitelist_add' ) );
+		add_action( 'wp_ajax_pepban_blacklist_add',        array( __CLASS__, 'ajax_add' ) );
+		add_action( 'wp_ajax_pepban_blacklist_remove',     array( __CLASS__, 'ajax_remove' ) );
+		add_action( 'wp_ajax_pepban_blacklist_report',     array( __CLASS__, 'ajax_report_to_hub' ) );
+		add_action( 'wp_ajax_pepban_blacklist_import_csv', array( __CLASS__, 'ajax_import_csv' ) );
+		add_action( 'wp_ajax_pepban_whitelist_local_add',  array( __CLASS__, 'ajax_whitelist_add' ) );
 		add_action( 'wp_ajax_pepban_whitelist_local_remove', array( __CLASS__, 'ajax_whitelist_remove' ) );
 	}
 
@@ -195,6 +196,85 @@ class PepBan_Client_Blacklist {
 		update_option( self::OPTION_KEY, $customers );
 
 		wp_send_json_success( 'Removed from blacklist.' );
+	}
+
+	public static function ajax_import_csv() {
+		if ( ! check_ajax_referer( 'pepban_client_nonce', 'nonce', false ) ) wp_send_json_error( 'Invalid request.' );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) wp_send_json_error( 'Unauthorized.' );
+
+		if ( empty( $_FILES['csv_file'] ) || (int) $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK ) {
+			wp_send_json_error( 'File upload failed (error ' . ( $_FILES['csv_file']['error'] ?? 'none' ) . ').' );
+		}
+
+		$handle = fopen( $_FILES['csv_file']['tmp_name'], 'r' );
+		if ( ! $handle ) wp_send_json_error( 'Could not read file.' );
+
+		$customers = self::get_all();
+		$existing  = array();
+		foreach ( $customers as $e ) {
+			$existing[ self::entry_type( $e ) . ':' . strtolower( self::entry_value( $e ) ) ] = true;
+		}
+
+		$added = $skipped = 0;
+		$errors = array();
+		$row_num = 0;
+
+		while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+			$row_num++;
+			// Support: single-column (email per line) OR type,value,reason
+			if ( count( $row ) === 1 ) {
+				$type   = 'email';
+				$value  = trim( $row[0] );
+				$reason = '';
+			} else {
+				// Skip header
+				if ( $row_num === 1 && strtolower( trim( $row[0] ) ) === 'type' ) continue;
+				$type   = strtolower( trim( $row[0] ?? 'email' ) );
+				$value  = trim( $row[1] ?? '' );
+				$reason = sanitize_text_field( $row[2] ?? '' );
+			}
+
+			if ( ! in_array( $type, self::VALID_TYPES, true ) ) { $skipped++; continue; }
+			if ( empty( $value ) ) { $skipped++; continue; }
+
+			if ( $type === 'email' ) {
+				$value = strtolower( $value );
+				if ( ! is_email( $value ) ) {
+					$errors[] = "Row {$row_num}: invalid email '" . esc_html( $value ) . "'";
+					$skipped++;
+					continue;
+				}
+			} elseif ( $type === 'ip' ) {
+				if ( ! filter_var( $value, FILTER_VALIDATE_IP ) ) {
+					$errors[] = "Row {$row_num}: invalid IP '" . esc_html( $value ) . "'";
+					$skipped++;
+					continue;
+				}
+			}
+
+			$key = $type . ':' . strtolower( $value );
+			if ( isset( $existing[ $key ] ) ) { $skipped++; continue; }
+
+			$existing[ $key ] = true;
+			$customers[] = array(
+				'type'            => $type,
+				'value'           => $value,
+				'reason'          => $reason,
+				'date_added'      => current_time( 'mysql' ),
+				'reported_to_hub' => false,
+			);
+			$added++;
+		}
+		fclose( $handle );
+
+		update_option( self::OPTION_KEY, $customers );
+
+		wp_send_json_success( array(
+			'added'   => $added,
+			'skipped' => $skipped,
+			'errors'  => array_slice( $errors, 0, 5 ),
+			'message' => "Imported {$added} entries ({$skipped} skipped).",
+		) );
 	}
 
 	public static function ajax_report_to_hub() {

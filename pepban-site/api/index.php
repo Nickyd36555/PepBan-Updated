@@ -9,6 +9,17 @@ $segment = preg_replace('#^/api/v1/?#', '', $path); // e.g. "check"
 $auth    = ApiAuth::authenticate();
 $db      = Database::get();
 
+function pepban_calc_risk(int $reports, int $stores, string $last_updated): array {
+	$score  = 20;
+	$score += min($stores,  5) * 8;                   // up to +40 for 5 stores
+	$score += min(max($reports - 1, 0), 5) * 4;       // up to +20 for 6+ reports
+	$days   = max(0, (time() - strtotime($last_updated)) / 86400);
+	$score -= (int) min($days / 30, 20);               // decay up to -20 over ~2 years
+	$score  = max(0, min(100, $score));
+	$conf   = $score >= 80 ? 'very_high' : ($score >= 60 ? 'high' : ($score >= 40 ? 'medium' : 'low'));
+	return ['score' => $score, 'confidence' => $conf];
+}
+
 // ── POST /api/v1/check ────────────────────────────────────────────────────────
 if ($segment === 'check' && $method === 'POST') {
 	$body  = ApiAuth::body();
@@ -29,7 +40,7 @@ if ($segment === 'check' && $method === 'POST') {
 	}
 
 	$customer = $db->fetch(
-		"SELECT id, email, first_name, last_name, phone, status, reason
+		"SELECT id, email, first_name, last_name, phone, status, reason, reports_count, last_updated
 		 FROM pepban_banned_customers WHERE email = ? AND status = 'active'",
 		[$email]
 	);
@@ -54,10 +65,20 @@ if ($segment === 'check' && $method === 'POST') {
 		[$customer->id, $auth->id]
 	);
 
+	$store_count  = (int) $db->scalar(
+		'SELECT COUNT(DISTINCT client_id) FROM pepban_ban_reports WHERE customer_id = ?',
+		[$customer->id]
+	);
+	$risk = pepban_calc_risk((int)$customer->reports_count, $store_count, $customer->last_updated);
+
 	ApiAuth::json([
-		'banned'      => true,
-		'whitelisted' => (bool) $whitelisted,
-		'customer'    => [
+		'banned'       => true,
+		'whitelisted'  => (bool) $whitelisted,
+		'risk_score'   => $risk['score'],
+		'confidence'   => $risk['confidence'],
+		'report_count' => (int) $customer->reports_count,
+		'store_count'  => $store_count,
+		'customer'     => [
 			'id'         => $customer->id,
 			'email'      => $customer->email,
 			'first_name' => $customer->first_name,
@@ -116,7 +137,22 @@ if ($segment === 'report' && $method === 'POST') {
 		'date_reported' => date('Y-m-d H:i:s'),
 	]);
 
-	ApiAuth::json(['success' => true, 'customer_id' => $customer_id]);
+	// Recalculate and persist risk score + store count
+	$store_count = (int) $db->scalar(
+		'SELECT COUNT(DISTINCT client_id) FROM pepban_ban_reports WHERE customer_id = ?',
+		[$customer_id]
+	);
+	$updated = $db->fetch(
+		'SELECT reports_count, last_updated FROM pepban_banned_customers WHERE id = ?',
+		[$customer_id]
+	);
+	$risk = pepban_calc_risk((int)($updated->reports_count ?? 1), $store_count, $updated->last_updated ?? date('Y-m-d H:i:s'));
+	$db->query(
+		'UPDATE pepban_banned_customers SET risk_score = ?, store_count = ? WHERE id = ?',
+		[$risk['score'], $store_count, $customer_id]
+	);
+
+	ApiAuth::json(['success' => true, 'customer_id' => $customer_id, 'risk_score' => $risk['score'], 'store_count' => $store_count]);
 }
 
 // ── POST /api/v1/whitelist/add ────────────────────────────────────────────────

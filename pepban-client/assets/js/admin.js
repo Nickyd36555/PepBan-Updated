@@ -279,6 +279,43 @@ jQuery(function ($) {
 		});
 	});
 
+	// ── Bulk CSV import on blacklist page ───────────────────────────────────
+	$('#pepban-bl-csv-import').on('click', function () {
+		var file = $('#pepban-bl-csv-file')[0].files[0];
+		if (!file) { alert('Please select a CSV file first.'); return; }
+
+		var formData = new FormData();
+		formData.append('action', 'pepban_blacklist_import_csv');
+		formData.append('nonce',  pepbanClient.nonce);
+		formData.append('csv_file', file);
+
+		var $btn = $(this);
+		var $res = $('#pepban-bl-csv-result');
+		$btn.prop('disabled', true).text('Importing…');
+		$res.hide();
+
+		$.ajax({
+			url:         pepbanClient.ajaxurl,
+			type:        'POST',
+			data:        formData,
+			processData: false,
+			contentType: false,
+			success: function (res) {
+				$btn.prop('disabled', false).text('Import CSV');
+				if (res.success) {
+					$res.html('<span style="color:#00a32a">&#10003; ' + res.data.message + '</span>').show();
+					if (res.data.added > 0) setTimeout(function() { location.reload(); }, 1200);
+				} else {
+					$res.html('<span style="color:#d63638">&#10007; ' + (res.data || 'Import failed.') + '</span>').show();
+				}
+			},
+			error: function () {
+				$btn.prop('disabled', false).text('Import CSV');
+				$res.html('<span style="color:#d63638">&#10007; Request failed.</span>').show();
+			}
+		});
+	});
+
 	// ── Remove from whitelist page ───────────────────────────────────────────
 	$(document).on('click', '.pepban-remove-whitelist', function () {
 		if (!confirm('Remove this customer from your site whitelist? They will be blocked again at checkout.')) return;

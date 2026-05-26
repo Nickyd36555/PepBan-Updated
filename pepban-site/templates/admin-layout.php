@@ -19,6 +19,7 @@
 			'dashboard' => 'Dashboard',
 			'banned'    => 'Banned Customers',
 			'clients'   => 'Clients',
+			'import'    => 'Bulk Import',
 			'security'  => 'Security',
 			'settings'  => 'Settings',
 		];
