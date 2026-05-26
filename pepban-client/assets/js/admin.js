@@ -102,25 +102,22 @@ jQuery(function ($) {
 	});
 
 	// ── Customer blacklist page ──────────────────────────────────────────────
-	$('#pepban-bl-add').on('click', function () {
-		var reason  = $('#pepban-bl-reason').val().trim();
-		var $result = $('#pepban-bl-result');
-		var entries = [
-			{ type: 'email',   value: $('#pepban-bl-email').val().trim() },
-			{ type: 'ip',      value: $('#pepban-bl-ip').val().trim() },
-			{ type: 'address', value: $('#pepban-bl-address').val().trim() },
-		].filter(function (e) { return e.value !== ''; });
+	function buildAddress(prefix) {
+		var parts = [
+			$('#' + prefix + '-street').val().trim(),
+			$('#' + prefix + '-city').val().trim(),
+			($('#' + prefix + '-state').val().trim() + ' ' + $('#' + prefix + '-zip').val().trim()).trim(),
+		].filter(Boolean);
+		return parts.join(', ');
+	}
 
+	function submitEntries(entries, action, reason, $btn, $result, btnText, clearIds) {
 		if (!entries.length) { alert('Please fill in at least one field.'); return; }
-
-		var $btn = $(this);
 		$btn.prop('disabled', true).text('Adding…');
 		$result.hide();
-
 		var done = 0, succeeded = 0, errors = [];
-
 		entries.forEach(function (entry) {
-			$.post(ajaxurl, { action: 'pepban_blacklist_add', type: entry.type, value: entry.value, reason: reason, nonce: pepbanClient.nonce },
+			$.post(ajaxurl, { action: action, type: entry.type, value: entry.value, reason: reason, nonce: pepbanClient.nonce },
 			function (res) {
 				if (res.success) { succeeded++; } else { errors.push(res.data || 'Error'); }
 			}).fail(function () {
@@ -131,13 +128,55 @@ jQuery(function ($) {
 				$result.show();
 				if (errors.length) {
 					$result.html('<p style="color:#d63638">&#10007; ' + errors.join('; ') + '</p>');
-					$btn.prop('disabled', false).text('Add to Blacklist');
+					$btn.prop('disabled', false).text(btnText);
 				} else {
-					$result.html('<p style="color:#00a32a">&#10003; Added ' + succeeded + ' entr' + (succeeded === 1 ? 'y' : 'ies') + ' to the blacklist.</p>');
-					$('#pepban-bl-email, #pepban-bl-ip, #pepban-bl-address, #pepban-bl-reason').val('');
+					$result.html('<p style="color:#00a32a">&#10003; Added ' + succeeded + ' entr' + (succeeded === 1 ? 'y' : 'ies') + '.</p>');
+					$(clearIds).val('');
 					setTimeout(function () { location.reload(); }, 1200);
 				}
 			});
+		});
+	}
+
+	$('#pepban-bl-add').on('click', function () {
+		var addr    = buildAddress('pepban-bl');
+		var entries = [
+			{ type: 'email',   value: $('#pepban-bl-email').val().trim() },
+			{ type: 'ip',      value: $('#pepban-bl-ip').val().trim() },
+			{ type: 'address', value: addr },
+		].filter(function (e) { return e.value !== ''; });
+		submitEntries(entries, 'pepban_blacklist_add', $('#pepban-bl-reason').val().trim(),
+			$(this), $('#pepban-bl-result'), 'Add to Blacklist',
+			'#pepban-bl-email, #pepban-bl-ip, #pepban-bl-street, #pepban-bl-city, #pepban-bl-state, #pepban-bl-zip, #pepban-bl-reason');
+	});
+
+	// ── Customer whitelist page ──────────────────────────────────────────────
+	$('#pepban-wl-add').on('click', function () {
+		var addr    = buildAddress('pepban-wl');
+		var entries = [
+			{ type: 'email',   value: $('#pepban-wl-email').val().trim() },
+			{ type: 'ip',      value: $('#pepban-wl-ip').val().trim() },
+			{ type: 'address', value: addr },
+		].filter(function (e) { return e.value !== ''; });
+		submitEntries(entries, 'pepban_whitelist_local_add', $('#pepban-wl-reason').val().trim(),
+			$(this), $('#pepban-wl-result'), 'Add to Whitelist',
+			'#pepban-wl-email, #pepban-wl-ip, #pepban-wl-street, #pepban-wl-city, #pepban-wl-state, #pepban-wl-zip, #pepban-wl-reason');
+	});
+
+	$(document).on('click', '.pepban-wl-remove', function () {
+		var $btn  = $(this);
+		var type  = $btn.data('type') || 'email';
+		var value = String($btn.data('value') || '');
+		if (!confirm('Remove "' + value + '" from the local whitelist?')) return;
+		$btn.prop('disabled', true).text('Removing…');
+		$.post(ajaxurl, { action: 'pepban_whitelist_local_remove', type: type, value: value, nonce: pepbanClient.nonce },
+		function (res) {
+			if (res.success) {
+				$('.pepban-wl-row[data-type="' + type + '"][data-value="' + value + '"]').fadeOut(300, function () { $(this).remove(); });
+			} else {
+				alert('Error: ' + (res.data || 'Unknown error.'));
+				$btn.prop('disabled', false).text('Remove');
+			}
 		});
 	});
 

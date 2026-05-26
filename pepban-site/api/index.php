@@ -257,7 +257,11 @@ if ($segment === 'plugin/info' && $method === 'GET') {
 			. '<li>Activate the plugin.</li>'
 			. '<li>Go to <strong>PepBan → Settings</strong> and enter your API key.</li>'
 			. '</ol>',
-		'changelog'    => '<h4>v1.1.3</h4><ul>'
+		'changelog'    => '<h4>v1.1.4</h4><ul>'
+			. '<li>Billing address blocked/whitelisted by Street, City, State, and ZIP separately</li>'
+			. '<li>Local whitelist: allow customers by email, IP, or billing address — overrides all blocking</li>'
+			. '</ul>'
+			. '<h4>v1.1.3</h4><ul>'
 			. '<li>Blacklist now supports Email, IP Address, and Billing Address — block any combination at once</li>'
 			. '<li>Global IP blocking checked at checkout via the hub API</li>'
 			. '<li>Billing address uses partial/substring match (city, zip, full address)</li>'

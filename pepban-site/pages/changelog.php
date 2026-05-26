@@ -12,8 +12,20 @@ require __DIR__ . '/../templates/layout.php';
   <div class="pb-cl-entry">
     <div class="pb-cl-dot"></div>
     <div class="pb-cl-version">
-      <h2>v1.1.3</h2>
+      <h2>v1.1.4</h2>
       <span class="pb-cl-latest">Latest</span>
+      <span class="pb-cl-date">May 2025</span>
+    </div>
+    <ul class="pb-cl-items">
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-improvement">Improved</span> Billing address split into Street, City, State, and ZIP fields for precise blocking and whitelisting</li>
+      <li class="pb-cl-item"><span class="pb-cl-tag pb-cl-tag-new">New</span> Local whitelist supports Email, IP Address, and Billing Address — whitelisted customers bypass all blocking on your site</li>
+    </ul>
+  </div>
+
+  <div class="pb-cl-entry">
+    <div class="pb-cl-dot"></div>
+    <div class="pb-cl-version">
+      <h2>v1.1.3</h2>
       <span class="pb-cl-date">May 2025</span>
     </div>
     <ul class="pb-cl-items">

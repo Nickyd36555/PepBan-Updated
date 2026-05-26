@@ -46,6 +46,8 @@ class PepBan_Client_Checker {
 		$message = PepBan_Client_Settings::get( 'block_message', '' );
 		if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
 
+		if ( PepBan_Client_Blacklist::is_whitelisted_locally( $email, $ip, $address ) ) return;
+
 		if ( $email   && PepBan_Client_Blacklist::is_blocked( $email ) )            { wc_add_notice( $message, 'error' ); return; }
 		if ( $ip      && PepBan_Client_Blacklist::is_blocked_ip( $ip ) )            { wc_add_notice( $message, 'error' ); return; }
 		if ( $address && PepBan_Client_Blacklist::is_blocked_address( $address ) )  { wc_add_notice( $message, 'error' ); return; }
@@ -89,6 +91,8 @@ class PepBan_Client_Checker {
 		) ) ) );
 
 		$blocked = false;
+
+		if ( PepBan_Client_Blacklist::is_whitelisted_locally( $email, $ip, $address ) ) return;
 
 		if ( $email   && PepBan_Client_Blacklist::is_blocked( $email ) )           { $blocked = true; }
 		elseif ( $ip  && PepBan_Client_Blacklist::is_blocked_ip( $ip ) )           { $blocked = true; }

@@ -36,10 +36,15 @@ $type_labels = array( 'email' => 'Email', 'ip' => 'IP Address', 'address' => 'Ad
 				</td>
 			</tr>
 			<tr>
-				<th style="padding:8px 0"><label for="pepban-bl-address">Billing Address</label></th>
+				<th style="padding:8px 0;vertical-align:top;padding-top:14px"><label>Billing Address</label></th>
 				<td style="padding:8px 0">
-					<input type="text" id="pepban-bl-address" class="regular-text" placeholder="e.g. Austin TX  or  78701">
-					<p class="description" style="margin-top:4px">Partial match — city, zip code, or full address.</p>
+					<input type="text" id="pepban-bl-street" class="regular-text" placeholder="Street (e.g. 123 Main St)" style="margin-bottom:6px;display:block">
+					<div style="display:flex;gap:6px;flex-wrap:wrap">
+						<input type="text" id="pepban-bl-city"  style="flex:2;min-width:120px" placeholder="City">
+						<input type="text" id="pepban-bl-state" style="flex:1;min-width:60px;max-width:80px" placeholder="State">
+						<input type="text" id="pepban-bl-zip"   style="flex:1;min-width:80px;max-width:100px" placeholder="ZIP">
+					</div>
+					<p class="description" style="margin-top:4px">Fill any combination — partial match is used at checkout.</p>
 				</td>
 			</tr>
 			<tr>

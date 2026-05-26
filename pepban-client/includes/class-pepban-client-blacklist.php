@@ -3,13 +3,16 @@ defined( 'ABSPATH' ) || exit;
 
 class PepBan_Client_Blacklist {
 
-	const OPTION_KEY = 'pepban_client_customer_blacklist';
-	const VALID_TYPES = array( 'email', 'ip', 'address' );
+	const OPTION_KEY          = 'pepban_client_customer_blacklist';
+	const WHITELIST_OPTION_KEY = 'pepban_client_local_whitelist';
+	const VALID_TYPES         = array( 'email', 'ip', 'address' );
 
 	public static function init() {
-		add_action( 'wp_ajax_pepban_blacklist_add',    array( __CLASS__, 'ajax_add' ) );
-		add_action( 'wp_ajax_pepban_blacklist_remove', array( __CLASS__, 'ajax_remove' ) );
-		add_action( 'wp_ajax_pepban_blacklist_report', array( __CLASS__, 'ajax_report_to_hub' ) );
+		add_action( 'wp_ajax_pepban_blacklist_add',       array( __CLASS__, 'ajax_add' ) );
+		add_action( 'wp_ajax_pepban_blacklist_remove',    array( __CLASS__, 'ajax_remove' ) );
+		add_action( 'wp_ajax_pepban_blacklist_report',    array( __CLASS__, 'ajax_report_to_hub' ) );
+		add_action( 'wp_ajax_pepban_whitelist_local_add', array( __CLASS__, 'ajax_whitelist_add' ) );
+		add_action( 'wp_ajax_pepban_whitelist_local_remove', array( __CLASS__, 'ajax_whitelist_remove' ) );
 	}
 
 	public static function get_all(): array {
@@ -56,6 +59,76 @@ class PepBan_Client_Blacklist {
 	public static function render_page() {
 		$customers = self::get_all();
 		include PEPBAN_CLIENT_DIR . 'admin/views/blacklist.php';
+	}
+
+	// ── Local whitelist ──────────────────────────────────────────────────────────
+
+	public static function whitelist_get_all(): array {
+		return get_option( self::WHITELIST_OPTION_KEY, array() );
+	}
+
+	public static function is_whitelisted_locally( string $email, string $ip = '', string $address = '' ): bool {
+		foreach ( self::whitelist_get_all() as $e ) {
+			$type  = $e['type']  ?? 'email';
+			$value = $e['value'] ?? $e['email'] ?? '';
+			if ( $type === 'email'   && $email   && strtolower( $value ) === strtolower( $email ) ) return true;
+			if ( $type === 'ip'      && $ip      && $value === $ip ) return true;
+			if ( $type === 'address' && $address ) {
+				$val = strtolower( trim( $value ) );
+				if ( $val && strpos( strtolower( $address ), $val ) !== false ) return true;
+			}
+		}
+		return false;
+	}
+
+	public static function ajax_whitelist_add() {
+		if ( ! check_ajax_referer( 'pepban_client_nonce', 'nonce', false ) ) wp_send_json_error( 'Invalid request.' );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) wp_send_json_error( 'Unauthorized.' );
+
+		$type   = sanitize_text_field( wp_unslash( $_POST['type']   ?? 'email' ) );
+		$value  = trim( sanitize_text_field( wp_unslash( $_POST['value']  ?? '' ) ) );
+		$reason = sanitize_text_field( wp_unslash( $_POST['reason'] ?? '' ) );
+
+		if ( ! in_array( $type, self::VALID_TYPES, true ) ) wp_send_json_error( 'Invalid type.' );
+		if ( empty( $value ) ) wp_send_json_error( 'Value is required.' );
+
+		if ( $type === 'email' ) {
+			$value = strtolower( $value );
+			if ( ! is_email( $value ) ) wp_send_json_error( 'Invalid email address.' );
+		} elseif ( $type === 'ip' ) {
+			if ( ! filter_var( $value, FILTER_VALIDATE_IP ) ) wp_send_json_error( 'Invalid IP address.' );
+		}
+
+		$entries = self::whitelist_get_all();
+		foreach ( $entries as $e ) {
+			if ( ( $e['type'] ?? 'email' ) === $type && strtolower( $e['value'] ?? $e['email'] ?? '' ) === strtolower( $value ) ) {
+				wp_send_json_error( 'Already in whitelist.' );
+			}
+		}
+
+		$entries[] = array(
+			'type'       => $type,
+			'value'      => $value,
+			'reason'     => $reason,
+			'date_added' => current_time( 'mysql' ),
+		);
+		update_option( self::WHITELIST_OPTION_KEY, $entries );
+		wp_send_json_success( array( 'message' => 'Added to whitelist.', 'type' => $type, 'value' => $value ) );
+	}
+
+	public static function ajax_whitelist_remove() {
+		if ( ! check_ajax_referer( 'pepban_client_nonce', 'nonce', false ) ) wp_send_json_error( 'Invalid request.' );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) wp_send_json_error( 'Unauthorized.' );
+
+		$type  = sanitize_text_field( wp_unslash( $_POST['type']  ?? 'email' ) );
+		$value = strtolower( trim( sanitize_text_field( wp_unslash( $_POST['value'] ?? '' ) ) ) );
+		if ( empty( $value ) ) wp_send_json_error( 'Value is required.' );
+
+		$entries = array_values( array_filter( self::whitelist_get_all(), function( $e ) use ( $type, $value ) {
+			return ! ( ( $e['type'] ?? 'email' ) === $type && strtolower( $e['value'] ?? $e['email'] ?? '' ) === $value );
+		} ) );
+		update_option( self::WHITELIST_OPTION_KEY, $entries );
+		wp_send_json_success( 'Removed from whitelist.' );
 	}
 
 	public static function ajax_add() {
