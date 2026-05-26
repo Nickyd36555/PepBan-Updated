@@ -19,6 +19,13 @@ class PepBan_Client_Settings {
 		delete_transient( 'pepban_plugin_update_info' );
 		delete_transient( 'pepban_client_connection_status' );
 		delete_site_transient( 'update_plugins' );
+
+		// Fetch fresh plugin info now so the settings page shows the correct status after redirect
+		$result = PepBan_Client_API::get( '/plugin/info' );
+		if ( ! is_wp_error( $result ) && ! empty( $result['version'] ) ) {
+			set_transient( 'pepban_plugin_update_info', $result, 6 * HOUR_IN_SECONDS );
+		}
+
 		wp_update_plugins();
 		wp_safe_redirect( admin_url( 'admin.php?page=pepban-client&pepban_update_checked=1' ) );
 		exit;

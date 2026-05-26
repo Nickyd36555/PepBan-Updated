@@ -78,8 +78,17 @@ $connection_status = PepBan_Client_Settings::test_connection();
 	<h2>Plugin Updates</h2>
 	<p>Current version: <strong><?php echo esc_html( PEPBAN_CLIENT_VERSION ); ?></strong><?php
 		$info = get_transient( 'pepban_plugin_update_info' );
+		if ( false === $info ) {
+			// Transient expired — fetch live so the status is always accurate
+			$info = PepBan_Client_API::get( '/plugin/info' );
+			if ( ! is_wp_error( $info ) && ! empty( $info['version'] ) ) {
+				set_transient( 'pepban_plugin_update_info', $info, 6 * HOUR_IN_SECONDS );
+			} else {
+				$info = array();
+			}
+		}
 		if ( ! empty( $info['version'] ) && version_compare( $info['version'], PEPBAN_CLIENT_VERSION, '>' ) ) {
-			echo ' &mdash; <span style="color:#d63638">Version ' . esc_html( $info['version'] ) . ' available</span>';
+			echo ' &mdash; <span style="color:#d63638">Version ' . esc_html( $info['version'] ) . ' available — <a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">update now</a></span>';
 		} else {
 			echo ' &mdash; <span style="color:#00a32a">Up to date</span>';
 		}
