@@ -84,7 +84,10 @@ class PepBan_Client_Settings {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) wp_die( 'Unauthorized' );
 		check_admin_referer( 'pepban_client_save_settings' );
 
-		$settings = array(
+		// Merge with existing so settings added in future versions are not wiped
+		// when a store saves from a slightly older version of the settings form.
+		$existing = get_option( self::OPTION_KEY, array() );
+		$settings = array_merge( $existing, array(
 			'api_key'              => sanitize_text_field( wp_unslash( $_POST['api_key'] ?? '' ) ),
 			'block_on_ban'         => ! empty( $_POST['block_on_ban'] ),
 			'block_message'        => sanitize_textarea_field( wp_unslash( $_POST['block_message'] ?? '' ) ),
@@ -94,7 +97,7 @@ class PepBan_Client_Settings {
 			'check_billing_address'=> ! empty( $_POST['check_billing_address'] ),
 			'auto_report_on_flag'  => ! empty( $_POST['auto_report_on_flag'] ),
 			'show_ban_notice_admin'=> ! empty( $_POST['show_ban_notice_admin'] ),
-		);
+		) );
 
 		update_option( self::OPTION_KEY, $settings );
 

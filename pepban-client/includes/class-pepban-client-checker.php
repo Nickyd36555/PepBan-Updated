@@ -8,6 +8,9 @@ defined( 'ABSPATH' ) || exit;
  */
 class PepBan_Client_Checker {
 
+	// Per-request cache — prevents duplicate API calls when multiple hooks fire for the same checkout
+	private static $check_cache = array();
+
 	public static function init() {
 		// Universal: fires for every checkout type before the order is saved
 		add_action( 'woocommerce_checkout_order_created',    array( __CLASS__, 'check_order_and_cancel' ), 1, 1 );
@@ -55,10 +58,9 @@ class PepBan_Client_Checker {
 		if ( $address && PepBan_Client_Blacklist::is_blocked_address( $address ) )  { wc_add_notice( $message, 'error' ); return; }
 		if ( $email   && PepBan_Client_Domains::is_blocked( $email ) )              { wc_add_notice( $message, 'error' ); return; }
 
-		$result = PepBan_Client_API::check_customer( $email, $phone, $first_name, $last_name, $ip );
+		$result = self::api_check( $email, $phone, $first_name, $last_name, $ip );
 
 		if ( is_wp_error( $result ) ) {
-			// API unavailable — fail open or closed based on settings
 			if ( PepBan_Client_Settings::get( 'block_on_api_error', false ) ) {
 				wc_add_notice( 'Our system is temporarily unavailable. Please try again in a moment.', 'error' );
 			}
@@ -103,24 +105,23 @@ class PepBan_Client_Checker {
 		elseif ( $address && PepBan_Client_Blacklist::is_blocked_address( $address ) ) { $blocked = true; }
 		elseif ( $email && PepBan_Client_Domains::is_blocked( $email ) )           { $blocked = true; }
 		else {
-			$result = PepBan_Client_API::check_customer( $email, $phone );
+			$result = self::api_check( $email, $phone );
 			if ( ! is_wp_error( $result ) && ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
 				$blocked = true;
 			}
 		}
 
 		if ( $blocked ) {
-			// Cancel and trash the order immediately
-			$order->update_status( 'cancelled', 'Blocked by PepBan — banned customer.' );
-			$order->save();
-			wp_trash_post( $order->get_id() );
-
 			$message = PepBan_Client_Settings::get( 'block_message', '' );
 			if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
 
-			// Show error to customer and halt execution
+			// Mark failed so payment gateways see a terminal state — do NOT trash,
+			// as gateways may still hold a reference to this order ID.
+			$order->update_status( 'failed', 'Blocked by PepBan — banned customer.' );
+			$order->save();
+
 			wc_add_notice( $message, 'error' );
-			throw new Exception( $message );
+			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', $message, 400 );
 		}
 	}
 
@@ -146,7 +147,7 @@ class PepBan_Client_Checker {
 			return;
 		}
 
-		$result = PepBan_Client_API::check_customer(
+		$result = self::api_check(
 			$email,
 			$phone,
 			sanitize_text_field( $data['billing_first_name'] ?? '' ),
@@ -171,7 +172,7 @@ class PepBan_Client_Checker {
 			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', $message, 400 );
 		}
 
-		$result = PepBan_Client_API::check_customer(
+		$result = self::api_check(
 			$email,
 			$phone,
 			$order->get_billing_first_name(),
@@ -219,6 +220,14 @@ class PepBan_Client_Checker {
 			</div>
 		</div>
 		<?php
+	}
+
+	private static function api_check( string $email, string $phone, string $first = '', string $last = '', string $ip = '' ) {
+		$key = md5( $email . '|' . $phone );
+		if ( ! isset( self::$check_cache[ $key ] ) ) {
+			self::$check_cache[ $key ] = PepBan_Client_API::check_customer( $email, $phone, $first, $last, $ip );
+		}
+		return self::$check_cache[ $key ];
 	}
 
 	private static function get_customer_ip() {

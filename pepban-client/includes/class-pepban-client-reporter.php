@@ -14,9 +14,6 @@ class PepBan_Client_Reporter {
 		// AJAX: report customer from order screen
 		add_action( 'wp_ajax_pepban_report_customer', array( __CLASS__, 'ajax_report_customer' ) );
 
-		// AJAX: report customer from admin order list (quick action)
-		add_action( 'wp_ajax_pepban_quick_report', array( __CLASS__, 'ajax_quick_report' ) );
-
 		// Enqueue scripts for order screen
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_order_scripts' ) );
 	}
