@@ -190,7 +190,7 @@ code {
   margin-bottom: 40px;
 }
 .pb-hero-logo-img {
-  height: 140px;
+  height: 210px;
   width: auto;
   border-radius: 16px;
   filter: drop-shadow(0 8px 32px rgba(220,38,38,0.25));
@@ -1202,7 +1202,7 @@ code {
   .pb-section { padding: 52px 20px; }
   .pb-hero-title { font-size: 2.1rem; }
   .pb-hero { padding: 36px 20px 44px; }
-  .pb-hero-logo-img { height: 100px; }
+  .pb-hero-logo-img { height: 60px; }
   .pb-section-title { font-size: 1.6rem; }
   .pb-cta-title { font-size: 1.7rem; }
 
