@@ -22,6 +22,7 @@ if (!defined('SITE_NAME'))  define('SITE_NAME', 'PepBan');
 if (!defined('PEPBAN_VERSION')) define('PEPBAN_VERSION', '1.0.0');
 
 if (!defined('ADMIN_EMAIL'))         define('ADMIN_EMAIL',         'admin@example.com');
+if (!defined('SUPPORT_EMAIL'))       define('SUPPORT_EMAIL',       'admin@pepban.com');
 if (!defined('ADMIN_PASSWORD_HASH')) define('ADMIN_PASSWORD_HASH', '$2y$10$changethishashbygeneratingyourown.........');
 
 if (!defined('MAIL_FROM'))      define('MAIL_FROM',      'noreply@your-domain.com');

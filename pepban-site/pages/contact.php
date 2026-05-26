@@ -27,7 +27,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 		if ( $ok ) {
 			$sent = true;
 		} else {
-			$errors[] = 'Could not send message. Please email us directly at ' . ADMIN_EMAIL . '.';
+			$errors[] = 'Could not send message. Please email us directly at ' . SUPPORT_EMAIL . '.';
 		}
 	}
 }
@@ -44,7 +44,7 @@ require __DIR__ . '/../templates/layout.php';
 
       <div class="pb-contact-detail">
         <span class="pb-contact-label">Email</span>
-        <a href="mailto:<?= ADMIN_EMAIL ?>"><?= ADMIN_EMAIL ?></a>
+        <a href="mailto:<?= SUPPORT_EMAIL ?>"><?= SUPPORT_EMAIL ?></a>
       </div>
       <div class="pb-contact-detail">
         <span class="pb-contact-label">Response time</span>
