@@ -17,11 +17,7 @@
       <span></span><span></span><span></span>
     </button>
     <a href="<?= url('/') ?>" class="pb-nav-brand">
-      <?php if (file_exists(__DIR__ . '/../assets/images/logo.png')): ?>
-        <img src="<?= url('assets/images/logo.png') ?>" alt="PepBan" class="pb-nav-logo">
-      <?php else: ?>
-        <span class="pb-nav-wordmark">Pep<span>Ban</span></span>
-      <?php endif; ?>
+      <span class="pb-nav-wordmark">Pep<span>Ban</span></span>
     </a>
     <div class="pb-nav-links" id="pb-nav-links">
       <a href="<?= url('/') ?>" class="pb-nav-link">Home</a>
