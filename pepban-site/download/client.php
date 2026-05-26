@@ -1,5 +1,4 @@
 <?php
-ob_start(); // capture any stray output so it doesn't corrupt the binary ZIP response
 // Allow API-key-authenticated downloads (used by WordPress auto-updater)
 $api_key_param = trim($_GET['api_key'] ?? '');
 if ($api_key_param) {
