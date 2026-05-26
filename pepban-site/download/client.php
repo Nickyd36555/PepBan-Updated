@@ -53,7 +53,7 @@ if (!class_exists('ZipArchive')) {
 }
 
 // Build ZIP in temp directory
-$zip_path = sys_get_temp_dir() . '/pepban-client-' . PEPBAN_VERSION . '.zip';
+$zip_path = sys_get_temp_dir() . '/pepban-client-' . PEPBAN_PLUGIN_VERSION . '.zip';
 
 // Rebuild each time (version or source may have changed)
 if (file_exists($zip_path)) unlink($zip_path);
@@ -78,8 +78,8 @@ foreach ($files as $file) {
 	// Dynamically stamp the hub version into the main plugin file
 	if (basename($real) === 'pepban-client.php' && dirname($real) === $base) {
 		$content = file_get_contents($real);
-		$content = preg_replace('/(\*\s*Version:\s*)[\d.]+/', '${1}' . PEPBAN_VERSION, $content);
-		$content = preg_replace("/(define\s*\(\s*'PEPBAN_CLIENT_VERSION'\s*,\s*')[^']+(')/", '${1}' . PEPBAN_VERSION . '${2}', $content);
+		$content = preg_replace('/(\*\s*Version:\s*)[\d.]+/', '${1}' . PEPBAN_PLUGIN_VERSION, $content);
+		$content = preg_replace("/(define\s*\(\s*'PEPBAN_CLIENT_VERSION'\s*,\s*')[^']+(')/", '${1}' . PEPBAN_PLUGIN_VERSION . '${2}', $content);
 		$zip->addFromString($local, $content);
 	} else {
 		$zip->addFile($real, $local);
@@ -89,7 +89,7 @@ $zip->close();
 
 // Stream the ZIP
 header('Content-Type: application/zip');
-header('Content-Disposition: attachment; filename="pepban-client-' . PEPBAN_VERSION . '.zip"');
+header('Content-Disposition: attachment; filename="pepban-client-' . PEPBAN_PLUGIN_VERSION . '.zip"');
 header('Content-Length: ' . filesize($zip_path));
 header('Cache-Control: no-store');
 readfile($zip_path);

@@ -236,17 +236,17 @@ if ($segment === 'blocked-ips' && $method === 'GET') {
 if ($segment === 'plugin/info' && $method === 'GET') {
 	$raw_key = $_SERVER['HTTP_X_PEPBAN_API_KEY'] ?? '';
 	ApiAuth::json([
-		'version'      => PEPBAN_VERSION,
+		'version'      => PEPBAN_PLUGIN_VERSION,
 		'download_url' => rtrim(SITE_URL, '/') . '/download/client?api_key=' . urlencode($raw_key),
-		'details_url'  => rtrim(SITE_URL, '/'),
+		'details_url'  => rtrim(SITE_URL, '/') . '/changelog',
 		'description'  => '<p><strong>PepBan</strong> connects your WooCommerce store to the centralized PepBan ban database — shared across all member peptide stores.</p>'
 			. '<h4>Features</h4><ul>'
 			. '<li>Automatically blocks banned customers at checkout</li>'
 			. '<li>One-click reporting from the WooCommerce order screen</li>'
-			. '<li>Real-time email and phone checks against the shared ban list</li>'
+			. '<li>Block by email address, IP address, or billing address</li>'
 			. '<li>Per-site whitelisting — allow a banned customer on your store only</li>'
-			. '<li>IP blocking — prevent known bad actors from browsing your store</li>'
-			. '<li>Domain blocking — block all signups from suspicious email domains</li>'
+			. '<li>Global IP blocking — IPs banned at the hub are checked at checkout</li>'
+			. '<li>Domain blocking — block all orders from suspicious email domains</li>'
 			. '<li>Automatic updates delivered directly from pepban.com</li>'
 			. '</ul>',
 		'installation' => '<ol>'
@@ -255,7 +255,17 @@ if ($segment === 'plugin/info' && $method === 'GET') {
 			. '<li>Activate the plugin.</li>'
 			. '<li>Go to <strong>PepBan → Settings</strong> and enter your API key.</li>'
 			. '</ol>',
-		'changelog'    => '<h4>' . PEPBAN_VERSION . '</h4><ul><li>Latest release — see pepban.com for full release notes.</li></ul>',
+		'changelog'    => '<h4>v1.1.3</h4><ul>'
+			. '<li>Blacklist now supports Email, IP Address, and Billing Address — block any combination at once</li>'
+			. '<li>Global IP blocking checked at checkout via the hub API</li>'
+			. '<li>Billing address uses partial/substring match (city, zip, full address)</li>'
+			. '<li>All checkout hooks check IP and address against the local blacklist</li>'
+			. '</ul>'
+			. '<h4>v1.1.2</h4><ul>'
+			. '<li>Per-site customer blacklist</li>'
+			. '<li>Report to PepBan button — escalate local bans to the global network</li>'
+			. '<li>Per-site domain blacklist</li>'
+			. '</ul>',
 	]);
 }
 
