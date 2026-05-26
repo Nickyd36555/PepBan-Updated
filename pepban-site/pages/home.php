@@ -5,6 +5,9 @@ require __DIR__ . '/../templates/layout.php';
 
 <!-- ── Hero ──────────────────────────────────────────────────────────────────── -->
 <section class="pb-hero pb-hero-v2">
+  <div class="pb-hero-logo-wrap">
+    <img src="<?= url('assets/images/logo.png') ?>" alt="PepBan" class="pb-hero-logo-img">
+  </div>
   <div class="pb-hero-split">
 
     <div class="pb-hero-content">
