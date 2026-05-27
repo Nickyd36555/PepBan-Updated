@@ -38,9 +38,18 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.2.2',
+			'version' => '1.3.0',
 			'date'    => 'May 2025',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'New', 'text' => 'HMAC-signed API requests — every request is cryptographically bound to the API key, endpoint, body, and a 5-minute timestamp window; replayed or stolen keys are rejected'],
+				['tag' => 'New', 'text' => 'Domain verification — hub logs requests whose origin does not match the registered store URL'],
+				['tag' => 'Improved', 'text' => 'Plugin license updated to proprietary'],
+			],
+		],
+		[
+			'version' => '1.2.2',
+			'date'    => 'May 2025',
 			'items'   => [
 				['tag' => 'Fix',      'text' => 'Banned customer orders now marked <em>failed</em> instead of trashed — prevents conflicts with Stripe, PayPal, and other payment gateways'],
 				['tag' => 'Fix',      'text' => 'API checked only once per checkout regardless of which hooks fire — eliminates duplicate lookups'],

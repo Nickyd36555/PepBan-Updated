@@ -3,6 +3,8 @@ defined('PEPBAN_VERSION') || die;
 
 class ApiAuth {
 
+	private static ?string $raw_body = null;
+
 	private static function respond(int $code, array $body): never {
 		http_response_code($code);
 		header('Content-Type: application/json');
@@ -10,10 +12,18 @@ class ApiAuth {
 		exit;
 	}
 
+	// Read php://input once and cache it — body() reuses the same string.
+	private static function raw_body(): string {
+		if (self::$raw_body === null) {
+			self::$raw_body = (string) file_get_contents('php://input');
+		}
+		return self::$raw_body;
+	}
+
 	public static function authenticate(): object {
 		$raw_key = $_SERVER['HTTP_X_PEPBAN_API_KEY'] ?? '';
 		if (!$raw_key) {
-			self::respond(401, ['success' => false, 'message' => 'API key missing. Send X-PepBan-API-Key header.']);
+			self::respond(401, ['success' => false, 'message' => 'API key missing.']);
 		}
 
 		$prefix = substr($raw_key, 0, 8);
@@ -42,7 +52,43 @@ class ApiAuth {
 			self::respond(429, ['success' => false, 'message' => 'Rate limit exceeded. Try again in a minute.']);
 		}
 
-		// Update last_active (non-blocking)
+		// ── HMAC signature verification ───────────────────────────────────────────
+		$sig       = $_SERVER['HTTP_X_PEPBAN_SIG']       ?? '';
+		$timestamp = $_SERVER['HTTP_X_PEPBAN_TIMESTAMP'] ?? '';
+
+		if ($sig !== '' && $timestamp !== '') {
+			// Reject requests older than 5 minutes or from the future (>30s clock drift)
+			$age = time() - (int) $timestamp;
+			if ($age > 300 || $age < -30) {
+				self::respond(401, ['success' => false, 'message' => 'Request expired or clock skew too large.']);
+			}
+
+			if ($client->api_key) {
+				$method    = $_SERVER['REQUEST_METHOD'];
+				$path      = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
+				$body_hash = hash('sha256', self::raw_body());
+				$sig_data  = implode("\n", [$timestamp, $method, $path, $body_hash]);
+				$expected  = hash_hmac('sha256', $sig_data, $client->api_key);
+				if (!hash_equals($expected, $sig)) {
+					self::audit($client->id, 'sig_mismatch', 'client', $client->id,
+						'Expected sig mismatch from ' . ($_SERVER['HTTP_X_PEPBAN_SITE'] ?? '?'));
+					self::respond(401, ['success' => false, 'message' => 'Invalid request signature.']);
+				}
+			}
+		}
+
+		// ── Domain locking ────────────────────────────────────────────────────────
+		$req_site = $_SERVER['HTTP_X_PEPBAN_SITE'] ?? '';
+		if ($req_site) {
+			$norm = fn($url) => strtolower(preg_replace('/^www\./', '', parse_url($url, PHP_URL_HOST) ?? ''));
+			if ($norm($req_site) !== $norm($client->site_url)) {
+				self::audit($client->id, 'domain_mismatch', 'client', $client->id,
+					'Registered: ' . $client->site_url . ' — Request: ' . $req_site);
+				// Log but do not reject — client site_url may differ from WordPress home_url in some setups.
+				// Flip to self::respond(403, ...) once domain data is verified clean in the audit log.
+			}
+		}
+
 		Database::get()->update('pepban_clients', ['last_active' => date('Y-m-d H:i:s')], ['id' => $client->id]);
 
 		return $client;
@@ -56,12 +102,25 @@ class ApiAuth {
 	}
 
 	public static function body(): object {
-		$raw  = file_get_contents('php://input');
+		$raw  = self::raw_body();
 		$json = $raw ? json_decode($raw) : null;
 		return is_object($json) ? $json : (object) $_POST;
 	}
 
 	public static function error(string $message, int $code = 400): never {
 		self::respond($code, ['success' => false, 'message' => $message]);
+	}
+
+	private static function audit(int $actor_id, string $action, string $target_type, int $target_id, string $details): void {
+		try {
+			Database::get()->insert('pepban_audit_log', [
+				'actor'       => 'client:' . $actor_id,
+				'action'      => $action,
+				'target_type' => $target_type,
+				'target_id'   => $target_id,
+				'details'     => $details,
+				'created_at'  => date('Y-m-d H:i:s'),
+			]);
+		} catch (Throwable $e) {}
 	}
 }

@@ -3,9 +3,9 @@
  * Plugin Name: PepBan Client
  * Plugin URI:  https://pepban.com
  * Description: Connects your WooCommerce store to the PepBan central ban database. Blocks banned customers at checkout and lets you report bad actors directly from orders.
- * Version:     1.2.2
+ * Version:     1.3.0
  * Author:      PepBan
- * License:     GPL-2.0+
+ * License:     Proprietary
  * Text Domain: pepban-client
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'PEPBAN_CLIENT_VERSION', '1.2.2' );
+define( 'PEPBAN_CLIENT_VERSION', '1.3.0' );
 define( 'PEPBAN_CLIENT_FILE',    __FILE__ );
 define( 'PEPBAN_CLIENT_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'PEPBAN_CLIENT_URL',     plugin_dir_url( __FILE__ ) );
