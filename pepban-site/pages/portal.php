@@ -72,7 +72,7 @@ function pepbanCopyKey(btn){var t=document.getElementById('pepban-key-text').tex
 		<div class="pepban-card-icon">&#127968;</div>
 		<h3>Your Store</h3>
 	</div>
-	<div class="pepban-card-inner pepban-card-inner-cols">
+	<div class="pepban-card-inner">
 		<div class="pepban-info-row">
 			<span class="pepban-info-label">Store URL</span>
 			<span class="pepban-info-value"><?= e($client->site_url) ?></span>
