@@ -98,6 +98,55 @@ function pepbanCopyKey(btn){var t=document.getElementById('pepban-key-text').tex
 	</div>
 </div>
 
+<?php
+$total_reports  = Database::get()->scalar('SELECT COUNT(*) FROM pepban_ban_reports WHERE client_id = ?', [$client->id]);
+$month_reports  = Database::get()->scalar('SELECT COUNT(*) FROM pepban_ban_reports WHERE client_id = ? AND date_reported >= ?', [$client->id, date('Y-m-01')]);
+$recent_reports = Database::get()->fetchAll('SELECT r.date_reported, r.reason, b.email, b.first_name, b.last_name FROM pepban_ban_reports r JOIN pepban_banned_customers b ON b.id = r.customer_id WHERE r.client_id = ? ORDER BY r.date_reported DESC LIMIT 10', [$client->id]);
+?>
+
+<div class="pepban-card pepban-card-wide" style="margin-top:20px">
+    <div class="pepban-card-header">
+        <div class="pepban-card-icon">&#128202;</div>
+        <h3>Network Activity</h3>
+    </div>
+    <div class="pepban-card-inner">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+            <div style="background:var(--surface-2,#f8f8fa);border-radius:10px;padding:16px;text-align:center">
+                <div style="font-size:2rem;font-weight:700;color:var(--accent,#7c3aed)"><?= (int)$total_reports ?></div>
+                <div style="font-size:.85rem;color:var(--muted)">Total Reports Submitted</div>
+            </div>
+            <div style="background:var(--surface-2,#f8f8fa);border-radius:10px;padding:16px;text-align:center">
+                <div style="font-size:2rem;font-weight:700;color:var(--accent,#7c3aed)"><?= (int)$month_reports ?></div>
+                <div style="font-size:.85rem;color:var(--muted)">This Month</div>
+            </div>
+        </div>
+    </div>
+    <?php if ($recent_reports): ?>
+    <div class="pepban-card-body-flush">
+        <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+            <thead>
+                <tr style="border-bottom:2px solid var(--border,#e5e7eb)">
+                    <th style="padding:10px 16px;text-align:left;font-weight:600;color:var(--muted)">Email</th>
+                    <th style="padding:10px 16px;text-align:left;font-weight:600;color:var(--muted)">Name</th>
+                    <th style="padding:10px 16px;text-align:left;font-weight:600;color:var(--muted)">Reason</th>
+                    <th style="padding:10px 16px;text-align:left;font-weight:600;color:var(--muted)">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($recent_reports as $r): ?>
+                <tr style="border-bottom:1px solid var(--border,#e5e7eb)">
+                    <td style="padding:10px 16px"><?= e($r->email) ?></td>
+                    <td style="padding:10px 16px"><?= e(trim($r->first_name . ' ' . $r->last_name)) ?></td>
+                    <td style="padding:10px 16px"><?= e($r->reason) ?></td>
+                    <td style="padding:10px 16px;white-space:nowrap"><?= date('M j, Y', strtotime($r->date_reported)) ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
+</div>
+
 <?php if ($status === 'active'): ?>
 <div class="pepban-download-card">
 	<h3>&#11015;&nbsp; Download Client Plugin</h3>
@@ -138,7 +187,7 @@ function pepbanCopyKey(btn){var t=document.getElementById('pepban-key-text').tex
 <div class="pepban-portal-footer">
 	<span>PepBan &copy; <?= date('Y') ?></span>
 	<div class="pepban-portal-footer-links">
-		<a href="<?= url('/forgot-password') ?>">Change password</a>
+		<a href="<?= url('/account') ?>">Account settings</a>
 		<a href="<?= url('/logout') ?>">Log out</a>
 	</div>
 </div>

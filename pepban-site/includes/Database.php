@@ -84,5 +84,15 @@ class Database {
 		if (!in_array('api_key', $cols2, true)) {
 			$db->query("ALTER TABLE pepban_clients ADD COLUMN api_key VARCHAR(80) NOT NULL DEFAULT '' AFTER api_key_prefix");
 		}
+		// audit log table
+		$db->query("CREATE TABLE IF NOT EXISTS pepban_audit_log (
+			id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			actor       VARCHAR(50)  NOT NULL DEFAULT 'admin',
+			action      VARCHAR(100) NOT NULL,
+			target_type VARCHAR(50)  NOT NULL DEFAULT '',
+			target_id   INT UNSIGNED NOT NULL DEFAULT 0,
+			details     TEXT         NOT NULL,
+			created_at  DATETIME     NOT NULL
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 	}
 }

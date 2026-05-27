@@ -3,13 +3,38 @@ $db     = Database::get();
 $action = get_param('action', 'list');
 $id     = (int) get_param('id');
 
+function audit(string $action, string $target_type = '', int $target_id = 0, string $details = ''): void {
+	Database::get()->insert('pepban_audit_log', [
+		'actor'       => 'admin',
+		'action'      => $action,
+		'target_type' => $target_type,
+		'target_id'   => $target_id,
+		'details'     => $details,
+		'created_at'  => date('Y-m-d H:i:s'),
+	]);
+}
+
+// ── CSV export ────────────────────────────────────────────────────────────────
+if ($action === 'export') {
+	header('Content-Type: text/csv; charset=utf-8');
+	header('Content-Disposition: attachment; filename="pepban-bans-' . date('Y-m-d') . '.csv"');
+	$out = fopen('php://output', 'w');
+	fputcsv($out, ['email','first_name','last_name','phone','billing_address','ip_address','reason','status','reports_count','date_added']);
+	$rows = $db->fetchAll('SELECT email,first_name,last_name,phone,billing_address,ip_address,reason,status,reports_count,date_added FROM pepban_banned_customers ORDER BY date_added DESC');
+	foreach ($rows as $r) {
+		fputcsv($out, [(string)$r->email,(string)$r->first_name,(string)$r->last_name,(string)$r->phone,(string)$r->billing_address,(string)$r->ip_address,(string)$r->reason,(string)$r->status,(string)$r->reports_count,(string)$r->date_added]);
+	}
+	fclose($out);
+	exit;
+}
+
 // ── Handle POST actions ───────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	verify_csrf();
 	$act = post('_action');
 
 	if ($act === 'add') {
-		$db->insert('pepban_banned_customers', [
+		$new_id = $db->insert('pepban_banned_customers', [
 			'email'              => strtolower(post('email')),
 			'first_name'         => post('first_name'),
 			'last_name'          => post('last_name'),
@@ -25,8 +50,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			'admin_notes'        => '',
 			'reports_count'      => 1,
 		]);
+		audit('ban_add', 'customer', $new_id, post('email'));
 		flash('success', 'Customer added to ban list.');
 		redirect('/admin/banned');
+	}
+
+	if ($act === 'edit' && $id) {
+		$db->update('pepban_banned_customers', [
+			'email'           => strtolower(post('email')),
+			'first_name'      => post('first_name'),
+			'last_name'       => post('last_name'),
+			'phone'           => post('phone'),
+			'billing_address' => post('billing_address'),
+			'ip_address'      => post('ip_address'),
+			'reason'          => post('reason'),
+			'admin_notes'     => post('admin_notes'),
+			'last_updated'    => date('Y-m-d H:i:s'),
+		], ['id' => $id]);
+		audit('ban_edit', 'customer', $id, post('email'));
+		flash('success', 'Customer updated.');
+		redirect('/admin/banned?action=view&id=' . $id);
 	}
 
 	if ($act === 'update_status' && $id) {
@@ -34,17 +77,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			['status' => post('status'), 'last_updated' => date('Y-m-d H:i:s')],
 			['id' => $id]
 		);
+		audit('status_change', 'customer', $id, post('status'));
 		flash('success', 'Status updated.');
 		redirect('/admin/banned?action=view&id=' . $id);
 	}
 
 	if ($act === 'delete' && $id) {
+		$gone = $db->fetch('SELECT email FROM pepban_banned_customers WHERE id = ?', [$id]);
 		$db->delete('pepban_banned_customers', ['id' => $id]);
 		$db->query('DELETE FROM pepban_ban_reports WHERE customer_id = ?', [$id]);
 		$db->query('DELETE FROM pepban_whitelists WHERE customer_id = ?', [$id]);
+		audit('ban_delete', 'customer', $id, $gone->email ?? '');
 		flash('success', 'Customer permanently removed.');
 		redirect('/admin/banned');
 	}
+}
+
+// ── Edit form ─────────────────────────────────────────────────────────────────
+if ($action === 'edit' && $id) {
+	$customer = $db->fetch('SELECT * FROM pepban_banned_customers WHERE id = ?', [$id]);
+	$page_title = 'Edit Ban';
+	require __DIR__ . '/../templates/admin-layout.php';
+	if (!$customer) { echo '<p>Not found.</p>'; require __DIR__ . '/../templates/admin-layout-end.php'; exit; }
+	?>
+	<a href="<?= url('/admin/banned?action=view&id=' . $id) ?>" class="pb-back-link">&larr; Back to customer</a>
+	<div class="pb-card" style="max-width:640px">
+		<div class="pb-card-header"><h3>Edit Banned Customer</h3></div>
+		<div class="pb-card-body">
+			<form method="post" class="pb-form">
+				<?= csrf_field() ?>
+				<input type="hidden" name="_action" value="edit">
+				<div class="pb-field"><label>Email *</label><input type="email" name="email" value="<?= e($customer->email) ?>" required></div>
+				<div class="pb-grid-2">
+					<div class="pb-field"><label>First Name</label><input type="text" name="first_name" value="<?= e($customer->first_name) ?>"></div>
+					<div class="pb-field"><label>Last Name</label><input type="text" name="last_name" value="<?= e($customer->last_name) ?>"></div>
+				</div>
+				<div class="pb-field"><label>Phone</label><input type="text" name="phone" value="<?= e($customer->phone) ?>"></div>
+				<div class="pb-field"><label>Billing Address</label><textarea name="billing_address" rows="3"><?= e($customer->billing_address) ?></textarea></div>
+				<div class="pb-field"><label>IP Address</label><input type="text" name="ip_address" value="<?= e($customer->ip_address) ?>" placeholder="0.0.0.0"></div>
+				<div class="pb-field"><label>Reason</label><textarea name="reason" rows="3"><?= e($customer->reason) ?></textarea></div>
+				<div class="pb-field"><label>Admin Notes</label><textarea name="admin_notes" rows="3"><?= e($customer->admin_notes) ?></textarea></div>
+				<button type="submit" class="pb-btn pb-btn-primary">Save Changes</button>
+			</form>
+		</div>
+	</div>
+	<?php
+	require __DIR__ . '/../templates/admin-layout-end.php';
+	exit;
 }
 
 // ── View single customer ──────────────────────────────────────────────────────
@@ -83,7 +162,7 @@ if ($action === 'view' && $id) {
 		<div class="pb-card">
 			<div class="pb-card-header"><h3>Actions</h3></div>
 			<div class="pb-card-body">
-				<p><em>Only you can change or remove bans.</em></p>
+				<a href="<?= url('/admin/banned?action=edit&id=' . $customer->id) ?>" class="pb-btn pb-btn-secondary" style="display:block;margin-bottom:12px;text-align:center">Edit Details</a>
 				<form method="post" style="margin-bottom:12px">
 					<?= csrf_field() ?>
 					<input type="hidden" name="_action" value="update_status">
@@ -198,6 +277,7 @@ require __DIR__ . '/../templates/admin-layout.php';
 		<input type="search" name="s" value="<?= e($search) ?>" placeholder="Search email, name, phone…" class="pb-search">
 		<button type="submit" class="pb-btn pb-btn-secondary">Search</button>
 		<a href="<?= url('/admin/banned?action=add') ?>" class="pb-btn pb-btn-primary">+ Add Ban</a>
+		<a href="<?= url('/admin/banned?action=export') ?>" class="pb-btn pb-btn-ghost">&#11015; Export CSV</a>
 	</form>
 </div>
 

@@ -123,6 +123,14 @@ if ($segment === 'report' && $method === 'POST') {
 		'date_reported' => date('Y-m-d H:i:s'),
 	]);
 
+	$db->insert('pepban_audit_log', [
+		'actor'       => 'client:' . $auth->id,
+		'action'      => 'api_report',
+		'target_type' => 'customer',
+		'target_id'   => $customer_id,
+		'details'     => $email . ' via ' . ($auth->site_url ?? ''),
+		'created_at'  => date('Y-m-d H:i:s'),
+	]);
 	ApiAuth::json(['success' => true, 'customer_id' => $customer_id]);
 }
 

@@ -20,6 +20,7 @@
 			'banned'    => 'Banned Customers',
 			'clients'   => 'Clients',
 			'import'    => 'Bulk Import',
+			'audit'     => 'Audit Log',
 			'security'  => 'Security',
 			'settings'  => 'Settings',
 		];

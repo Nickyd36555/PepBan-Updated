@@ -10,7 +10,7 @@ require_once __DIR__ . '/includes/functions.php';
 Auth::start();
 
 // Run schema migrations once per deploy (flag file prevents repeat queries)
-$_migration_flag = __DIR__ . '/.db_migrated_v3';
+$_migration_flag = __DIR__ . '/.db_migrated_v4';
 if (!file_exists($_migration_flag)) {
 	try { Database::maybe_migrate(); file_put_contents($_migration_flag, date('c')); } catch (Throwable $e) {}
 }
@@ -73,10 +73,12 @@ if (str_starts_with($path, '/admin')) {
 // ── Public routes ─────────────────────────────────────────────────────────────
 $routes = [
 	'/'                 => 'pages/home.php',
+	'/plugin'           => 'pages/plugin.php',
 	'/signup'           => 'pages/signup.php',
 	'/login'            => 'pages/login.php',
 	'/logout'           => 'pages/logout.php',
 	'/portal'           => 'pages/portal.php',
+	'/account'          => 'pages/account.php',
 	'/faq'              => 'pages/faq.php',
 	'/changelog'        => 'pages/changelog.php',
 	'/contact'          => 'pages/contact.php',
