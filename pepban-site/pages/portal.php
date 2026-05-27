@@ -67,47 +67,33 @@ function pepbanCopyKey(btn){var t=document.getElementById('pepban-key-text').tex
 	<span class="pepban-portal-status pepban-status-<?= e($status) ?>"><?= e(ucfirst($status)) ?></span>
 </div>
 
-<div class="pepban-portal-grid">
-	<div class="pepban-card">
-		<div class="pepban-card-header">
-			<div class="pepban-card-icon">&#127968;</div>
-			<h3>Your Store</h3>
-		</div>
-		<div class="pepban-card-inner">
-			<div class="pepban-info-row">
-				<span class="pepban-info-label">URL</span>
-				<span class="pepban-info-value"><?= e($client->site_url) ?></span>
-			</div>
-			<div class="pepban-info-row">
-				<span class="pepban-info-label">Member since</span>
-				<span class="pepban-info-value"><?= date('M j, Y', strtotime($client->created_at)) ?></span>
-			</div>
-		</div>
+<div class="pepban-card pepban-card-wide">
+	<div class="pepban-card-header">
+		<div class="pepban-card-icon">&#127968;</div>
+		<h3>Your Store</h3>
 	</div>
-	<div class="pepban-card">
-		<div class="pepban-card-header">
-			<div class="pepban-card-icon">&#128273;</div>
-			<h3>API Key</h3>
+	<div class="pepban-card-inner pepban-card-inner-cols">
+		<div class="pepban-info-row">
+			<span class="pepban-info-label">Store URL</span>
+			<span class="pepban-info-value"><?= e($client->site_url) ?></span>
 		</div>
-		<div class="pepban-card-inner">
-			<div class="pepban-info-row">
-				<span class="pepban-info-label">API Key</span>
-				<span class="pepban-info-value">
-					<?php if ($client->api_key): ?>
-					<div class="pepban-key-inline">
-						<code id="pepban-portal-key"><?= e($client->api_key) ?></code>
-						<button type="button" class="pepban-copy-btn pepban-copy-sm" onclick="pepbanCopyPortalKey(this)">Copy</button>
-					</div>
-					<?php else: ?>
-					<code><?= e($client->api_key_prefix) ?>&hellip;</code>
-					<small style="display:block;margin-top:4px;color:var(--muted)">Regenerate your key to reveal the full value.</small>
-					<?php endif; ?>
-				</span>
-			</div>
-			<div class="pepban-info-row">
-				<span class="pepban-info-label">Hub URL</span>
-				<span class="pepban-info-value"><code><?= e(SITE_URL) ?></code></span>
-			</div>
+		<div class="pepban-info-row">
+			<span class="pepban-info-label">Member since</span>
+			<span class="pepban-info-value"><?= date('M j, Y', strtotime($client->created_at)) ?></span>
+		</div>
+		<div class="pepban-info-row">
+			<span class="pepban-info-label">API Key</span>
+			<span class="pepban-info-value">
+				<?php if ($client->api_key): ?>
+				<div class="pepban-key-inline">
+					<code id="pepban-portal-key"><?= e($client->api_key) ?></code>
+					<button type="button" class="pepban-copy-btn pepban-copy-sm" onclick="pepbanCopyPortalKey(this)">Copy</button>
+				</div>
+				<?php else: ?>
+				<code><?= e($client->api_key_prefix) ?>&hellip;</code>
+				<small style="display:block;margin-top:4px;color:var(--muted)">Regenerate your key to reveal the full value.</small>
+				<?php endif; ?>
+			</span>
 		</div>
 	</div>
 </div>
@@ -126,9 +112,7 @@ function pepbanCopyKey(btn){var t=document.getElementById('pepban-key-text').tex
 		<li>Download the zip file above</li>
 		<li>In your store: go to <strong>Plugins &rarr; Add New &rarr; Upload Plugin</strong></li>
 		<li>Upload the zip, click <strong>Install Now</strong>, then <strong>Activate</strong></li>
-		<li>Go to <strong>PepBan &rarr; Settings</strong> and enter:<br>
-			<strong>Hub URL:</strong> <code><?= e(SITE_URL) ?></code><br>
-			<strong>API Key:</strong> your key from above or from your welcome email</li>
+		<li>Go to <strong>PepBan &rarr; Settings</strong> and enter your <strong>API Key</strong> from above</li>
 		<li>Save &mdash; you should see a green <strong>Connected</strong> status &#10003;</li>
 	</ol>
 </div>

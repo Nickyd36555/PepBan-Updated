@@ -872,15 +872,6 @@ code {
 .pepban-status-suspended { background: var(--red-dim); color: #f87171; border: 1px solid var(--red-border); }
 
 /* ── Portal grid ─────────────────────────────────────────────────────────────── */
-.pepban-portal-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-@media (max-width: 640px) {
-  .pepban-portal-grid { grid-template-columns: 1fr; }
-}
 
 /* ── Cards ───────────────────────────────────────────────────────────────────── */
 .pepban-card {
@@ -902,6 +893,15 @@ code {
 .pepban-card-header h3 { font-size: .95rem; font-weight: 700; color: var(--text); }
 .pepban-card-icon { font-size: 1.2rem; }
 .pepban-card-inner { padding: 16px 20px; }
+.pepban-card-wide { margin-bottom: 24px; }
+.pepban-card-inner-cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 24px; }
+.pepban-card-inner-cols .pepban-info-row { flex-direction: column; gap: 4px; border-bottom: none; border-right: 1px solid var(--border); padding-right: 24px; }
+.pepban-card-inner-cols .pepban-info-row:last-child { border-right: none; padding-right: 0; }
+@media (max-width: 700px) {
+  .pepban-card-inner-cols { grid-template-columns: 1fr; }
+  .pepban-card-inner-cols .pepban-info-row { border-right: none; border-bottom: 1px solid var(--border); padding-right: 0; flex-direction: row; justify-content: space-between; }
+  .pepban-card-inner-cols .pepban-info-row:last-child { border-bottom: none; }
+}
 .pepban-info-row {
   display: flex;
   align-items: flex-start;
