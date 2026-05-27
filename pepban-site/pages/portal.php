@@ -4,6 +4,24 @@ $client  = Auth::client();
 $new_key = $_SESSION['new_api_key'] ?? null;
 unset($_SESSION['new_api_key']);
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('action') === 'send_feedback') {
+	verify_csrf();
+	$msg = trim(post('feedback_message'));
+	if (strlen($msg) >= 10) {
+		Database::get()->insert('pepban_feedback', [
+			'client_id'    => $client->id,
+			'client_email' => $client->owner_email,
+			'message'      => $msg,
+			'created_at'   => date('Y-m-d H:i:s'),
+		]);
+		Mailer::adminFeedback($client->owner_name, $client->owner_email, $client->site_url, $msg);
+		flash('success', 'Thanks for your feedback!');
+	} else {
+		flash('error', 'Message too short — please write at least 10 characters.');
+	}
+	redirect('/portal');
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('action') === 'regen_key') {
 	verify_csrf();
 	if (!isset($_POST['confirm'])) redirect('/portal');
@@ -172,6 +190,17 @@ $recent_reports = Database::get()->fetchAll('SELECT r.date_reported, r.reason, b
 	<p>Your account is awaiting admin approval. You'll get an email the moment it's activated.</p>
 </div>
 <?php endif; ?>
+
+<div class="pepban-regen-section">
+	<h3>Share Feedback</h3>
+	<p>Have a feature request, bug report, or general comment? We read everything.</p>
+	<form method="post">
+		<?= csrf_field() ?>
+		<input type="hidden" name="action" value="send_feedback">
+		<textarea name="feedback_message" rows="4" placeholder="Your message…" style="width:100%;box-sizing:border-box;background:var(--bg-card-hover);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:12px;font-size:.9rem;resize:vertical;margin-bottom:10px"></textarea>
+		<button type="submit" class="pepban-btn pepban-btn-secondary">Send Feedback</button>
+	</form>
+</div>
 
 <div class="pepban-regen-section">
 	<h3>Lost your API key?</h3>

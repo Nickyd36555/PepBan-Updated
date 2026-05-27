@@ -94,5 +94,14 @@ class Database {
 			details     TEXT         NOT NULL,
 			created_at  DATETIME     NOT NULL
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+		// feedback table
+		$db->query("CREATE TABLE IF NOT EXISTS pepban_feedback (
+			id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			client_id    INT UNSIGNED NOT NULL DEFAULT 0,
+			client_email VARCHAR(255) NOT NULL DEFAULT '',
+			message      TEXT         NOT NULL,
+			created_at   DATETIME     NOT NULL,
+			read_at      DATETIME     DEFAULT NULL
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 	}
 }

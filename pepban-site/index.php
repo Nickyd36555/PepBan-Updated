@@ -9,8 +9,40 @@ require_once __DIR__ . '/includes/functions.php';
 
 Auth::start();
 
+// ── Global error / exception handlers ────────────────────────────────────────
+set_exception_handler(function (Throwable $e) {
+	$msg = sprintf(
+		"Uncaught %s: %s\nFile: %s:%d\nURL: %s %s\nTime: %s\n\nTrace:\n%s",
+		get_class($e), $e->getMessage(),
+		$e->getFile(), $e->getLine(),
+		$_SERVER['REQUEST_METHOD'] ?? 'CLI',
+		$_SERVER['REQUEST_URI']    ?? '',
+		date('Y-m-d H:i:s'),
+		$e->getTraceAsString()
+	);
+	error_log($msg);
+	Mailer::adminError(get_class($e) . ' on ' . ($_SERVER['REQUEST_URI'] ?? ''), $msg);
+	http_response_code(500);
+	echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Error</title><style>body{background:#080810;color:#e8e8f5;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}.box{text-align:center;padding:48px}</style></head><body><div class="box"><h1>Something went wrong</h1><p style="color:#7070a0">The error has been reported. Please try again shortly.</p></div></body></html>';
+	exit;
+});
+register_shutdown_function(function () {
+	$e = error_get_last();
+	if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+		$msg = sprintf(
+			"Fatal error: %s\nFile: %s:%d\nURL: %s %s\nTime: %s",
+			$e['message'], $e['file'], $e['line'],
+			$_SERVER['REQUEST_METHOD'] ?? 'CLI',
+			$_SERVER['REQUEST_URI']    ?? '',
+			date('Y-m-d H:i:s')
+		);
+		error_log($msg);
+		Mailer::adminError('Fatal error on ' . ($_SERVER['REQUEST_URI'] ?? ''), $msg);
+	}
+});
+
 // Run schema migrations once per deploy (flag file prevents repeat queries)
-$_migration_flag = __DIR__ . '/.db_migrated_v4';
+$_migration_flag = __DIR__ . '/.db_migrated_v5';
 if (!file_exists($_migration_flag)) {
 	try { Database::maybe_migrate(); file_put_contents($_migration_flag, date('c')); } catch (Throwable $e) {}
 }

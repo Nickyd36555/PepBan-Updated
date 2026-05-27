@@ -91,6 +91,25 @@ class Mailer {
 		return (int)$r === 250;
 	}
 
+	public static function adminError(string $subject, string $body): void {
+		// Suppress all exceptions — error handler must never itself throw
+		try {
+			self::send(ADMIN_EMAIL, '[PepBan Error] ' . $subject, $body);
+		} catch (Throwable $e) {}
+	}
+
+	public static function adminFeedback(string $from_name, string $from_email, string $site, string $message): void {
+		self::send(
+			ADMIN_EMAIL,
+			'PepBan Feedback from ' . $from_name,
+			"New feedback submitted from your PepBan portal.\n\n" .
+			"From:    {$from_name} <{$from_email}>\n" .
+			"Store:   {$site}\n\n" .
+			"Message:\n{$message}\n\n" .
+			"— PepBan"
+		);
+	}
+
 	public static function welcome(object $client, string $raw_key): void {
 		$status = ($client->subscription_status === 'active')
 			? "Your account is active and ready to use."
