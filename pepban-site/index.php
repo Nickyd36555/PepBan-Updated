@@ -10,7 +10,7 @@ require_once __DIR__ . '/includes/functions.php';
 Auth::start();
 
 // Run schema migrations once per deploy (flag file prevents repeat queries)
-$_migration_flag = __DIR__ . '/.db_migrated_v2';
+$_migration_flag = __DIR__ . '/.db_migrated_v3';
 if (!file_exists($_migration_flag)) {
 	try { Database::maybe_migrate(); file_put_contents($_migration_flag, date('c')); } catch (Throwable $e) {}
 }

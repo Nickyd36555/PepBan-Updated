@@ -980,6 +980,9 @@ code {
 .pepban-copy-btn:hover { background: var(--border); color: var(--text); }
 .pepban-copy-done { background: rgba(34,197,94,0.2) !important; color: var(--green) !important; border-color: rgba(34,197,94,0.3) !important; }
 .pepban-key-note { color: var(--text-muted); font-size: .8rem; }
+.pepban-key-inline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pepban-key-inline code { font-size: .78rem; word-break: break-all; }
+.pepban-copy-sm { padding: 4px 10px; font-size: .75rem; }
 
 /* ── Download card ───────────────────────────────────────────────────────────── */
 .pepban-download-card {

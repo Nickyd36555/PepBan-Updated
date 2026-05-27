@@ -62,6 +62,7 @@ class Database {
 
 	public static function maybe_migrate(): void {
 		$db   = self::get();
+		// pepban_banned_customers columns
 		$rows = $db->fetchAll(
 			"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
 			 WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pepban_banned_customers'"
@@ -73,6 +74,15 @@ class Database {
 		}
 		if (!in_array('store_count', $cols, true)) {
 			$db->query("ALTER TABLE pepban_banned_customers ADD COLUMN store_count SMALLINT UNSIGNED NOT NULL DEFAULT 1 AFTER risk_score");
+		}
+		// pepban_clients columns
+		$rows2 = $db->fetchAll(
+			"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+			 WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pepban_clients'"
+		);
+		$cols2 = array_column(array_map(fn($r) => (array)$r, $rows2), 'COLUMN_NAME');
+		if (!in_array('api_key', $cols2, true)) {
+			$db->query("ALTER TABLE pepban_clients ADD COLUMN api_key VARCHAR(80) NOT NULL DEFAULT '' AFTER api_key_prefix");
 		}
 	}
 }

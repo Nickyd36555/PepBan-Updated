@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('action') === 'regen_key') {
 	Database::get()->update('pepban_clients', [
 		'api_key_hash'   => password_hash($raw_key, PASSWORD_DEFAULT),
 		'api_key_prefix' => substr($raw_key, 0, 8),
+		'api_key'        => $raw_key,
 	], ['id' => $client->id]);
 	Mailer::newKey($client, $raw_key);
 	$_SESSION['new_api_key'] = $raw_key;
@@ -90,8 +91,18 @@ function pepbanCopyKey(btn){var t=document.getElementById('pepban-key-text').tex
 		</div>
 		<div class="pepban-card-inner">
 			<div class="pepban-info-row">
-				<span class="pepban-info-label">Key prefix</span>
-				<span class="pepban-info-value"><code><?= e($client->api_key_prefix) ?>&hellip;</code></span>
+				<span class="pepban-info-label">API Key</span>
+				<span class="pepban-info-value">
+					<?php if ($client->api_key): ?>
+					<div class="pepban-key-inline">
+						<code id="pepban-portal-key"><?= e($client->api_key) ?></code>
+						<button type="button" class="pepban-copy-btn pepban-copy-sm" onclick="pepbanCopyPortalKey(this)">Copy</button>
+					</div>
+					<?php else: ?>
+					<code><?= e($client->api_key_prefix) ?>&hellip;</code>
+					<small style="display:block;margin-top:4px;color:var(--muted)">Regenerate your key to reveal the full value.</small>
+					<?php endif; ?>
+				</span>
 			</div>
 			<div class="pepban-info-row">
 				<span class="pepban-info-label">Hub URL</span>
@@ -151,4 +162,7 @@ function pepbanCopyKey(btn){var t=document.getElementById('pepban-key-text').tex
 </div>
 </div>
 
+<script>
+function pepbanCopyPortalKey(btn){var t=document.getElementById('pepban-portal-key').textContent;function d(){btn.textContent='✓ Copied!';btn.classList.add('pepban-copy-done');}if(navigator.clipboard){navigator.clipboard.writeText(t).then(d);}else{var el=document.createElement('textarea');el.value=t;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);d();}}
+</script>
 <?php require __DIR__ . '/../templates/layout-end.php'; ?>
