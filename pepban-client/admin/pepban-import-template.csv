@@ -1,0 +1,7 @@
+type,value,reason
+email,scammer@example.com,Chargeback fraud
+email,fraud123@gmail.com,Multiple chargebacks
+ip,192.168.1.100,Repeated abuse attempts
+ip,10.0.0.55,Fraudulent orders
+address,123 Fake Street,Suspicious billing address
+address,Springfield IL 62701,Block entire city/zip

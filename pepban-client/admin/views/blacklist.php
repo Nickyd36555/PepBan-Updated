@@ -64,7 +64,8 @@ $type_labels = array( 'email' => 'Email', 'ip' => 'IP Address', 'address' => 'Ad
 		<h3 style="margin-top:0;margin-bottom:4px">Bulk Import via CSV</h3>
 		<p class="description" style="margin-top:0;margin-bottom:12px">
 			CSV columns: <code>type, value, reason</code> &mdash; or single-column list of emails.<br>
-			Valid types: <code>email</code>, <code>ip</code>, <code>address</code>
+			Valid types: <code>email</code>, <code>ip</code>, <code>address</code><br>
+			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=pepban_download_template' ), 'pepban_download_template' ) ); ?>" style="font-weight:600">&#11015; Download example CSV template</a>
 		</p>
 		<input type="file" id="pepban-bl-csv-file" accept=".csv,text/csv"
 		       style="display:block;margin-bottom:10px">

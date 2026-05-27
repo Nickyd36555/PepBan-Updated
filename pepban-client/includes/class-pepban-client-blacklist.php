@@ -12,6 +12,7 @@ class PepBan_Client_Blacklist {
 		add_action( 'wp_ajax_pepban_blacklist_remove',     array( __CLASS__, 'ajax_remove' ) );
 		add_action( 'wp_ajax_pepban_blacklist_report',     array( __CLASS__, 'ajax_report_to_hub' ) );
 		add_action( 'wp_ajax_pepban_blacklist_import_csv', array( __CLASS__, 'ajax_import_csv' ) );
+		add_action( 'admin_post_pepban_download_template', array( __CLASS__, 'download_template' ) );
 		add_action( 'wp_ajax_pepban_whitelist_local_add',  array( __CLASS__, 'ajax_whitelist_add' ) );
 		add_action( 'wp_ajax_pepban_whitelist_local_remove', array( __CLASS__, 'ajax_whitelist_remove' ) );
 	}
@@ -308,5 +309,26 @@ class PepBan_Client_Blacklist {
 		update_option( self::OPTION_KEY, $customers );
 
 		wp_send_json_success( array( 'message' => 'Reported to PepBan network.' ) );
+	}
+
+	public static function download_template() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Unauthorized', 403 );
+		}
+		check_admin_referer( 'pepban_download_template' );
+
+		$csv = "type,value,reason\n"
+			. "email,scammer@example.com,Chargeback fraud\n"
+			. "email,fraud123@gmail.com,Multiple chargebacks\n"
+			. "ip,192.168.1.100,Repeated abuse attempts\n"
+			. "ip,10.0.0.55,Fraudulent orders\n"
+			. "address,123 Fake Street,Suspicious billing address\n"
+			. "address,Springfield IL 62701,Block entire city or zip\n";
+
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="pepban-import-template.csv"' );
+		header( 'Cache-Control: no-cache, no-store, must-revalidate' );
+		echo $csv;
+		exit;
 	}
 }
