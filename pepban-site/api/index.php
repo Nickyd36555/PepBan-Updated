@@ -249,57 +249,16 @@ if ($segment === 'blocked-ips' && $method === 'GET') {
 
 // ── GET /api/v1/plugin/info ───────────────────────────────────────────────────
 if ($segment === 'plugin/info' && $method === 'GET') {
-	// Generate a time-based HMAC token valid for 24 h (two 12-hour buckets checked at download)
+	require_once __DIR__ . '/../includes/plugin-release.php';
 	$bucket = (string) floor(time() / (12 * 3600));
 	$token  = hash_hmac('sha256', 'dl:' . $bucket, SECRET_KEY);
 	ApiAuth::json([
 		'version'      => PEPBAN_PLUGIN_VERSION,
 		'download_url' => rtrim(SITE_URL, '/') . '/download/client?token=' . $token,
 		'details_url'  => rtrim(SITE_URL, '/') . '/changelog',
-		'description'  => '<p><strong>PepBan</strong> connects your WooCommerce store to the centralized PepBan ban database — shared across all member peptide stores.</p>'
-			. '<h4>Features</h4><ul>'
-			. '<li>Automatically blocks banned customers at checkout by email, phone, IP, or billing address</li>'
-			. '<li>One-click reporting from the WooCommerce order screen</li>'
-			. '<li>Per-site blacklist and whitelist — block or allow customers on your store only</li>'
-			. '<li>Bulk CSV import — add multiple bans to your local blacklist at once</li>'
-			. '<li>Global IP and domain blocking — hub-level bans checked at every checkout</li>'
-			. '<li>Order admin notice shows how many stores have reported the customer</li>'
-			. '<li>Automatic updates delivered directly from pepban.com</li>'
-			. '</ul>',
-		'installation' => '<ol>'
-			. '<li>Download the plugin ZIP from your <a href="' . rtrim(SITE_URL, '/') . '/portal">PepBan portal</a>.</li>'
-			. '<li>In WordPress go to <strong>Plugins → Add New → Upload Plugin</strong> and upload the ZIP.</li>'
-			. '<li>Activate the plugin.</li>'
-			. '<li>Go to <strong>PepBan → Settings</strong> and enter your API key.</li>'
-			. '</ol>',
-		'changelog'    => '<h4>v1.2.2</h4><ul>'
-			. '<li>Fix: orders are now marked failed (not trashed) when a banned customer is caught at the safety-net — prevents conflicts with payment gateways</li>'
-			. '<li>Fix: API is called only once per checkout regardless of which hooks fire — eliminates duplicate lookups</li>'
-			. '<li>Fix: saving settings no longer wipes fields added by future versions</li>'
-			. '<li>Fix: removed unregistered AJAX handler that could cause a fatal error</li>'
-			. '</ul>'
-			. '<h4>v1.2.1</h4><ul>'
-			. '<li>Fix: "Check by Phone" label corrected in settings</li>'
-			. '</ul>'
-			. '<h4>v1.2.0</h4><ul>'
-			. '<li>Bulk CSV import on the local blacklist page — add emails, IPs, or addresses in bulk</li>'
-			. '<li>Order admin notice now shows total reports and stores that reported the customer</li>'
-			. '<li>Check IP Address and Check Billing Address are now separate toggles in settings</li>'
-			. '</ul>'
-			. '<h4>v1.1.4</h4><ul>'
-			. '<li>Billing address blocked/whitelisted by Street, City, State, and ZIP separately</li>'
-			. '<li>Local whitelist: allow customers by email, IP, or billing address — overrides all blocking</li>'
-			. '</ul>'
-			. '<h4>v1.1.3</h4><ul>'
-			. '<li>Blacklist now supports Email, IP Address, and Billing Address — block any combination at once</li>'
-			. '<li>Global IP blocking checked at checkout via the hub API</li>'
-			. '<li>All checkout hooks check IP and address against the local blacklist</li>'
-			. '</ul>'
-			. '<h4>v1.1.2</h4><ul>'
-			. '<li>Per-site customer blacklist</li>'
-			. '<li>Report to PepBan button — escalate local bans to the global network</li>'
-			. '<li>Per-site domain blacklist</li>'
-			. '</ul>',
+		'description'  => pepban_plugin_description(),
+		'installation' => pepban_plugin_installation(),
+		'changelog'    => pepban_plugin_changelog_html(),
 	]);
 }
 

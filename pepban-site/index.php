@@ -6,6 +6,7 @@ require_once __DIR__ . '/includes/Auth.php';
 require_once __DIR__ . '/includes/ApiAuth.php';
 require_once __DIR__ . '/includes/Mailer.php';
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/plugin-release.php';
 
 Auth::start();
 
