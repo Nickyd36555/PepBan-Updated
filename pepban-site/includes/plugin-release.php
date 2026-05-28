@@ -38,9 +38,17 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.4.0',
+			'version' => '1.4.1',
 			'date'    => 'May 2025',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Fix', 'text' => 'Admin sidebar icon: PB text now correctly centered within the shield'],
+			],
+		],
+		[
+			'version' => '1.4.0',
+			'date'    => 'May 2025',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'New',      'text' => 'Ban appeal URL — add a contact/dispute link that is automatically appended to the block message shown to banned customers, reducing chargebacks'],
 				['tag' => 'New',      'text' => 'Auto-report on block — optional setting that automatically reports a blocked customer back to the PepBan network, closing the feedback loop across all member stores'],

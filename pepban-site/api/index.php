@@ -95,14 +95,17 @@ if ($segment === 'report' && $method === 'POST') {
 			[$customer_id]
 		);
 	} else {
+		$first_name  = $body->first_name ?? '';
+		$last_name   = $body->last_name  ?? '';
+		$ban_reason  = $body->reason     ?? '';
 		$customer_id = $db->insert('pepban_banned_customers', [
 			'email'              => $email,
-			'first_name'         => $body->first_name ?? '',
-			'last_name'          => $body->last_name  ?? '',
+			'first_name'         => $first_name,
+			'last_name'          => $last_name,
 			'phone'              => $body->phone       ?? '',
 			'billing_address'    => $body->billing_address ?? '',
 			'ip_address'         => $body->ip_address  ?? '',
-			'reason'             => $body->reason      ?? '',
+			'reason'             => $ban_reason,
 			'reported_by_site'   => $auth->site_url,
 			'reported_by_client' => $auth->id,
 			'date_added'         => date('Y-m-d H:i:s'),
@@ -111,6 +114,7 @@ if ($segment === 'report' && $method === 'POST') {
 			'admin_notes'        => '',
 			'reports_count'      => 1,
 		]);
+		Mailer::adminNewBan($email, trim($first_name . ' ' . $last_name), $ban_reason, $auth->site_url ?? 'API');
 	}
 
 	// Insert report record

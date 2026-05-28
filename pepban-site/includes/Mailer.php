@@ -110,6 +110,21 @@ class Mailer {
 		);
 	}
 
+	public static function adminNewBan(string $email, string $name, string $reason, string $reported_by): void {
+		$admin_url = (defined('APP_URL') ? rtrim(APP_URL, '/') : 'https://pepban.com') . '/admin/banned';
+		self::send(
+			ADMIN_EMAIL,
+			'PepBan — New Customer Banned: ' . $email,
+			"A customer has been added to the ban list.\n\n" .
+			"Email:       {$email}\n" .
+			"Name:        {$name}\n" .
+			"Reason:      {$reason}\n" .
+			"Reported by: {$reported_by}\n\n" .
+			"View in admin: {$admin_url}\n\n" .
+			"— PepBan"
+		);
+	}
+
 	public static function adminNewSignup(object $client): void {
 		$admin_url = (defined('APP_URL') ? rtrim(APP_URL, '/') : 'https://pepban.com') . '/admin/clients';
 		self::send(
