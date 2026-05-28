@@ -209,7 +209,7 @@ if ($segment === 'status' && $method === 'GET') {
 
 // ── GET /api/v1/blocked-domains ──────────────────────────────────────────────
 if ($segment === 'blocked-domains' && $method === 'GET') {
-	$rows = $db->fetchAll('SELECT id, domain, reason, date_added FROM pepban_blocked_domains ORDER BY date_added DESC');
+	$rows = $db->fetchAll('SELECT domain, reason FROM pepban_blocked_domains ORDER BY domain ASC');
 	ApiAuth::json(['blocked_domains' => $rows]);
 }
 
