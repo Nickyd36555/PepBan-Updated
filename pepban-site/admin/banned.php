@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		]);
 		audit('ban_add', 'customer', $new_id, post('email'));
 		Mailer::adminNewBan(post('email'), trim(post('first_name') . ' ' . post('last_name')), post('reason'), 'admin');
-		flash('success', 'Customer added to ban list.');
+		admin_flash('success', 'Customer added to ban list.');
 		redirect('/admin/banned');
 	}
 
@@ -78,14 +78,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			'last_updated'    => date('Y-m-d H:i:s'),
 		], ['id' => $id]);
 		audit('ban_edit', 'customer', $id, post('email'));
-		flash('success', 'Customer updated.');
+		admin_flash('success', 'Customer updated.');
 		redirect('/admin/banned?action=view&id=' . $id);
 	}
 
 	if ($act === 'dismiss_review' && $id) {
 		$db->update('pepban_banned_customers', ['flagged_for_review' => 0, 'last_updated' => date('Y-m-d H:i:s')], ['id' => $id]);
 		audit('dismiss_review', 'customer', $id, '');
-		flash('success', 'Review flag dismissed.');
+		admin_flash('success', 'Review flag dismissed.');
 		redirect('/admin/banned?action=view&id=' . $id);
 	}
 
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			['id' => $id]
 		);
 		audit('status_change', 'customer', $id, post('status'));
-		flash('success', 'Status updated.');
+		admin_flash('success', 'Status updated.');
 		redirect('/admin/banned?action=view&id=' . $id);
 	}
 
@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$db->query('DELETE FROM pepban_ban_reports WHERE customer_id = ?', [$id]);
 		$db->query('DELETE FROM pepban_whitelists WHERE customer_id = ?', [$id]);
 		audit('ban_delete', 'customer', $id, $gone->email ?? '');
-		flash('success', 'Customer permanently removed.');
+		admin_flash('success', 'Customer permanently removed.');
 		redirect('/admin/banned');
 	}
 }

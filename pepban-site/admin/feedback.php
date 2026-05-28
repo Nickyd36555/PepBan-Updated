@@ -10,14 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		foreach ($ids as $fid) {
 			$db->update('pepban_feedback', ['read_at' => date('Y-m-d H:i:s')], ['id' => (int)$fid]);
 		}
-		flash('success', 'Marked as read.');
+		admin_flash('success', 'Marked as read.');
 		redirect('/admin/feedback');
 	}
 
 	if ($act === 'delete') {
 		$fid = (int) post('id');
 		if ($fid) $db->delete('pepban_feedback', ['id' => $fid]);
-		flash('success', 'Deleted.');
+		admin_flash('success', 'Deleted.');
 		redirect('/admin/feedback');
 	}
 }

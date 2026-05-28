@@ -43,3 +43,6 @@
 		<h1><?= e($page_title ?? 'Dashboard') ?></h1>
 	</header>
 	<div class="pb-content">
+<?php foreach (get_admin_flashes() as $_af): ?>
+<div class="pb-alert pb-alert-<?= e($_af['type']) ?>"><?= e($_af['message']) ?></div>
+<?php endforeach; ?>

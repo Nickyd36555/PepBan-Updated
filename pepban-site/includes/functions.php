@@ -68,6 +68,16 @@ function get_flashes(): array {
 	return $f;
 }
 
+function admin_flash(string $type, string $message): void {
+	$_SESSION['admin_flash'][] = compact('type', 'message');
+}
+
+function get_admin_flashes(): array {
+	$f = $_SESSION['admin_flash'] ?? [];
+	unset($_SESSION['admin_flash']);
+	return $f;
+}
+
 // ── API key generation ────────────────────────────────────────────────────────
 
 function generate_api_key(): string {

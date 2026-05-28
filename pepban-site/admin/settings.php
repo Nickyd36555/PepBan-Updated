@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$lines[] = '';
 
 	file_put_contents(__DIR__ . '/../config.local.php', implode("\n", $lines));
-	flash('success', 'Settings saved. Reload config by refreshing the page.');
+	admin_flash('success', 'Settings saved. Reload config by refreshing the page.');
 	redirect('/admin/settings');
 }
 

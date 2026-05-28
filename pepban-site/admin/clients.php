@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			require_once __DIR__ . '/../includes/Mailer.php';
 			Mailer::activated($client);
 		}
-		flash('success', 'Client activated.');
+		admin_flash('success', 'Client activated.');
 		redirect('/admin/clients?action=view&id=' . $id);
 	}
 
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			['subscription_status' => 'inactive'],
 			['id' => $id]
 		);
-		flash('success', 'Client deactivated.');
+		admin_flash('success', 'Client deactivated.');
 		redirect('/admin/clients?action=view&id=' . $id);
 	}
 
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			['subscription_status' => 'suspended'],
 			['id' => $id]
 		);
-		flash('success', 'Client suspended.');
+		admin_flash('success', 'Client suspended.');
 		redirect('/admin/clients?action=view&id=' . $id);
 	}
 
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			], ['id' => $id]);
 			require_once __DIR__ . '/../includes/Mailer.php';
 			Mailer::newKey($client, $raw_key);
-			flash('success', 'API key regenerated and emailed to ' . $client->owner_email . '.');
+			admin_flash('success', 'API key regenerated and emailed to ' . $client->owner_email . '.');
 		}
 		redirect('/admin/clients?action=view&id=' . $id);
 	}
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if ($act === 'delete' && $id) {
 		$db->query('DELETE FROM pepban_whitelists WHERE client_id = ?', [$id]);
 		$db->delete('pepban_clients', ['id' => $id]);
-		flash('success', 'Client permanently deleted.');
+		admin_flash('success', 'Client permanently deleted.');
 		redirect('/admin/clients');
 	}
 
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			['admin_notes' => post('admin_notes')],
 			['id' => $id]
 		);
-		flash('success', 'Notes saved.');
+		admin_flash('success', 'Notes saved.');
 		redirect('/admin/clients?action=view&id=' . $id);
 	}
 }
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($action === 'view' && $id) {
 	$client = $db->fetch('SELECT * FROM pepban_clients WHERE id = ?', [$id]);
 	if (!$client) {
-		flash('error', 'Client not found.');
+		admin_flash('error', 'Client not found.');
 		redirect('/admin/clients');
 	}
 

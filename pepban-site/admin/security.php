@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $reason = trim(post('reason'));
 
         if ($domain === '') {
-            flash('error', 'Domain is required.');
+            admin_flash('error', 'Domain is required.');
             redirect('/admin/security');
         }
 
@@ -24,9 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'reason'     => $reason,
                 'date_added' => date('Y-m-d H:i:s'),
             ]);
-            flash('success', 'Domain "' . $domain . '" has been blocked.');
+            admin_flash('success', 'Domain "' . $domain . '" has been blocked.');
         } catch (Exception $e) {
-            flash('error', 'Could not add domain — it may already be blocked.');
+            admin_flash('error', 'Could not add domain — it may already be blocked.');
         }
         redirect('/admin/security');
     }
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $did = (int) get_param('did');
         if ($did) {
             $db->delete('pepban_blocked_domains', ['id' => $did]);
-            flash('success', 'Domain removed from blocklist.');
+            admin_flash('success', 'Domain removed from blocklist.');
         }
         redirect('/admin/security');
     }
@@ -47,12 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $reason     = trim(post('reason'));
 
         if ($ip_address === '') {
-            flash('error', 'IP address is required.');
+            admin_flash('error', 'IP address is required.');
             redirect('/admin/security');
         }
 
         if (!filter_var($ip_address, FILTER_VALIDATE_IP)) {
-            flash('error', 'Invalid IP address format.');
+            admin_flash('error', 'Invalid IP address format.');
             redirect('/admin/security');
         }
 
@@ -62,9 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'reason'     => $reason,
                 'date_added' => date('Y-m-d H:i:s'),
             ]);
-            flash('success', 'IP "' . $ip_address . '" has been blocked.');
+            admin_flash('success', 'IP "' . $ip_address . '" has been blocked.');
         } catch (Exception $e) {
-            flash('error', 'Could not add IP — it may already be blocked.');
+            admin_flash('error', 'Could not add IP — it may already be blocked.');
         }
         redirect('/admin/security');
     }
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $iid = (int) get_param('iid');
         if ($iid) {
             $db->delete('pepban_blocked_ips', ['id' => $iid]);
-            flash('success', 'IP address removed from blocklist.');
+            admin_flash('success', 'IP address removed from blocklist.');
         }
         redirect('/admin/security');
     }
