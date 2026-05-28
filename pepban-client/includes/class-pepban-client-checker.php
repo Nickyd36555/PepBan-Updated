@@ -48,15 +48,12 @@ class PepBan_Client_Checker {
 			) ) ) )
 			: '';
 
-		$message = PepBan_Client_Settings::get( 'block_message', '' );
-		if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
-
 		if ( PepBan_Client_Blacklist::is_whitelisted_locally( $email, $ip, $address ) ) return;
 
-		if ( $email   && PepBan_Client_Blacklist::is_blocked( $email ) )            { wc_add_notice( $message, 'error' ); return; }
-		if ( $ip      && PepBan_Client_Blacklist::is_blocked_ip( $ip ) )            { wc_add_notice( $message, 'error' ); return; }
-		if ( $address && PepBan_Client_Blacklist::is_blocked_address( $address ) )  { wc_add_notice( $message, 'error' ); return; }
-		if ( $email   && PepBan_Client_Domains::is_blocked( $email ) )              { wc_add_notice( $message, 'error' ); return; }
+		if ( $email   && PepBan_Client_Blacklist::is_blocked( $email ) )            { wc_add_notice( self::get_block_message(), 'error' ); return; }
+		if ( $ip      && PepBan_Client_Blacklist::is_blocked_ip( $ip ) )            { wc_add_notice( self::get_block_message(), 'error' ); return; }
+		if ( $address && PepBan_Client_Blacklist::is_blocked_address( $address ) )  { wc_add_notice( self::get_block_message(), 'error' ); return; }
+		if ( $email   && PepBan_Client_Domains::is_blocked( $email ) )              { wc_add_notice( self::get_block_message(), 'error' ); return; }
 
 		$result = self::api_check( $email, $phone, $first_name, $last_name, $ip );
 
@@ -68,11 +65,7 @@ class PepBan_Client_Checker {
 		}
 
 		if ( ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
-			$message = PepBan_Client_Settings::get( 'block_message', '' );
-			if ( empty( $message ) ) {
-				$message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
-			}
-			wc_add_notice( $message, 'error' );
+			wc_add_notice( self::get_block_message(), 'error' );
 		}
 	}
 
@@ -112,8 +105,7 @@ class PepBan_Client_Checker {
 		}
 
 		if ( $blocked ) {
-			$message = PepBan_Client_Settings::get( 'block_message', '' );
-			if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
+			$message = self::get_block_message();
 
 			// Mark failed so payment gateways see a terminal state — do NOT trash,
 			// as gateways may still hold a reference to this order ID.
@@ -134,16 +126,13 @@ class PepBan_Client_Checker {
 
 		if ( empty( $email ) && empty( $phone ) ) return;
 
-		$message = PepBan_Client_Settings::get( 'block_message', '' );
-		if ( empty( $message ) ) $message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
-
 		if ( $email && PepBan_Client_Blacklist::is_blocked( $email ) ) {
-			$errors->add( 'pepban_blocked', $message );
+			$errors->add( 'pepban_blocked', self::get_block_message() );
 			return;
 		}
 
 		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
-			$errors->add( 'pepban_blocked', $message );
+			$errors->add( 'pepban_blocked', self::get_block_message() );
 			return;
 		}
 
@@ -156,7 +145,7 @@ class PepBan_Client_Checker {
 		);
 
 		if ( ! is_wp_error( $result ) && ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
-			$errors->add( 'pepban_banned', $message );
+			$errors->add( 'pepban_banned', self::get_block_message() );
 		}
 	}
 
@@ -168,8 +157,7 @@ class PepBan_Client_Checker {
 		if ( empty( $email ) && empty( $phone ) ) return;
 
 		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
-			$message = PepBan_Client_Settings::get( 'block_message', 'You have been reported as a scammer. Please contact site admin or admin@pepban.com' );
-			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', $message, 400 );
+			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', self::get_block_message(), 400 );
 		}
 
 		$result = self::api_check(
@@ -181,12 +169,7 @@ class PepBan_Client_Checker {
 		);
 
 		if ( ! is_wp_error( $result ) && ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
-			$message = PepBan_Client_Settings::get( 'block_message', 'You have been reported as a scammer. Please contact site admin or admin@pepban.com' );
-			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException(
-				'pepban_banned',
-				$message,
-				400
-			);
+			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', self::get_block_message(), 400 );
 		}
 	}
 
@@ -222,10 +205,44 @@ class PepBan_Client_Checker {
 		<?php
 	}
 
+	// Returns the block message, appending an appeal link if one is configured.
+	private static function get_block_message(): string {
+		$message = PepBan_Client_Settings::get( 'block_message', '' );
+		if ( empty( $message ) ) {
+			$message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
+		}
+		$appeal = PepBan_Client_Settings::get( 'appeal_url', '' );
+		if ( $appeal ) {
+			$message .= ' <a href="' . esc_url( $appeal ) . '">Contact us to dispute this.</a>';
+		}
+		return $message;
+	}
+
 	private static function api_check( string $email, string $phone, string $first = '', string $last = '', string $ip = '' ) {
 		$key = md5( $email . '|' . $phone );
 		if ( ! isset( self::$check_cache[ $key ] ) ) {
-			self::$check_cache[ $key ] = PepBan_Client_API::check_customer( $email, $phone, $first, $last, $ip );
+			$result = PepBan_Client_API::check_customer( $email, $phone, $first, $last, $ip );
+			self::$check_cache[ $key ] = $result;
+
+			// Auto-report on block: silently report once per hour per email
+			if ( PepBan_Client_Settings::get( 'auto_report_on_flag', false )
+				&& ! is_wp_error( $result )
+				&& ! empty( $result['banned'] )
+				&& empty( $result['whitelisted'] )
+			) {
+				$tkey = 'pepban_auto_rep_' . md5( $email );
+				if ( ! get_transient( $tkey ) ) {
+					PepBan_Client_API::report_customer( array_filter( array(
+						'email'      => $email,
+						'phone'      => $phone,
+						'first_name' => $first,
+						'last_name'  => $last,
+						'ip_address' => $ip,
+						'reason'     => 'Auto-reported: customer blocked at checkout',
+					) ) );
+					set_transient( $tkey, 1, HOUR_IN_SECONDS );
+				}
+			}
 		}
 		return self::$check_cache[ $key ];
 	}

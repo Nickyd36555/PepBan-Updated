@@ -58,8 +58,22 @@ $connection_status = PepBan_Client_Settings::test_connection();
 				<th><label for="block_message">Block Message</label></th>
 				<td>
 					<textarea name="block_message" id="block_message" rows="3" class="regular-text"><?php echo esc_textarea( $settings['block_message'] ?? '' ); ?></textarea>
-					<p class="description">Message shown to blocked customers. Leave blank for the default.</p>
+					<p class="description">Message shown to blocked customers. Leave blank for the default. If an Appeal URL is set, a link is appended automatically.</p>
 				</td>
+			</tr>
+			<tr>
+				<th><label for="appeal_url">Ban Appeal / Contact URL</label></th>
+				<td>
+					<input type="url" name="appeal_url" id="appeal_url" class="regular-text"
+						value="<?php echo esc_attr( $settings['appeal_url'] ?? '' ); ?>"
+						placeholder="https://your-store.com/contact">
+					<p class="description">Optional. If set, blocked customers see a "Contact us to dispute" link appended to the block message. Helps reduce chargebacks.</p>
+				</td>
+			</tr>
+			<tr>
+				<th>Auto-Report on Block</th>
+				<td><label><input type="checkbox" name="auto_report_on_flag" value="1" <?php checked( $settings['auto_report_on_flag'] ?? false ); ?>> Automatically report a customer to the PepBan network when the hub blocks them at checkout</label>
+				<p class="description">Closes the feedback loop — confirms the ban across every member store without manual action.</p></td>
 			</tr>
 		</table>
 

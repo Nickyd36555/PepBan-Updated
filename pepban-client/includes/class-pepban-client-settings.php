@@ -91,6 +91,7 @@ class PepBan_Client_Settings {
 			'api_key'              => sanitize_text_field( wp_unslash( $_POST['api_key'] ?? '' ) ),
 			'block_on_ban'         => ! empty( $_POST['block_on_ban'] ),
 			'block_message'        => sanitize_textarea_field( wp_unslash( $_POST['block_message'] ?? '' ) ),
+			'appeal_url'           => esc_url_raw( wp_unslash( $_POST['appeal_url'] ?? '' ) ),
 			'check_email'          => ! empty( $_POST['check_email'] ),
 			'check_phone'          => ! empty( $_POST['check_phone'] ),
 			'check_ip'             => ! empty( $_POST['check_ip'] ),

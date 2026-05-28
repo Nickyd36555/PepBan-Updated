@@ -75,6 +75,9 @@ class Database {
 		if (!in_array('store_count', $cols, true)) {
 			$db->query("ALTER TABLE pepban_banned_customers ADD COLUMN store_count SMALLINT UNSIGNED NOT NULL DEFAULT 1 AFTER risk_score");
 		}
+		if (!in_array('flagged_for_review', $cols, true)) {
+			$db->query("ALTER TABLE pepban_banned_customers ADD COLUMN flagged_for_review TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER store_count");
+		}
 		// pepban_clients columns
 		$rows2 = $db->fetchAll(
 			"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS

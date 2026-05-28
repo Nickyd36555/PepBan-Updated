@@ -50,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 		$client = $db->fetch('SELECT * FROM pepban_clients WHERE id = ?', [$id]);
 		Mailer::welcome($client, $raw_key);
+		Mailer::adminNewSignup($client);
 
 		// Store key in session to show once on portal
 		$_SESSION['new_api_key'] = $raw_key;

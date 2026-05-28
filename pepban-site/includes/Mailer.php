@@ -110,6 +110,21 @@ class Mailer {
 		);
 	}
 
+	public static function adminNewSignup(object $client): void {
+		$admin_url = (defined('APP_URL') ? rtrim(APP_URL, '/') : 'https://pepban.com') . '/admin/clients';
+		self::send(
+			ADMIN_EMAIL,
+			'PepBan — New Store Signup: ' . $client->owner_name,
+			"A new store has signed up for PepBan.\n\n" .
+			"Name:   {$client->owner_name}\n" .
+			"Email:  {$client->owner_email}\n" .
+			"Store:  {$client->site_url}\n" .
+			"Status: {$client->subscription_status}\n\n" .
+			"View in admin: {$admin_url}\n\n" .
+			"— PepBan"
+		);
+	}
+
 	public static function welcome(object $client, string $raw_key): void {
 		$status = ($client->subscription_status === 'active')
 			? "Your account is active and ready to use."

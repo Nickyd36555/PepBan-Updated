@@ -28,6 +28,18 @@ if ($action === 'export') {
 	exit;
 }
 
+// ── Daily auto-flag bans older than 6 months ─────────────────────────────────
+// Uses a transient so this only runs once per day, not on every page load.
+if (!get_transient('pepban_review_flag_ran')) {
+	$six_months_ago = date('Y-m-d H:i:s', strtotime('-6 months'));
+	$db->query(
+		"UPDATE pepban_banned_customers SET flagged_for_review = 1
+		 WHERE status = 'active' AND date_added < ? AND flagged_for_review = 0",
+		[$six_months_ago]
+	);
+	set_transient('pepban_review_flag_ran', 1, DAY_IN_SECONDS);
+}
+
 // ── Handle POST actions ───────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	verify_csrf();
@@ -69,6 +81,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		], ['id' => $id]);
 		audit('ban_edit', 'customer', $id, post('email'));
 		flash('success', 'Customer updated.');
+		redirect('/admin/banned?action=view&id=' . $id);
+	}
+
+	if ($act === 'dismiss_review' && $id) {
+		$db->update('pepban_banned_customers', ['flagged_for_review' => 0, 'last_updated' => date('Y-m-d H:i:s')], ['id' => $id]);
+		audit('dismiss_review', 'customer', $id, '');
+		flash('success', 'Review flag dismissed.');
 		redirect('/admin/banned?action=view&id=' . $id);
 	}
 
@@ -163,6 +182,13 @@ if ($action === 'view' && $id) {
 			<div class="pb-card-header"><h3>Actions</h3></div>
 			<div class="pb-card-body">
 				<a href="<?= url('/admin/banned?action=edit&id=' . $customer->id) ?>" class="pb-btn pb-btn-secondary" style="display:block;margin-bottom:12px;text-align:center">Edit Details</a>
+				<?php if (!empty($customer->flagged_for_review)): ?>
+				<form method="post" style="margin-bottom:12px">
+					<?= csrf_field() ?>
+					<input type="hidden" name="_action" value="dismiss_review">
+					<button type="submit" class="pb-btn pb-btn-secondary" style="width:100%;background:#fef3c7;border-color:#f59e0b;color:#92400e">&#9888; Dismiss Review Flag</button>
+				</form>
+				<?php endif; ?>
 				<form method="post" style="margin-bottom:12px">
 					<?= csrf_field() ?>
 					<input type="hidden" name="_action" value="update_status">
@@ -248,7 +274,11 @@ $per_page = 25;
 
 $where  = ['1=1'];
 $params = [];
-if ($status && $status !== 'all') { $where[] = 'status = ?'; $params[] = $status; }
+if ($status === 'review') {
+	$where[] = 'flagged_for_review = 1';
+} elseif ($status && $status !== 'all') {
+	$where[] = 'status = ?'; $params[] = $status;
+}
 if ($search) {
 	$where[] = '(email LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR phone LIKE ?)';
 	$like = '%' . $search . '%';
@@ -272,6 +302,7 @@ require __DIR__ . '/../templates/admin-layout.php';
 		<select name="status" class="pb-select" onchange="this.form.submit()">
 			<option value="active"   <?= $status==='active'?'selected':'' ?>>Active</option>
 			<option value="inactive" <?= $status==='inactive'?'selected':'' ?>>Inactive</option>
+			<option value="review"   <?= $status==='review'?'selected':'' ?>>Needs Review</option>
 			<option value="all"      <?= $status==='all'?'selected':'' ?>>All</option>
 		</select>
 		<input type="search" name="s" value="<?= e($search) ?>" placeholder="Search email, name, phone…" class="pb-search">
@@ -291,8 +322,8 @@ require __DIR__ . '/../templates/admin-layout.php';
 			<tr><td colspan="7" style="text-align:center;padding:32px;color:#6b7280">No banned customers found.</td></tr>
 		<?php else: ?>
 			<?php foreach ($customers as $c): ?>
-			<tr>
-				<td><a href="<?= url('/admin/banned?action=view&id=' . $c->id) ?>"><?= e($c->email) ?></a></td>
+			<tr <?= !empty($c->flagged_for_review) ? 'style="background:rgba(245,158,11,.07)"' : '' ?>>
+				<td><a href="<?= url('/admin/banned?action=view&id=' . $c->id) ?>"><?= e($c->email) ?></a><?= !empty($c->flagged_for_review) ? ' <span title="Flagged for review" style="color:#f59e0b;font-size:.75rem">&#9888;</span>' : '' ?></td>
 				<td><?= e(trim($c->first_name . ' ' . $c->last_name)) ?: '—' ?></td>
 				<td><?= e($c->phone) ?: '—' ?></td>
 				<td><?= e($c->reported_by_site) ?></td>
