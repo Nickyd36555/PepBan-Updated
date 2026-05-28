@@ -38,9 +38,18 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.4.5',
+			'version' => '1.4.6',
 			'date'    => 'May 2025',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'New', 'text' => 'Appeal URL now supports routing blocked customers to <a href="https://pepban.com/dispute">pepban.com/dispute</a> for a centralized ban review — set this in PepBan → Settings'],
+				['tag' => 'Improved', 'text' => 'Default block message no longer contains a specific email address — cleaner fallback when no custom message is configured'],
+			],
+		],
+		[
+			'version' => '1.4.5',
+			'date'    => 'May 2025',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Fix', 'text' => 'Admin sidebar icon switched to native WordPress shield dashicon'],
 			],
