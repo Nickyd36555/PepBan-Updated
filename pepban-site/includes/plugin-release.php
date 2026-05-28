@@ -38,9 +38,17 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.4.1',
+			'version' => '1.4.2',
 			'date'    => 'May 2025',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Fix', 'text' => 'Admin sidebar icon redrawn as a crisp vector path — no longer relies on SVG text rendering which looked blurry at small sizes'],
+			],
+		],
+		[
+			'version' => '1.4.1',
+			'date'    => 'May 2025',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Fix', 'text' => 'Admin sidebar icon: PB text now correctly centered within the shield'],
 			],
