@@ -42,7 +42,7 @@ function pepban_plugin_changelog(): array {
 			'date'    => 'May 2025',
 			'latest'  => true,
 			'items'   => [
-				['tag' => 'New', 'text' => 'Appeal URL now supports routing blocked customers to <a href="https://pepban.com/dispute">pepban.com/dispute</a> for a centralized ban review — set this in PepBan → Settings'],
+				['tag' => 'New', 'text' => 'Blocked customers can now be directed to pepban.com/dispute for a centralized ban review — set Appeal URL in PepBan → Settings'],
 				['tag' => 'Improved', 'text' => 'Default block message no longer contains a specific email address — cleaner fallback when no custom message is configured'],
 			],
 		],
