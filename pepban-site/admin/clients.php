@@ -1,4 +1,5 @@
 <?php
+defined('PEPBAN_VERSION') || die('Direct access not allowed.');
 $db     = Database::get();
 $action = get_param('action', 'list');
 $id     = (int) get_param('id');

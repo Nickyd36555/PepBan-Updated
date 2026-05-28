@@ -36,6 +36,7 @@ if (!defined('SMTP_USER'))   define('SMTP_USER',   '');
 if (!defined('SMTP_PASS'))   define('SMTP_PASS',   '');
 if (!defined('SMTP_SECURE')) define('SMTP_SECURE', 'tls'); // 'tls' (STARTTLS) or 'ssl'
 
+if (!defined('COOKIE_SECURE'))         define('COOKIE_SECURE',         true);
 if (!defined('SECRET_KEY'))            define('SECRET_KEY',            'change-this-to-64-hex-chars');
 if (!defined('RATE_LIMIT_PER_MINUTE')) define('RATE_LIMIT_PER_MINUTE', 60);
 if (!defined('AUTO_APPROVE_CLIENTS'))  define('AUTO_APPROVE_CLIENTS',  false);

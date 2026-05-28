@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/functions.php';
 $token = get_param('token');
 $expected = hash_hmac('sha256', 'install', SECRET_KEY);
 if (!hash_equals($expected, $token)) {
-	die('Access denied. Append ?token=' . $expected . ' to the URL to run the installer.');
+	die('Access denied.');
 }
 
 try {

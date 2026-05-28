@@ -5,6 +5,12 @@ $sent    = false;
 $errors  = [];
 
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+	verify_csrf();
+
+	if (!check_rate_limit('contact_' . ($_SERVER['REMOTE_ADDR'] ?? ''))) {
+		$errors[] = 'Too many requests. Please wait a minute and try again.';
+	} else {
+
 	$name    = trim( $_POST['contact_name']    ?? '' );
 	$email   = trim( $_POST['contact_email']   ?? '' );
 	$subject = trim( $_POST['contact_subject'] ?? '' );
@@ -30,6 +36,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 			$errors[] = 'Could not send message. Please email us directly at ' . SUPPORT_EMAIL . '.';
 		}
 	}
+	} // end rate limit else
 }
 
 require __DIR__ . '/../templates/layout.php';
@@ -75,6 +82,7 @@ require __DIR__ . '/../templates/layout.php';
         <?php endif; ?>
 
         <form method="POST" class="pb-contact-form">
+          <?= csrf_field() ?>
           <div class="pb-cf-row pb-cf-row-2">
             <div class="pb-cf-field">
               <label for="contact_name">Your Name</label>

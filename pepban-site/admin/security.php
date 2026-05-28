@@ -1,4 +1,5 @@
 <?php
+defined('PEPBAN_VERSION') || die('Direct access not allowed.');
 $page_title = 'Security';
 $db = Database::get();
 

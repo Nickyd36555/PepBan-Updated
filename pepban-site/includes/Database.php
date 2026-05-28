@@ -97,7 +97,6 @@ class Database {
 			details     TEXT         NOT NULL,
 			created_at  DATETIME     NOT NULL
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-		// Ensure banned customer IDs start at 7029 (no-op if table already has higher IDs)
 		$db->query("ALTER TABLE pepban_banned_customers AUTO_INCREMENT = 7029");
 		// feedback table
 		$db->query("CREATE TABLE IF NOT EXISTS pepban_feedback (

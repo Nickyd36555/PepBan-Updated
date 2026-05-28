@@ -2,6 +2,9 @@
 $sent = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	verify_csrf();
+	if (!check_rate_limit('forgot_' . ($_SERVER['REMOTE_ADDR'] ?? ''))) {
+		$sent = true; // show generic success to avoid revealing rate limit to attacker
+	} else {
 	$email  = post('email');
 	$client = Database::get()->fetch('SELECT * FROM pepban_clients WHERE owner_email = ?', [$email]);
 	if ($client) {
@@ -10,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	}
 	// Always show success to prevent email enumeration
 	$sent = true;
+	} // end rate limit check
 }
 
 $page_title = 'Reset Password — ' . SITE_NAME;

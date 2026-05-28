@@ -209,7 +209,7 @@ class PepBan_Client_Checker {
 	private static function get_block_message(): string {
 		$message = PepBan_Client_Settings::get( 'block_message', '' );
 		if ( empty( $message ) ) {
-			$message = 'You have been reported as a scammer. Please contact site admin or admin@pepban.com';
+			$message = 'You have been reported as a scammer. Please contact the site administrator for assistance.';
 		}
 		$appeal = PepBan_Client_Settings::get( 'appeal_url', '' );
 		if ( $appeal ) {

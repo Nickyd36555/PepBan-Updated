@@ -104,7 +104,7 @@ function check_rate_limit(string $identifier): bool {
 	$file = $dir . md5($identifier) . '_' . floor(time() / 60);
 	$count = file_exists($file) ? (int) file_get_contents($file) : 0;
 	if ($count >= RATE_LIMIT_PER_MINUTE) return false;
-	file_put_contents($file, $count + 1);
+	file_put_contents($file, $count + 1, LOCK_EX);
 	// Clean stale files occasionally
 	if (mt_rand(1, 50) === 1) {
 		foreach (glob($dir . '*') as $f) {

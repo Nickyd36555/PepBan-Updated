@@ -1,4 +1,5 @@
 <?php
+defined('PEPBAN_VERSION') || die('Direct access not allowed.');
 $page_title = 'Upload Logo';
 $msg = '';
 $type = '';
@@ -11,14 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	} else {
 		$tmp  = $_FILES['logo']['tmp_name'];
 		$info = getimagesize($tmp);
-		if (!$info || !in_array($info['mime'], ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'], true)) {
-			$msg = 'Only PNG, JPG, WebP, or SVG files are allowed.'; $type = 'error';
+		if (!$info || !in_array($info['mime'], ['image/png', 'image/jpeg', 'image/webp'], true)) {
+			$msg = 'Only PNG, JPG, or WebP files are allowed.'; $type = 'error';
 		} else {
 			$ext  = match($info['mime']) {
-				'image/jpeg'     => 'jpg',
-				'image/webp'     => 'webp',
-				'image/svg+xml'  => 'svg',
-				default          => 'png',
+				'image/jpeg' => 'jpg',
+				'image/webp' => 'webp',
+				default      => 'png',
 			};
 			$dest = __DIR__ . '/../assets/images/logo.' . $ext;
 			// Remove old logo files
@@ -43,7 +43,7 @@ require __DIR__ . '/../templates/admin-layout.php';
 
 <div class="pb-admin-section">
 	<h2>Upload Site Logo</h2>
-	<p style="color:var(--text-muted);margin-bottom:20px">Replaces <code>assets/images/logo.png</code>. PNG with transparent background works best on the dark nav.</p>
+	<p style="color:var(--text-muted);margin-bottom:20px">Replaces <code>assets/images/logo.png</code>. PNG with transparent background works best on the dark nav. SVG is not accepted for security reasons.</p>
 
 	<?php if ($msg): ?>
 		<div class="pepban-alert pepban-alert-<?= $type === 'success' ? 'success' : 'error' ?>" style="margin-bottom:20px"><?= e($msg) ?></div>
@@ -68,8 +68,8 @@ require __DIR__ . '/../templates/admin-layout.php';
 	<form method="post" enctype="multipart/form-data" style="max-width:480px">
 		<input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_token']) ?>">
 		<div style="margin-bottom:16px">
-			<label style="display:block;color:var(--text-muted);font-size:.85rem;margin-bottom:8px">Select PNG / JPG / WebP / SVG</label>
-			<input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+			<label style="display:block;color:var(--text-muted);font-size:.85rem;margin-bottom:8px">Select PNG / JPG / WebP</label>
+			<input type="file" name="logo" accept="image/png,image/jpeg,image/webp"
 			       style="color:var(--text);background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;width:100%;cursor:pointer">
 		</div>
 		<button type="submit" class="pepban-btn pepban-btn-primary">Upload Logo</button>

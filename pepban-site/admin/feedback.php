@@ -1,4 +1,5 @@
 <?php
+defined('PEPBAN_VERSION') || die('Direct access not allowed.');
 $db = Database::get();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

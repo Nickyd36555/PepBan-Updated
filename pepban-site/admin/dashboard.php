@@ -1,4 +1,5 @@
 <?php
+defined('PEPBAN_VERSION') || die('Direct access not allowed.');
 $db   = Database::get();
 $page_title = 'Dashboard';
 $stats = [

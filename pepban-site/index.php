@@ -10,6 +10,13 @@ require_once __DIR__ . '/includes/plugin-release.php';
 
 Auth::start();
 
+// Boot guard: refuse to serve if critical secrets are still at their placeholder defaults
+if (SECRET_KEY === 'change-this-to-64-hex-chars' ||
+    ADMIN_PASSWORD_HASH === '$2y$10$changethishashbygeneratingyourown.........') {
+	http_response_code(503);
+	die('Site not configured. Please set SECRET_KEY and ADMIN_PASSWORD_HASH in config.local.php.');
+}
+
 // ── Global error / exception handlers ────────────────────────────────────────
 set_exception_handler(function (Throwable $e) {
 	$msg = sprintf(
@@ -86,6 +93,7 @@ if ($path === '/download/client') {
 // ── Admin routes ──────────────────────────────────────────────────────────────
 if (str_starts_with($path, '/admin')) {
 	$admin_path = ltrim(substr($path, 6), '/') ?: 'dashboard';
+	$admin_path = preg_replace('/[^a-z0-9_-]/i', '', $admin_path);
 
 	// Login/logout don't require auth
 	if ($admin_path === 'login')  { require __DIR__ . '/admin/login.php';  exit; }

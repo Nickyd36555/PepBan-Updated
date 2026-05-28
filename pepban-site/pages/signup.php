@@ -8,6 +8,11 @@ $old    = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	verify_csrf();
 
+	if (!check_rate_limit('signup_' . ($_SERVER['REMOTE_ADDR'] ?? ''))) {
+		$errors[] = 'Too many requests. Please wait a minute and try again.';
+	}
+
+	if (empty($errors)) {
 	$name  = post('name');
 	$email = post('email');
 	$site  = post('site_url');
@@ -58,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		Auth::loginClient($client);
 		redirect('/portal', ['registered' => '1']);
 	}
+	} // end rate limit check
 }
 
 $page_title = 'Sign Up — ' . SITE_NAME;
@@ -89,7 +95,7 @@ require __DIR__ . '/../templates/layout.php';
 		<?php if ($errors): ?>
 		<div class="pepban-alert pepban-alert-error">
 			<?php foreach ($errors as $e): ?>
-				<p><?= $e ?></p>
+				<p><?= strip_tags($e, '<a>') ?></p>
 			<?php endforeach; ?>
 		</div>
 		<?php endif; ?>
