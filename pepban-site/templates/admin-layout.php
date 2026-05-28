@@ -20,16 +20,23 @@
 			'banned'    => 'Banned Customers',
 			'clients'   => 'Clients',
 			'import'    => 'Bulk Import',
+			'disputes'  => 'Disputes',
 			'feedback'  => 'Feedback',
 			'audit'     => 'Audit Log',
 			'security'  => 'Security',
 			'settings'  => 'Settings',
 		];
+		$open_disputes = (int) Database::get()->scalar(
+			"SELECT COUNT(*) FROM pepban_disputes WHERE status = 'open'"
+		);
 		foreach ($nav_items as $slug => $label):
 			$is_active = ($cur_segment === $slug || str_starts_with($cur_segment, $slug . '/'));
 		?>
 		<a href="<?= url('/admin/' . $slug) ?>" <?= $is_active ? 'class="pb-active"' : '' ?>>
 			<?= e($label) ?>
+			<?php if ($slug === 'disputes' && $open_disputes > 0): ?>
+				<span style="margin-left:6px;background:#f59e0b;color:#000;font-size:.7rem;padding:1px 7px;border-radius:10px;font-weight:700"><?= $open_disputes ?></span>
+			<?php endif; ?>
 		</a>
 		<?php endforeach; ?>
 	</nav>

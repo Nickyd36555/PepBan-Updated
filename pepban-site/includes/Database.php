@@ -107,5 +107,18 @@ class Database {
 			created_at   DATETIME     NOT NULL,
 			read_at      DATETIME     DEFAULT NULL
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+		$db->query("CREATE TABLE IF NOT EXISTS pepban_disputes (
+			id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+			email       VARCHAR(200) NOT NULL,
+			name        VARCHAR(200) NOT NULL DEFAULT '',
+			store_hint  VARCHAR(255) NOT NULL DEFAULT '',
+			reason      TEXT         NOT NULL,
+			status      VARCHAR(20)  NOT NULL DEFAULT 'open',
+			admin_notes TEXT         NOT NULL DEFAULT '',
+			date_added  DATETIME     NOT NULL,
+			PRIMARY KEY (id),
+			KEY email  (email),
+			KEY status (status)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 	}
 }

@@ -91,6 +91,20 @@ class Mailer {
 		return (int)$r === 250;
 	}
 
+	public static function adminNewDispute(string $email, string $name, string $reason): void {
+		$admin_url = rtrim(SITE_URL, '/') . '/admin/disputes';
+		self::send(
+			ADMIN_EMAIL,
+			'PepBan — New Ban Dispute: ' . $email,
+			"A customer has submitted a ban dispute.\n\n" .
+			"Email:  {$email}\n" .
+			"Name:   {$name}\n\n" .
+			"Reason:\n{$reason}\n\n" .
+			"Review in admin: {$admin_url}\n\n" .
+			"— PepBan"
+		);
+	}
+
 	public static function adminError(string $subject, string $body): void {
 		// Suppress all exceptions — error handler must never itself throw
 		try {

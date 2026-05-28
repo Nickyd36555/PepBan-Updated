@@ -50,7 +50,7 @@ register_shutdown_function(function () {
 });
 
 // Run schema migrations once per deploy (flag file prevents repeat queries)
-$_migration_flag = __DIR__ . '/.db_migrated_v6';
+$_migration_flag = __DIR__ . '/.db_migrated_v7';
 if (!file_exists($_migration_flag)) {
 	try { Database::maybe_migrate(); file_put_contents($_migration_flag, date('c')); } catch (Throwable $e) {}
 }
@@ -123,6 +123,7 @@ $routes = [
 	'/faq'              => 'pages/faq.php',
 	'/changelog'        => 'pages/changelog.php',
 	'/contact'          => 'pages/contact.php',
+	'/dispute'          => 'pages/dispute.php',
 	'/forgot-password'  => 'pages/forgot-password.php',
 	'/reset-password'   => 'pages/reset-password.php',
 ];

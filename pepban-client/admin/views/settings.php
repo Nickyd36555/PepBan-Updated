@@ -66,8 +66,8 @@ $connection_status = PepBan_Client_Settings::test_connection();
 				<td>
 					<input type="url" name="appeal_url" id="appeal_url" class="regular-text"
 						value="<?php echo esc_attr( $settings['appeal_url'] ?? '' ); ?>"
-						placeholder="https://your-store.com/contact">
-					<p class="description">Optional. If set, blocked customers see a "Contact us to dispute" link appended to the block message. Helps reduce chargebacks.</p>
+						placeholder="https://pepban.com/dispute">
+					<p class="description">Optional. If set, blocked customers see a "Contact us to dispute" link appended to the block message. Use <strong>https://pepban.com/dispute</strong> to route disputes directly to PepBan, or your own contact URL.</p>
 				</td>
 			</tr>
 			<tr>
