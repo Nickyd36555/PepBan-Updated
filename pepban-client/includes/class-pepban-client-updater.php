@@ -47,6 +47,7 @@ class PepBan_Client_Updater {
 		$info = self::get_remote_info();
 		if ( ! $info ) return $result;
 
+		$hub = rtrim( PepBan_Client_Settings::get_hub_url(), '/' );
 		return (object) array(
 			'name'          => 'PepBan Client',
 			'slug'          => self::PLUGIN_SLUG,
@@ -56,6 +57,14 @@ class PepBan_Client_Updater {
 			'download_link' => $info['download_url'] ?? '',
 			'requires'      => '6.0',
 			'requires_php'  => '7.4',
+			'icons'         => array(
+				'svg' => $hub . '/assets/images/icon.svg',
+				'1x'  => $hub . '/assets/images/icon.svg',
+			),
+			'banners'       => array(
+				'low'  => $hub . '/assets/images/banner-772x250.png',
+				'high' => $hub . '/assets/images/banner-1544x500.png',
+			),
 			'sections'      => array(
 				'description'  => $info['description']  ?? '',
 				'installation' => $info['installation'] ?? '',

@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= e($page_title ?? SITE_NAME) ?></title>
+<link rel="icon" type="image/svg+xml" href="<?= url('assets/images/icon.svg') ?>">
+<link rel="shortcut icon" href="<?= url('assets/images/icon.svg') ?>"><?php
+// If a PNG logo exists use it as the apple-touch-icon (higher quality on iOS)
+foreach (['logo.png','logo.jpg','logo.webp'] as $_fi) {
+  if (file_exists(__DIR__ . '/../assets/images/' . $_fi)) {
+    echo "\n<link rel=\"apple-touch-icon\" href=\"" . url('assets/images/' . $_fi) . '">';
+    break;
+  }
+} ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">

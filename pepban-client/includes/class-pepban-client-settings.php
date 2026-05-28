@@ -56,7 +56,7 @@ class PepBan_Client_Settings {
 			'manage_woocommerce',
 			'pepban-client',
 			array( __CLASS__, 'render_settings_page' ),
-			'dashicons-shield',
+			PEPBAN_CLIENT_URL . 'assets/images/icon.svg',
 			57
 		);
 		add_submenu_page( 'pepban-client', 'Settings',  'Settings',  'manage_woocommerce', 'pepban-client',          array( __CLASS__, 'render_settings_page' ) );
