@@ -38,11 +38,11 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.4.3',
+			'version' => '1.4.4',
 			'date'    => 'May 2025',
 			'latest'  => true,
 			'items'   => [
-				['tag' => 'Fix', 'text' => 'Admin sidebar icon redrawn as a clean stroke-based vector — sharp at all sizes and consistent across operating systems'],
+				['tag' => 'Fix', 'text' => 'Admin sidebar icon restored to original two-tone shield design'],
 			],
 		],
 		[
