@@ -42,7 +42,6 @@ function pepban_plugin_changelog(): array {
 			'date'    => 'May 2025',
 			'latest'  => true,
 			'items'   => [
-				['tag' => 'New',      'text' => 'Admin email on signup — you are notified immediately when a new store creates an account'],
 				['tag' => 'New',      'text' => 'Ban appeal URL — add a contact/dispute link that is automatically appended to the block message shown to banned customers, reducing chargebacks'],
 				['tag' => 'New',      'text' => 'Auto-report on block — optional setting that automatically reports a blocked customer back to the PepBan network, closing the feedback loop across all member stores'],
 				['tag' => 'New',      'text' => 'Ban expiry review queue — bans older than 6 months are automatically flagged for review in the hub admin; flagged bans can be dismissed after manual inspection'],
