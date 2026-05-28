@@ -28,17 +28,14 @@ if ($action === 'export') {
 	exit;
 }
 
-// ── Daily auto-flag bans older than 6 months ─────────────────────────────────
-// Uses a transient so this only runs once per day, not on every page load.
-if (!get_transient('pepban_review_flag_ran')) {
-	$six_months_ago = date('Y-m-d H:i:s', strtotime('-6 months'));
-	$db->query(
-		"UPDATE pepban_banned_customers SET flagged_for_review = 1
-		 WHERE status = 'active' AND date_added < ? AND flagged_for_review = 0",
-		[$six_months_ago]
-	);
-	set_transient('pepban_review_flag_ran', 1, DAY_IN_SECONDS);
-}
+// ── Auto-flag bans older than 6 months ───────────────────────────────────────
+// Idempotent UPDATE — only touches rows not already flagged, so running on
+// every page load is cheap and avoids any dependency on WP transients.
+$db->query(
+	"UPDATE pepban_banned_customers SET flagged_for_review = 1
+	 WHERE status = 'active' AND date_added < ? AND flagged_for_review = 0",
+	[date('Y-m-d H:i:s', strtotime('-6 months'))]
+);
 
 // ── Handle POST actions ───────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
