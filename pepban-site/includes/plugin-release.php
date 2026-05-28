@@ -38,11 +38,11 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.4.4',
+			'version' => '1.4.5',
 			'date'    => 'May 2025',
 			'latest'  => true,
 			'items'   => [
-				['tag' => 'Fix', 'text' => 'Admin sidebar icon restored to original two-tone shield design'],
+				['tag' => 'Fix', 'text' => 'Admin sidebar icon switched to native WordPress shield dashicon'],
 			],
 		],
 		[
