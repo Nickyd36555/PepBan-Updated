@@ -105,7 +105,22 @@ class Mailer {
 		);
 	}
 
-	public static function disputeResolved(string $email, string $name): void {
+	public static function customerBanned(string $email, string $name, string $reason): void {
+		$dispute_url = rtrim(SITE_URL, '/') . '/dispute';
+		$greeting    = $name ? "Hi {$name}," : 'Hello,';
+		self::send(
+			$email,
+			'Important notice regarding your account',
+			"{$greeting}\n\n" .
+			"Your account has been flagged and you may be blocked from completing purchases at stores in the PepBan network.\n\n" .
+			"Reason on file:\n  {$reason}\n\n" .
+			"If you believe this is a mistake, you can submit a dispute for review:\n" .
+			"  {$dispute_url}\n\n" .
+			"— PepBan"
+		);
+	}
+
+
 		self::send(
 			$email,
 			'PepBan — Your Dispute Has Been Reviewed',

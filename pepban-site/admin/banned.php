@@ -62,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		]);
 		audit('ban_add', 'customer', $new_id, post('email'));
 		Mailer::adminNewBan(post('email'), trim(post('first_name') . ' ' . post('last_name')), post('reason'), 'admin');
+		Mailer::customerBanned(post('email'), trim(post('first_name') . ' ' . post('last_name')), post('reason'));
 		admin_flash('success', 'Customer added to ban list.');
 		redirect('/admin/banned');
 	}
