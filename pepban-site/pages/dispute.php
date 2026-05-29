@@ -23,12 +23,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 		if (empty($errors)) {
 			Database::get()->insert('pepban_disputes', [
-				'email'      => $email,
-				'name'       => $name,
-				'store_hint' => $store_hint,
-				'reason'     => $reason,
-				'status'     => 'open',
-				'date_added' => date('Y-m-d H:i:s'),
+				'email'       => $email,
+				'name'        => $name,
+				'store_hint'  => $store_hint,
+				'reason'      => $reason,
+				'status'      => 'open',
+				'admin_notes' => '',
+				'date_added'  => date('Y-m-d H:i:s'),
 			]);
 			Mailer::adminNewDispute($email, $name, $reason);
 			$sent = true;

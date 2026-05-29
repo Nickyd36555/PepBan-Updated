@@ -48,6 +48,10 @@ require __DIR__ . '/../templates/layout.php';
     <div class="pb-contact-info">
       <h1>Get in Touch</h1>
       <p>Have a question about PepBan, need help with your account, or want to report an issue? Send us a message and we'll get back to you within one business day.</p>
+      <div class="pb-contact-detail" style="background:var(--bg-card,#111);border-radius:8px;padding:12px 16px;margin-top:8px">
+        <span class="pb-contact-label">Blocked at checkout?</span>
+        <a href="<?= url('/dispute') ?>">Submit a ban dispute →</a>
+      </div>
 
       <div class="pb-contact-detail">
         <span class="pb-contact-label">Email</span>

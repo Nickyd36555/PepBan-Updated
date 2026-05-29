@@ -10,14 +10,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$action = $_POST['dispute_action'] ?? '';
 
 	if ($id && in_array($action, ['resolve', 'dismiss', 'reopen'], true)) {
+		$dispute    = $db->fetch('SELECT * FROM pepban_disputes WHERE id = ?', [$id]);
 		$status_map = ['resolve' => 'resolved', 'dismiss' => 'dismissed', 'reopen' => 'open'];
 		$db->query('UPDATE pepban_disputes SET status = ? WHERE id = ?', [$status_map[$action], $id]);
+
+		if ($dispute) {
+			if ($action === 'resolve') {
+				// Remove from ban list and notify customer
+				$db->query(
+					"UPDATE pepban_banned_customers SET status = 'inactive', last_updated = NOW() WHERE email = ?",
+					[$dispute->email]
+				);
+				Mailer::disputeResolved($dispute->email, $dispute->name);
+			} elseif ($action === 'dismiss') {
+				Mailer::disputeDismissed($dispute->email, $dispute->name);
+			}
+		}
+
 		$db->insert('pepban_audit_log', [
 			'actor'       => 'admin',
 			'action'      => 'dispute_' . $action,
 			'target_type' => 'dispute',
 			'target_id'   => $id,
-			'details'     => '',
+			'details'     => $dispute->email ?? '',
 			'created_at'  => date('Y-m-d H:i:s'),
 		]);
 		admin_flash('success', 'Dispute updated.');

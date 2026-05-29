@@ -105,6 +105,28 @@ class Mailer {
 		);
 	}
 
+	public static function disputeResolved(string $email, string $name): void {
+		self::send(
+			$email,
+			'PepBan — Your Dispute Has Been Reviewed',
+			"Hi {$name},\n\n" .
+			"We've reviewed your dispute and resolved it in your favor. Your account has been removed from the ban list and you should now be able to check out at member stores.\n\n" .
+			"If you continue to experience issues, please contact us at " . SUPPORT_EMAIL . ".\n\n" .
+			"— PepBan"
+		);
+	}
+
+	public static function disputeDismissed(string $email, string $name): void {
+		self::send(
+			$email,
+			'PepBan — Your Dispute Has Been Reviewed',
+			"Hi {$name},\n\n" .
+			"We've reviewed your dispute. After investigation, we were unable to remove the ban at this time.\n\n" .
+			"If you have additional information to provide, please contact us at " . SUPPORT_EMAIL . ".\n\n" .
+			"— PepBan"
+		);
+	}
+
 	public static function adminError(string $subject, string $body): void {
 		// Suppress all exceptions — error handler must never itself throw
 		try {

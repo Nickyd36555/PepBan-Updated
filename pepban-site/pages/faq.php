@@ -97,6 +97,23 @@ require __DIR__ . '/../templates/layout.php';
         <div class="pb-faq-answer">Once the plugin is installed, a "Report to PepBan" button appears on each order in your WooCommerce admin. Click the button, select the reason (fraud, chargeback, abuse, etc.), and confirm. The customer is immediately added to the shared ban list and all member stores are protected.</div>
       </div>
 
+      <!-- Blocked customers -->
+      <div class="pb-faq-item">
+        <button class="pb-faq-question" type="button">
+          I was blocked at a store — can I dispute this?
+          <svg class="pb-faq-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="pb-faq-answer">Yes. If you believe you were incorrectly flagged, visit our <a href="<?= url('/dispute') ?>">dispute page</a> and submit your case. Include the email address that was blocked and a brief explanation. We review every dispute and will contact you within 3–5 business days. If we determine the ban was an error, your account will be removed from the list and you'll receive a confirmation email.</div>
+      </div>
+
+      <div class="pb-faq-item">
+        <button class="pb-faq-question" type="button">
+          How long does a dispute take to resolve?
+          <svg class="pb-faq-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="pb-faq-answer">We aim to review all disputes within 3–5 business days. Once reviewed, you'll receive an email at the address you provided with the outcome. If the dispute is resolved in your favor, the ban is lifted immediately and you'll be able to check out at member stores.</div>
+      </div>
+
       <!-- Pricing & Account -->
       <div class="pb-faq-item">
         <button class="pb-faq-question" type="button">
