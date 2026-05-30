@@ -8,20 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	verify_csrf();
 	$act = post('_action');
 
-	// ── Test email ────────────────────────────────────────────────────────────
-	if ($act === 'test_email') {
-		$to = post('test_to') ?: ADMIN_EMAIL;
-		// Capture smtp errors into buffer
-		ob_start();
-		$ok = Mailer::send($to, 'PepBan — Test Email', "This is a test email from your PepBan admin panel.\n\nIf you receive this, SMTP is working correctly.\n\n— PepBan");
-		ob_end_clean();
-		$test_result = $ok
-			? ['type' => 'success', 'msg' => "Test email sent to {$to} — check your inbox (and spam folder)."]
-			: ['type' => 'error',   'msg' => "Send failed. Check the PHP error log on Cloudways for a PepBan SMTP: line."];
-	}
-
-	// ── Save settings ─────────────────────────────────────────────────────────
-	if ($act === 'save') {
+	// ── Save settings (and optionally test email) ─────────────────────────────
+	if (in_array($act, ['save', 'save_and_test'], true)) {
 		$lines   = [];
 		$lines[] = '<?php';
 		$lines[] = "define('DB_HOST', " . var_export(post('db_host'), true) . ');';
@@ -69,8 +57,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		}
 
 		file_put_contents(__DIR__ . '/../config.local.php', implode("\n", $lines));
-		admin_flash('success', 'Settings saved.');
-		redirect('/admin/settings');
+
+		if ($act === 'save_and_test') {
+			// Re-load the constants we just wrote so the test uses the new SMTP config
+			foreach ($lines as $line) {
+				if (preg_match("/define\('(SMTP_HOST|SMTP_PORT|SMTP_USER|SMTP_PASS|SMTP_SECURE|MAIL_FROM|MAIL_FROM_NAME)',\s*(.+)\);/", $line, $m)) {
+					if (!defined($m[1])) define($m[1], eval('return ' . $m[2] . ';'));
+				}
+			}
+			$to = post('test_to') ?: ADMIN_EMAIL;
+			$ok = Mailer::send($to, 'PepBan — Test Email', "This is a test email from your PepBan admin panel.\n\nIf you receive this, SMTP is working correctly.\n\n— PepBan");
+			$test_result = $ok
+				? ['type' => 'success', 'msg' => "Settings saved. Test email sent to {$to} — check your inbox (and spam folder)."]
+				: ['type' => 'error',   'msg' => "Settings saved, but the test email failed. Check the PHP error log for a PepBan SMTP: line."];
+		} else {
+			admin_flash('success', 'Settings saved.');
+			redirect('/admin/settings');
+		}
 	}
 }
 
@@ -83,7 +86,7 @@ require __DIR__ . '/../templates/admin-layout.php';
 		<p style="color:#6b7280;margin-bottom:20px">Changes are saved to <code>config.local.php</code> which overrides <code>config.php</code>.</p>
 		<form method="post" class="pb-form">
 			<?= csrf_field() ?>
-			<input type="hidden" name="_action" value="save">
+			<input type="hidden" name="_action" value="save" id="settings-action">
 
 			<h4 class="pb-section-title">Database</h4>
 			<div class="pb-grid-2">
@@ -141,27 +144,23 @@ require __DIR__ . '/../templates/admin-layout.php';
 				</select>
 			</div>
 
-			<button type="submit" class="pb-btn pb-btn-primary" style="margin-top:8px">Save Settings</button>
-		</form>
-	</div>
-</div>
+			<?php if ($test_result): ?>
+				<div class="pb-alert pb-alert-<?= e($test_result['type']) ?>" style="margin:12px 0"><?= e($test_result['msg']) ?></div>
+			<?php endif; ?>
 
-<div class="pb-card" style="max-width:680px;margin-top:24px">
-	<div class="pb-card-header"><h3>Test Email</h3></div>
-	<div class="pb-card-body">
-		<?php if ($test_result): ?>
-			<div class="pb-alert pb-alert-<?= e($test_result['type']) ?>" style="margin-bottom:16px"><?= e($test_result['msg']) ?></div>
-		<?php endif; ?>
-		<form method="post" class="pb-form" style="display:flex;gap:10px;align-items:flex-end">
-			<?= csrf_field() ?>
-			<input type="hidden" name="_action" value="test_email">
-			<div class="pb-field" style="flex:1;margin:0">
-				<label>Send test email to</label>
-				<input type="email" name="test_to" placeholder="<?= e(ADMIN_EMAIL) ?>" value="">
+			<div style="display:flex;gap:10px;align-items:flex-end;margin-top:16px;flex-wrap:wrap">
+				<button type="submit" class="pb-btn pb-btn-primary">Save Settings</button>
+				<div style="display:flex;gap:8px;align-items:center;flex:1;min-width:200px">
+					<input type="email" name="test_to" placeholder="<?= e(ADMIN_EMAIL) ?>"
+					       style="flex:1;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.9rem">
+					<button type="submit" class="pb-btn pb-btn-secondary" style="white-space:nowrap"
+					        onclick="document.getElementById('settings-action').value='save_and_test'">
+						Save &amp; Test Email
+					</button>
+				</div>
 			</div>
-			<button type="submit" class="pb-btn pb-btn-secondary" style="white-space:nowrap">Send Test</button>
+			<p style="color:#6b7280;font-size:.8rem;margin-top:6px">Enter an email address and click "Save &amp; Test Email" to save settings and send a test in one step.</p>
 		</form>
-		<p style="color:#6b7280;font-size:.82rem;margin-top:10px">Leave blank to send to the Admin Email above. Uses your current SMTP settings.</p>
 	</div>
 </div>
 
