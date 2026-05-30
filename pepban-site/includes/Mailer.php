@@ -120,7 +120,7 @@ class Mailer {
 		);
 	}
 
-
+	public static function disputeResolved(string $email, string $name): void {
 		self::send(
 			$email,
 			'PepBan — Your Dispute Has Been Reviewed',
