@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /portal
+Disallow: /account
+Disallow: /logout
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /download/
+
+Allow: /

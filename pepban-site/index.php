@@ -126,11 +126,12 @@ $routes = [
 	'/dispute'          => 'pages/dispute.php',
 	'/forgot-password'  => 'pages/forgot-password.php',
 	'/reset-password'   => 'pages/reset-password.php',
+	'/privacy'          => 'pages/privacy.php',
 ];
 
 if (isset($routes[$path])) {
 	require __DIR__ . '/' . $routes[$path];
 } else {
 	http_response_code(404);
-	echo '404 Not Found';
+	require __DIR__ . '/pages/404.php';
 }
