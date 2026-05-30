@@ -8,6 +8,7 @@
       <a href="<?= url('/contact') ?>">Contact</a>
       <a href="<?= url('/dispute') ?>">Dispute a Ban</a>
       <a href="<?= url('/privacy') ?>">Privacy Policy</a>
+      <a href="<?= url('/terms') ?>">Terms of Service</a>
       <a href="<?= url('/login') ?>">Login</a>
       <a href="<?= url('/signup') ?>">Sign Up</a>
     </div>

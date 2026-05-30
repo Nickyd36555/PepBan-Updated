@@ -22,6 +22,7 @@
 			'import'    => 'Bulk Import',
 			'disputes'  => 'Disputes',
 			'feedback'  => 'Feedback',
+			'analytics' => 'Analytics',
 			'audit'     => 'Audit Log',
 			'security'  => 'Security',
 			'settings'  => 'Settings',

@@ -127,6 +127,7 @@ $routes = [
 	'/forgot-password'  => 'pages/forgot-password.php',
 	'/reset-password'   => 'pages/reset-password.php',
 	'/privacy'          => 'pages/privacy.php',
+	'/terms'            => 'pages/terms.php',
 ];
 
 if (isset($routes[$path])) {
