@@ -29,7 +29,10 @@ class Mailer {
 
 		$addr   = $secure === 'ssl' ? "ssl://{$host}:{$port}" : "tcp://{$host}:{$port}";
 		$socket = stream_socket_client($addr, $errno, $errstr, 15, STREAM_CLIENT_CONNECT, $ctx);
-		if (!$socket) return false;
+		if (!$socket) {
+			error_log("PepBan SMTP: connection failed to {$addr} — {$errstr} ({$errno})");
+			return false;
+		}
 
 		stream_set_timeout($socket, 15);
 
@@ -58,14 +61,14 @@ class Mailer {
 		}
 
 		$r = $cmd('AUTH LOGIN');
-		if ((int)$r !== 334) { fclose($socket); return false; }
+		if ((int)$r !== 334) { error_log("PepBan SMTP: AUTH LOGIN rejected — {$r}"); fclose($socket); return false; }
 		$cmd(base64_encode(SMTP_USER));
 		$r = $cmd(base64_encode(SMTP_PASS));
-		if ((int)$r !== 235) { fclose($socket); return false; }
+		if ((int)$r !== 235) { error_log("PepBan SMTP: authentication failed — {$r}"); fclose($socket); return false; }
 
 		$cmd('MAIL FROM:<' . MAIL_FROM . '>');
 		$r = $cmd('RCPT TO:<' . $to . '>');
-		if ((int)$r > 299) { fclose($socket); return false; }
+		if ((int)$r > 299) { error_log("PepBan SMTP: recipient rejected ({$to}) — {$r}"); fclose($socket); return false; }
 
 		// Headers + body
 		$cmd('DATA');
@@ -88,7 +91,11 @@ class Mailer {
 		$cmd('QUIT');
 		fclose($socket);
 
-		return (int)$r === 250;
+		if ((int)$r !== 250) {
+			error_log("PepBan SMTP: message not queued for {$to} — {$r}");
+			return false;
+		}
+		return true;
 	}
 
 	public static function adminNewDispute(string $email, string $name, string $reason): void {
@@ -108,7 +115,7 @@ class Mailer {
 	public static function customerBanned(string $email, string $name, string $reason): void {
 		$dispute_url = rtrim(SITE_URL, '/') . '/dispute';
 		$greeting    = $name ? "Hi {$name}," : 'Hello,';
-		self::send(
+		$sent = self::send(
 			$email,
 			'Important notice regarding your account',
 			"{$greeting}\n\n" .
@@ -118,6 +125,9 @@ class Mailer {
 			"  {$dispute_url}\n\n" .
 			"— PepBan"
 		);
+		if (!$sent) {
+			error_log("PepBan: customerBanned email failed for {$email}");
+		}
 	}
 
 	public static function disputeResolved(string $email, string $name): void {
