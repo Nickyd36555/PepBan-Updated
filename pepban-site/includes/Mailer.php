@@ -66,7 +66,10 @@ class Mailer {
 		$r = $cmd(base64_encode(SMTP_PASS));
 		if ((int)$r !== 235) { error_log("PepBan SMTP: authentication failed — {$r}"); fclose($socket); return false; }
 
-		$cmd('MAIL FROM:<' . MAIL_FROM . '>');
+		// Gmail requires the envelope sender to match the authenticated SMTP user.
+		// Use SMTP_USER as the envelope FROM; keep MAIL_FROM as Reply-To.
+		$envelope_from = SMTP_USER ?: MAIL_FROM;
+		$cmd('MAIL FROM:<' . $envelope_from . '>');
 		$r = $cmd('RCPT TO:<' . $to . '>');
 		if ((int)$r > 299) { error_log("PepBan SMTP: recipient rejected ({$to}) — {$r}"); fclose($socket); return false; }
 
@@ -77,7 +80,8 @@ class Mailer {
 		$headers =
 			"Date: {$date}\r\n" .
 			"Message-ID: {$msgId}\r\n" .
-			"From: " . MAIL_FROM_NAME . " <" . MAIL_FROM . ">\r\n" .
+			"From: " . MAIL_FROM_NAME . " <" . $envelope_from . ">\r\n" .
+			"Reply-To: " . MAIL_FROM . "\r\n" .
 			"To: {$to}\r\n" .
 			"Subject: {$subject}\r\n" .
 			"Content-Type: text/plain; charset=UTF-8\r\n" .
