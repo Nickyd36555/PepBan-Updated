@@ -5,7 +5,6 @@
     <p>&copy; <?= date('Y') ?> PepBan. All rights reserved.</p>
     <div class="pb-footer-links">
       <a href="<?= url('/faq') ?>">FAQ</a>
-      <a href="<?= url('/changelog') ?>">Changelog</a>
       <a href="<?= url('/contact') ?>">Contact</a>
       <a href="<?= url('/dispute') ?>">Dispute a Ban</a>
       <a href="<?= url('/login') ?>">Login</a>

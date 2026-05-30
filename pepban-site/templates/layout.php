@@ -42,7 +42,6 @@ foreach (['logo.png','logo.jpg','logo.webp'] as $_fi) {
       <a href="<?= url('/') ?>" class="pb-nav-link">Home</a>
       <a href="<?= url('/#features') ?>" class="pb-nav-link">Features</a>
       <a href="<?= url('/faq') ?>" class="pb-nav-link">FAQ</a>
-      <a href="<?= url('/changelog') ?>" class="pb-nav-link">Changelog</a>
       <a href="<?= url('/contact') ?>" class="pb-nav-link">Contact</a>
       <a href="<?= url('/dispute') ?>" class="pb-nav-link">Dispute a Ban</a>
       <a href="<?= url('/plugin') ?>" class="pb-nav-link">Plugin</a>

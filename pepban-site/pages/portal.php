@@ -242,6 +242,37 @@ $recent_reports = Database::get()->fetchAll(
 	</form>
 </div>
 
+<div class="pepban-regen-section" id="changelog" style="padding-bottom:0">
+	<h3>What's New</h3>
+	<p>Latest updates to the PepBan plugin.</p>
+</div>
+<?php
+$tag_css = ['New' => 'new', 'Fix' => 'fix', 'Improved' => 'improvement'];
+foreach (pepban_plugin_changelog() as $release):
+?>
+<div class="pepban-regen-section" style="padding-top:16px;padding-bottom:16px;border-top:1px solid var(--border)">
+	<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+		<span style="font-weight:700;font-size:1rem;color:var(--text)">v<?= e($release['version']) ?></span>
+		<?php if (!empty($release['latest'])): ?>
+		<span style="background:var(--red);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:2px 8px;border-radius:20px;text-transform:uppercase">Latest</span>
+		<?php endif; ?>
+		<span style="font-size:.82rem;color:var(--text-muted)"><?= e($release['date']) ?></span>
+	</div>
+	<ul style="margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:7px">
+		<?php foreach ($release['items'] as $item): ?>
+		<li style="display:flex;align-items:flex-start;gap:8px;font-size:.88rem;color:var(--text-muted)">
+			<span style="flex-shrink:0;font-size:.7rem;font-weight:700;letter-spacing:.07em;padding:2px 7px;border-radius:4px;margin-top:1px;
+				<?php if ($item['tag']==='New'): ?>background:rgba(34,197,94,.12);color:#4ade80;
+				<?php elseif ($item['tag']==='Fix'): ?>background:rgba(239,68,68,.1);color:#f87171;
+				<?php else: ?>background:rgba(99,102,241,.12);color:#818cf8;<?php endif; ?>
+			"><?= e($item['tag']) ?></span>
+			<?= $item['text'] ?>
+		</li>
+		<?php endforeach; ?>
+	</ul>
+</div>
+<?php endforeach; ?>
+
 <div class="pepban-portal-footer">
 	<span>PepBan &copy; <?= date('Y') ?></span>
 	<div class="pepban-portal-footer-links">

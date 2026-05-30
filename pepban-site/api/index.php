@@ -260,7 +260,7 @@ if ($segment === 'plugin/info' && $method === 'GET') {
 	ApiAuth::json([
 		'version'      => PEPBAN_PLUGIN_VERSION,
 		'download_url' => rtrim(SITE_URL, '/') . '/download/client?token=' . $token,
-		'details_url'  => rtrim(SITE_URL, '/') . '/changelog',
+		'details_url'  => rtrim(SITE_URL, '/') . '/portal',
 		'description'  => pepban_plugin_description(),
 		'installation' => pepban_plugin_installation(),
 		'changelog'    => pepban_plugin_changelog_html(),
