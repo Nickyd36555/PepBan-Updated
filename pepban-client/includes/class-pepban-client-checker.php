@@ -298,7 +298,11 @@ class PepBan_Client_Checker {
 			'<p style="margin:0;font-size:12px;color:#9ca3af">This alert was sent by the PepBan plugin on ' . esc_html( $site_name ) . '. You receive one alert per customer per hour.</p>' .
 			'</td></tr></table></td></tr></table></body></html>';
 
-		wp_mail( $to, $subject, $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
+		wp_mail( $to, $subject, $html, array(
+			'Content-Type: text/html; charset=UTF-8',
+			'From: PepBan <admin@pepban.com>',
+			'Reply-To: admin@pepban.com',
+		) );
 	}
 
 	private static function get_customer_ip() {
