@@ -88,6 +88,11 @@ $connection_status = PepBan_Client_Settings::test_connection();
 				<th>Show Ban Warning on Orders</th>
 				<td><label><input type="checkbox" name="show_ban_notice_admin" value="1" <?php checked( $settings['show_ban_notice_admin'] ?? true ); ?>> Show a red alert on the order edit screen when the customer is in the ban database</label></td>
 			</tr>
+			<tr>
+				<th>Alert on Checkout Attempt</th>
+				<td><label><input type="checkbox" name="notify_store_on_attempt" value="1" <?php checked( $settings['notify_store_on_attempt'] ?? false ); ?>> Send me an email when a banned customer attempts to check out</label>
+				<p class="description">You will receive one alert per customer per hour. The email includes their details and reason on file.</p></td>
+			</tr>
 		</table>
 
 		<p class="submit"><button type="submit" class="button button-primary">Save Settings</button></p>
