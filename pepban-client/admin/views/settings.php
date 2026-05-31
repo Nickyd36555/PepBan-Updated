@@ -75,6 +75,11 @@ $connection_status = PepBan_Client_Settings::test_connection();
 				<td><label><input type="checkbox" name="auto_report_on_flag" value="1" <?php checked( $settings['auto_report_on_flag'] ?? false ); ?>> Automatically report a customer to the PepBan network when the hub blocks them at checkout</label>
 				<p class="description">Closes the feedback loop — confirms the ban across every member store without manual action.</p></td>
 			</tr>
+			<tr>
+				<th>Notify Customer on Ban</th>
+				<td><label><input type="checkbox" name="notify_customer_on_ban" value="1" <?php checked( $settings['notify_customer_on_ban'] ?? false ); ?>> Send the customer an email when they are reported to PepBan</label>
+				<p class="description">When enabled, PepBan will send the customer a notice explaining they have been flagged, with a link to submit a dispute. Disabled by default — enable only if you want customers informed immediately.</p></td>
+			</tr>
 		</table>
 
 		<h2>Admin Notices</h2>

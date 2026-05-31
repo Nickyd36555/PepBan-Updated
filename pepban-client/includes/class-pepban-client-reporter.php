@@ -128,6 +128,7 @@ class PepBan_Client_Reporter {
 			'ip_address'      => $order->get_customer_ip_address(),
 			'reason'          => $reason,
 			'order_id'        => (string) $order_id,
+			'notify_customer' => (bool) PepBan_Client_Settings::get( 'notify_customer_on_ban', false ),
 		);
 
 		$result = PepBan_Client_API::report_customer( $data );

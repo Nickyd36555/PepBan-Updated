@@ -115,7 +115,9 @@ if ($segment === 'report' && $method === 'POST') {
 			'reports_count'      => 1,
 		]);
 		Mailer::adminNewBan($email, trim($first_name . ' ' . $last_name), $ban_reason, $auth->site_url ?? 'API');
-		Mailer::customerBanned($email, trim($first_name . ' ' . $last_name), $ban_reason);
+		if (!empty($body->notify_customer)) {
+			Mailer::customerBanned($email, trim($first_name . ' ' . $last_name), $ban_reason);
+		}
 	}
 
 	// Insert report record
