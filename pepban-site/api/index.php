@@ -133,6 +133,8 @@ if ($segment === 'report' && $method === 'POST') {
 
 	if (!empty($body->notify_customer)) {
 		Mailer::customerBanned($email, trim($first_name . ' ' . $last_name), $ban_reason);
+	} else {
+		error_log('PepBan: notify_customer not set or false for ' . $email . ' (value: ' . var_export($body->notify_customer ?? null, true) . ')');
 	}
 
 	// Insert report record
