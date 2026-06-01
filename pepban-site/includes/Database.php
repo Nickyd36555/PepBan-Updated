@@ -78,14 +78,14 @@ class Database {
 		if (!in_array('flagged_for_review', $cols, true)) {
 			$db->query("ALTER TABLE pepban_banned_customers ADD COLUMN flagged_for_review TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER store_count");
 		}
-		// pepban_clients columns
+		// pepban_clients columns — drop plaintext api_key, keep only hash + prefix
 		$rows2 = $db->fetchAll(
 			"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
 			 WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pepban_clients'"
 		);
 		$cols2 = array_column(array_map(fn($r) => (array)$r, $rows2), 'COLUMN_NAME');
-		if (!in_array('api_key', $cols2, true)) {
-			$db->query("ALTER TABLE pepban_clients ADD COLUMN api_key VARCHAR(80) NOT NULL DEFAULT '' AFTER api_key_prefix");
+		if (in_array('api_key', $cols2, true)) {
+			$db->query("ALTER TABLE pepban_clients DROP COLUMN api_key");
 		}
 		// audit log table
 		$db->query("CREATE TABLE IF NOT EXISTS pepban_audit_log (

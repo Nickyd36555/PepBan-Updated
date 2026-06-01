@@ -46,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			'site_url'            => $site,
 			'api_key_hash'        => password_hash($raw_key, PASSWORD_DEFAULT),
 			'api_key_prefix'      => substr($raw_key, 0, 8),
-			'api_key'             => $raw_key,
 			'subscription_status' => $status,
 			'created_at'          => date('Y-m-d H:i:s'),
 			'activated_at'        => $status === 'active' ? date('Y-m-d H:i:s') : null,
