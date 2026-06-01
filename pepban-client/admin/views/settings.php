@@ -93,6 +93,15 @@ $connection_status = PepBan_Client_Settings::test_connection();
 				<td><label><input type="checkbox" name="notify_store_on_attempt" value="1" <?php checked( $settings['notify_store_on_attempt'] ?? false ); ?>> Send me an email when a banned customer attempts to check out</label>
 				<p class="description">You will receive one alert per customer per hour. The email includes their details and reason on file.</p></td>
 			</tr>
+			<tr>
+				<th><label for="alert_email">Alert Email Address</label></th>
+				<td>
+					<input type="email" name="alert_email" id="alert_email" class="regular-text"
+						value="<?php echo esc_attr( $settings['alert_email'] ?? '' ); ?>"
+						placeholder="<?php echo esc_attr( get_bloginfo( 'admin_email' ) ); ?>">
+					<p class="description">Where to send checkout attempt alerts. Leave blank to use the WordPress admin email (<?php echo esc_html( get_bloginfo( 'admin_email' ) ); ?>).</p>
+				</td>
+			</tr>
 		</table>
 
 		<p class="submit"><button type="submit" class="button button-primary">Save Settings</button></p>

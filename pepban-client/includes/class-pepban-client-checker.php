@@ -112,6 +112,15 @@ class PepBan_Client_Checker {
 			$order->update_status( 'failed', 'Blocked by PepBan — banned customer.' );
 			$order->save();
 
+			if ( PepBan_Client_Settings::get( 'notify_store_on_attempt', false ) ) {
+				$tkey = 'pepban_alert_' . md5( $order->get_billing_email() );
+				if ( ! get_transient( $tkey ) ) {
+					$result_data = isset( $result ) && ! is_wp_error( $result ) ? $result : array();
+					self::send_store_alert( $order->get_billing_email(), $order->get_billing_first_name(), $order->get_billing_last_name(), $result_data );
+					set_transient( $tkey, 1, HOUR_IN_SECONDS );
+				}
+			}
+
 			wc_add_notice( $message, 'error' );
 			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', $message, 400 );
 		}
@@ -255,7 +264,8 @@ class PepBan_Client_Checker {
 	}
 
 	private static function send_store_alert( string $email, string $first, string $last, array $result ): void {
-		$to           = get_bloginfo( 'admin_email' );
+		$configured = PepBan_Client_Settings::get( 'alert_email', '' );
+		$to         = ( $configured && is_email( $configured ) ) ? $configured : get_bloginfo( 'admin_email' );
 		$site_name    = get_bloginfo( 'name' );
 		$customer     = $result['customer'] ?? array();
 		$name         = trim( ( $customer['first_name'] ?? $first ) . ' ' . ( $customer['last_name'] ?? $last ) ) ?: 'Unknown';

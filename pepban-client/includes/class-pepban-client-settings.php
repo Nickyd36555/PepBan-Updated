@@ -100,6 +100,7 @@ class PepBan_Client_Settings {
 			'notify_customer_on_ban'  => ! empty( $_POST['notify_customer_on_ban'] ),
 			'show_ban_notice_admin'   => ! empty( $_POST['show_ban_notice_admin'] ),
 			'notify_store_on_attempt' => ! empty( $_POST['notify_store_on_attempt'] ),
+			'alert_email'             => sanitize_email( wp_unslash( $_POST['alert_email'] ?? '' ) ),
 		) );
 
 		update_option( self::OPTION_KEY, $settings );
