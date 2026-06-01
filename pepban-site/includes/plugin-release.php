@@ -38,9 +38,19 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.5.0',
+			'version' => '1.5.1',
 			'date'    => 'June 2025',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Fix', 'text' => 'Store owner checkout alert now fires correctly for all blocked customers, including those matched by the local blacklist'],
+				['tag' => 'Fix', 'text' => 'Customer ban notification now sends for all reports, not just first-time bans'],
+				['tag' => 'New', 'text' => 'Custom alert email address — set exactly where checkout attempt alerts are delivered in PepBan → Settings'],
+			],
+		],
+		[
+			'version' => '1.5.0',
+			'date'    => 'June 2025',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'New',      'text' => 'Optional customer ban notification — enable in PepBan → Settings to send the banned customer an email when they are reported to the network'],
 				['tag' => 'New',      'text' => 'Store owner checkout alert — get an email the moment a flagged customer attempts checkout on your store (off by default, toggle in settings)'],
