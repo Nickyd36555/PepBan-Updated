@@ -17,6 +17,8 @@ if ($segment === 'check' && $method === 'POST') {
 
 	if (!$email) ApiAuth::error('email is required', 422);
 
+	error_log('PepBan /check: email=' . $email . ' notify_store=' . var_export($body->notify_store ?? null, true) . ' alert_email=' . ($body->alert_email ?? 'none'));
+
 	$response = ['banned' => false, 'whitelisted' => false, 'report_count' => 0, 'store_count' => 0, 'customer' => null];
 
 	// Check global IP block list first
@@ -70,6 +72,8 @@ if ($segment === 'check' && $method === 'POST') {
 		}
 	}
 
+	error_log('PepBan /check result: email=' . $email . ' banned=' . var_export($response['banned'], true) . ' notify_store=' . var_export($body->notify_store ?? null, true));
+
 	// Send store owner alert via server SMTP — plugin passes notify_store=true with a rate-limited transient
 	if ($response['banned'] && !$response['whitelisted'] && !empty($body->notify_store)) {
 		$alert_to = trim($body->alert_email ?? '');
@@ -92,6 +96,7 @@ if ($segment === 'check' && $method === 'POST') {
 if ($segment === 'report' && $method === 'POST') {
 	$body  = ApiAuth::body();
 	$email = strtolower(trim($body->email ?? ''));
+	error_log('PepBan /report: email=' . $email . ' notify_customer=' . var_export($body->notify_customer ?? null, true));
 
 	if (!$email) ApiAuth::error('email is required', 422);
 
