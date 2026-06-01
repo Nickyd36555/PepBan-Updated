@@ -242,12 +242,13 @@ class PepBan_Client_Checker {
 					$tkey = 'pepban_auto_rep_' . md5( $email );
 					if ( ! get_transient( $tkey ) ) {
 						PepBan_Client_API::report_customer( array_filter( array(
-							'email'      => $email,
-							'phone'      => $phone,
-							'first_name' => $first,
-							'last_name'  => $last,
-							'ip_address' => $ip,
-							'reason'     => 'Auto-reported: customer blocked at checkout',
+							'email'           => $email,
+							'phone'           => $phone,
+							'first_name'      => $first,
+							'last_name'       => $last,
+							'ip_address'      => $ip,
+							'reason'          => 'Auto-reported: customer blocked at checkout',
+							'notify_customer' => PepBan_Client_Settings::get( 'notify_customer_on_ban', false ),
 						) ) );
 						set_transient( $tkey, 1, HOUR_IN_SECONDS );
 					}
