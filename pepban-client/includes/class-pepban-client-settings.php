@@ -10,7 +10,32 @@ class PepBan_Client_Settings {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_action( 'admin_post_pepban_client_save_settings',    array( __CLASS__, 'save_settings' ) );
 		add_action( 'admin_post_pepban_client_check_for_update', array( __CLASS__, 'force_update_check' ) );
+		add_action( 'admin_post_pepban_client_send_test_email',  array( __CLASS__, 'send_test_email' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
+	}
+
+	public static function send_test_email() {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) wp_die( 'Unauthorized' );
+		check_admin_referer( 'pepban_send_test_email' );
+
+		$configured = self::get( 'alert_email', '' );
+		$to         = ( $configured && is_email( $configured ) ) ? $configured : get_bloginfo( 'admin_email' );
+		$site_name  = get_bloginfo( 'name' );
+
+		$sent = wp_mail(
+			$to,
+			'[PepBan] Test Alert Email',
+			'<p>This is a test alert email from the PepBan plugin on <strong>' . esc_html( $site_name ) . '</strong>.</p><p>If you received this, checkout attempt alerts are working correctly.</p>',
+			array( 'Content-Type: text/html; charset=UTF-8' )
+		);
+
+		$msg = $sent
+			? 'Test email sent to ' . esc_html( $to ) . ' — check your inbox (and spam folder).'
+			: 'Test email FAILED. Check your server\'s PHP error log for details. You may need a WordPress SMTP plugin (e.g. WP Mail SMTP).';
+
+		set_transient( 'pepban_client_notice', $msg, 60 );
+		wp_safe_redirect( admin_url( 'admin.php?page=pepban-client' ) );
+		exit;
 	}
 
 	public static function force_update_check() {

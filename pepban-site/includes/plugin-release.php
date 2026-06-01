@@ -38,9 +38,18 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.5.1',
+			'version' => '1.5.2',
 			'date'    => 'June 2025',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Fix', 'text' => 'Store owner alert emails were being rejected by receiving mail servers due to a spoofed From header — now sends from your store\'s own domain, which passes SPF/DKIM checks'],
+				['tag' => 'New', 'text' => 'Send Test Alert Email button in PepBan → Settings — confirms email delivery is working on your server before relying on live alerts'],
+			],
+		],
+		[
+			'version' => '1.5.1',
+			'date'    => 'June 2025',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Fix', 'text' => 'Store owner checkout alert now fires correctly for all blocked customers, including those matched by the local blacklist'],
 				['tag' => 'Fix', 'text' => 'Customer ban notification now sends for all reports, not just first-time bans'],

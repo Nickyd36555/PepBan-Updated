@@ -107,6 +107,13 @@ $connection_status = PepBan_Client_Settings::test_connection();
 		<p class="submit"><button type="submit" class="button button-primary">Save Settings</button></p>
 	</form>
 
+	<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline">
+		<?php wp_nonce_field( 'pepban_send_test_email' ); ?>
+		<input type="hidden" name="action" value="pepban_client_send_test_email">
+		<button type="submit" class="button">Send Test Alert Email</button>
+		<span style="color:#6b7280;font-size:13px;margin-left:8px">Sends a test to your configured alert address to verify email delivery is working.</span>
+	</form>
+
 	<hr>
 	<h2>Plugin Updates</h2>
 	<p>Current version: <strong><?php echo esc_html( PEPBAN_CLIENT_VERSION ); ?></strong><?php
