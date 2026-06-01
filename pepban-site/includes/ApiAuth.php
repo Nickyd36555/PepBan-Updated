@@ -56,26 +56,6 @@ class ApiAuth {
 		$sig       = $_SERVER['HTTP_X_PEPBAN_SIG']       ?? '';
 		$timestamp = $_SERVER['HTTP_X_PEPBAN_TIMESTAMP'] ?? '';
 
-		if ($sig !== '' && $timestamp !== '') {
-			// Reject requests older than 5 minutes or from the future (>30s clock drift)
-			$age = time() - (int) $timestamp;
-			if ($age > 300 || $age < -30) {
-				self::respond(401, ['success' => false, 'message' => 'Request expired or clock skew too large.']);
-			}
-
-			if ($client->api_key) {
-				$method    = $_SERVER['REQUEST_METHOD'];
-				$path      = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
-				$body_hash = hash('sha256', self::raw_body());
-				$sig_data  = implode("\n", [$timestamp, $method, $path, $body_hash]);
-				$expected  = hash_hmac('sha256', $sig_data, $client->api_key);
-				if (!hash_equals($expected, $sig)) {
-					self::audit($client->id, 'sig_mismatch', 'client', $client->id,
-						'Expected sig mismatch from ' . ($_SERVER['HTTP_X_PEPBAN_SITE'] ?? '?'));
-					self::respond(401, ['success' => false, 'message' => 'Invalid request signature.']);
-				}
-			}
-		}
 
 		// ── Domain locking ────────────────────────────────────────────────────────
 		$req_site = $_SERVER['HTTP_X_PEPBAN_SITE'] ?? '';

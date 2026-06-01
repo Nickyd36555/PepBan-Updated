@@ -37,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 		$lines[] = "define('SECRET_KEY', " . var_export(post('secret_key'), true) . ');';
 		$lines[] = "define('RATE_LIMIT_PER_MINUTE', " . (int) post('rate_limit') . ');';
-		$lines[] = "define('AUTO_APPROVE_CLIENTS', " . (post('auto_approve') === '1' ? 'true' : 'false') . ');';
 		$lines[] = "define('PEPBAN_VERSION', " . var_export(post('pepban_version'), true) . ');';
 		$lines[] = '';
 
@@ -127,16 +126,7 @@ require __DIR__ . '/../templates/admin-layout.php';
 
 			<h4 class="pb-section-title">API &amp; Security</h4>
 			<div class="pb-field"><label>Secret Key <small>(64+ hex chars)</small></label><input type="text" name="secret_key" value="<?= e(SECRET_KEY) ?>" required></div>
-			<div class="pb-grid-2">
-				<div class="pb-field"><label>Rate Limit (requests/minute)</label><input type="number" name="rate_limit" value="<?= e(RATE_LIMIT_PER_MINUTE) ?>" min="1" max="600"></div>
-				<div class="pb-field">
-					<label>Auto-Approve New Clients</label>
-					<select name="auto_approve" class="pb-select">
-						<option value="0" <?= !AUTO_APPROVE_CLIENTS ? 'selected' : '' ?>>No — require manual activation</option>
-						<option value="1" <?= AUTO_APPROVE_CLIENTS ? 'selected' : '' ?>>Yes — activate on sign-up</option>
-					</select>
-				</div>
-			</div>
+			<div class="pb-field"><label>Rate Limit (requests/minute)</label><input type="number" name="rate_limit" value="<?= e(RATE_LIMIT_PER_MINUTE) ?>" min="1" max="600"></div>
 
 			<h4 class="pb-section-title">Email / SMTP</h4>
 			<div class="pb-grid-2">
