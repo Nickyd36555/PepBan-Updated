@@ -3,6 +3,10 @@ defined('PEPBAN_VERSION') || die;
 
 class Mailer {
 
+	private static string $last_error = '';
+
+	public static function last_error(): string { return self::$last_error; }
+
 	/**
 	 * Send an email. When $html is provided, sends multipart/alternative.
 	 */
@@ -106,7 +110,8 @@ class Mailer {
 		$addr   = $secure === 'ssl' ? "ssl://{$host}:{$port}" : "tcp://{$host}:{$port}";
 		$socket = stream_socket_client($addr, $errno, $errstr, 15, STREAM_CLIENT_CONNECT, $ctx);
 		if (!$socket) {
-			error_log("PepBan SMTP: connection failed to {$addr} — {$errstr} ({$errno})");
+			self::$last_error = "Connection failed to {$addr}: {$errstr} ({$errno})";
+			error_log('PepBan SMTP: ' . self::$last_error);
 			return false;
 		}
 
@@ -136,10 +141,16 @@ class Mailer {
 		}
 
 		$r = $cmd('AUTH LOGIN');
-		if ((int)$r !== 334) { error_log("PepBan SMTP: AUTH LOGIN rejected — {$r}"); fclose($socket); return false; }
+		if ((int)$r !== 334) {
+			self::$last_error = "AUTH LOGIN rejected: {$r}";
+			error_log('PepBan SMTP: ' . self::$last_error); fclose($socket); return false;
+		}
 		$cmd(base64_encode(SMTP_USER));
 		$r = $cmd(base64_encode(SMTP_PASS));
-		if ((int)$r !== 235) { error_log("PepBan SMTP: authentication failed — {$r}"); fclose($socket); return false; }
+		if ((int)$r !== 235) {
+			self::$last_error = "Authentication failed (wrong SMTP username or password): {$r}";
+			error_log('PepBan SMTP: ' . self::$last_error); fclose($socket); return false;
+		}
 
 		$envelope_from = SMTP_USER ?: MAIL_FROM;
 		$cmd('MAIL FROM:<' . $envelope_from . '>');
@@ -184,6 +195,7 @@ class Mailer {
 		fclose($socket);
 
 		if ((int)$r !== 250) {
+			self::$last_error = "Message rejected by server: {$r}";
 			error_log("PepBan SMTP: message not queued for {$to} — {$r}");
 			return false;
 		}

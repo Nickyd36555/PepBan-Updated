@@ -77,7 +77,11 @@ if ($segment === 'check' && $method === 'POST') {
 			$alert_to = $auth->owner_email ?? '';
 		}
 		if ($alert_to) {
-			Mailer::storeAlert($alert_to, $email, $response, $auth->site_url ?? '');
+			try {
+				Mailer::storeAlert($alert_to, $email, $response, $auth->site_url ?? '');
+			} catch (Throwable $e) {
+				error_log('PepBan storeAlert error: ' . $e->getMessage());
+			}
 		}
 	}
 

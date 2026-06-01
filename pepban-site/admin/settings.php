@@ -81,9 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			}
 			$to = post('test_to') ?: ADMIN_EMAIL;
 			$ok = Mailer::send($to, 'PepBan — Test Email', "This is a test email from your PepBan admin panel.\n\nIf you receive this, SMTP is working correctly.\n\n— PepBan");
+			$err = Mailer::last_error();
 			$test_result = $ok
 				? ['type' => 'success', 'msg' => "Settings saved. Test email sent to {$to} — check your inbox (and spam folder)."]
-				: ['type' => 'error',   'msg' => "Settings saved, but the test email failed. Check the PHP error log for a PepBan SMTP: line."];
+				: ['type' => 'error',   'msg' => "Settings saved, but the test email failed. " . ($err ?: 'Check the PHP error log for a PepBan SMTP: line.')];
 		} else {
 			admin_flash('success', 'Settings saved.');
 			redirect('/admin/settings');
