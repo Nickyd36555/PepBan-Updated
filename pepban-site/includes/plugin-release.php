@@ -38,9 +38,19 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
+			'version' => '1.5.0',
+			'date'    => 'June 2025',
+			'latest'  => true,
+			'items'   => [
+				['tag' => 'New',      'text' => 'Optional customer ban notification — enable in PepBan → Settings to send the banned customer an email when they are reported to the network'],
+				['tag' => 'New',      'text' => 'Store owner checkout alert — get an email the moment a flagged customer attempts checkout on your store (off by default, toggle in settings)'],
+				['tag' => 'Improved', 'text' => 'API key security — keys are now stored as a one-way hash; your plaintext key is shown only once and never saved to the database'],
+			],
+		],
+		[
 			'version' => '1.4.6',
 			'date'    => 'May 2025',
-			'latest'  => true,
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'New', 'text' => 'Blocked customers can now be directed to pepban.com/dispute for a centralized ban review — set Appeal URL in PepBan → Settings'],
 				['tag' => 'Improved', 'text' => 'Default block message no longer contains a specific email address — cleaner fallback when no custom message is configured'],
