@@ -112,15 +112,6 @@ class PepBan_Client_Checker {
 			$order->update_status( 'failed', 'Blocked by PepBan — banned customer.' );
 			$order->save();
 
-			if ( PepBan_Client_Settings::get( 'notify_store_on_attempt', false ) ) {
-				$tkey = 'pepban_alert_' . md5( $order->get_billing_email() );
-				if ( ! get_transient( $tkey ) ) {
-					$result_data = isset( $result ) && ! is_wp_error( $result ) ? $result : array();
-					self::send_store_alert( $order->get_billing_email(), $order->get_billing_first_name(), $order->get_billing_last_name(), $result_data );
-					set_transient( $tkey, 1, HOUR_IN_SECONDS );
-				}
-			}
-
 			wc_add_notice( $message, 'error' );
 			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', $message, 400 );
 		}
@@ -230,7 +221,19 @@ class PepBan_Client_Checker {
 	private static function api_check( string $email, string $phone, string $first = '', string $last = '', string $ip = '' ) {
 		$key = md5( $email . '|' . $phone );
 		if ( ! isset( self::$check_cache[ $key ] ) ) {
-			$result = PepBan_Client_API::check_customer( $email, $phone, $first, $last, $ip );
+			$extra = array();
+
+			// Ask server to send store alert if enabled and not rate-limited
+			if ( PepBan_Client_Settings::get( 'notify_store_on_attempt', false ) ) {
+				$alert_tkey = 'pepban_alert_' . md5( $email );
+				if ( ! get_transient( $alert_tkey ) ) {
+					$configured  = PepBan_Client_Settings::get( 'alert_email', '' );
+					$extra['notify_store'] = true;
+					$extra['alert_email']  = ( $configured && is_email( $configured ) ) ? $configured : get_bloginfo( 'admin_email' );
+				}
+			}
+
+			$result = PepBan_Client_API::check_customer( $email, $phone, $first, $last, $ip, $extra );
 			self::$check_cache[ $key ] = $result;
 
 			if ( ! is_wp_error( $result ) && ! empty( $result['banned'] ) && empty( $result['whitelisted'] ) ) {
@@ -250,68 +253,13 @@ class PepBan_Client_Checker {
 					}
 				}
 
-				// Alert store owner: once per hour per customer email
-				if ( PepBan_Client_Settings::get( 'notify_store_on_attempt', false ) ) {
-					$tkey = 'pepban_alert_' . md5( $email );
-					if ( ! get_transient( $tkey ) ) {
-						self::send_store_alert( $email, $first, $last, $result );
-						set_transient( $tkey, 1, HOUR_IN_SECONDS );
-					}
+				// Set alert rate-limit transient if we asked the server to send an alert
+				if ( ! empty( $extra['notify_store'] ) ) {
+					set_transient( $alert_tkey, 1, HOUR_IN_SECONDS );
 				}
 			}
 		}
 		return self::$check_cache[ $key ];
-	}
-
-	private static function send_store_alert( string $email, string $first, string $last, array $result ): void {
-		$configured = PepBan_Client_Settings::get( 'alert_email', '' );
-		$to         = ( $configured && is_email( $configured ) ) ? $configured : get_bloginfo( 'admin_email' );
-		$site_name    = get_bloginfo( 'name' );
-		$customer     = $result['customer'] ?? array();
-		$name         = trim( ( $customer['first_name'] ?? $first ) . ' ' . ( $customer['last_name'] ?? $last ) ) ?: 'Unknown';
-		$reason       = $customer['reason'] ?? 'N/A';
-		$report_count = (int) ( $result['report_count'] ?? 1 );
-		$store_count  = (int) ( $result['store_count']  ?? 1 );
-		$orders_url   = admin_url( 'edit.php?post_type=shop_order&s=' . urlencode( $email ) );
-		$pepban_url   = 'https://pepban.com/admin/banned';
-
-		$subject = '[PepBan] Banned customer attempted checkout on ' . $site_name;
-
-		$html =
-			'<!DOCTYPE html><html><head><meta charset="UTF-8"></head>' .
-			'<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif">' .
-			'<table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:40px 20px"><tr><td align="center">' .
-			'<table width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%">' .
-			'<tr><td style="background:#0c0c1e;border-radius:10px 10px 0 0;padding:24px 36px">' .
-			'<span style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em">Pep<span style="color:#dc2626">Ban</span></span>' .
-			'<span style="float:right;background:#dc2626;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px">Alert</span>' .
-			'</td></tr>' .
-			'<tr><td style="background:#fff;padding:36px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb">' .
-			'<h2 style="margin:0 0 6px;font-size:18px;font-weight:700;color:#111827">Banned customer attempted checkout</h2>' .
-			'<p style="margin:0 0 24px;font-size:14px;color:#6b7280">on <strong style="color:#374151">' . esc_html( $site_name ) . '</strong></p>' .
-			'<table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:24px">' .
-			'<tr style="background:#f9fafb"><td style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;width:130px">Email</td>' .
-			'<td style="padding:10px 16px;font-size:14px;color:#111827;font-weight:600">' . esc_html( $email ) . '</td></tr>' .
-			'<tr><td style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;border-top:1px solid #f3f4f6">Name</td>' .
-			'<td style="padding:10px 16px;font-size:14px;color:#374151;border-top:1px solid #f3f4f6">' . esc_html( $name ) . '</td></tr>' .
-			'<tr style="background:#fef2f2"><td style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#dc2626;border-top:1px solid #fecaca">Reason</td>' .
-			'<td style="padding:10px 16px;font-size:14px;color:#7f1d1d;border-top:1px solid #fecaca">' . esc_html( $reason ) . '</td></tr>' .
-			'<tr><td style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;border-top:1px solid #f3f4f6">Reports</td>' .
-			'<td style="padding:10px 16px;font-size:14px;color:#374151;border-top:1px solid #f3f4f6"><strong>' . esc_html( $report_count ) . '</strong> report(s) across <strong>' . esc_html( $store_count ) . '</strong> store(s)</td></tr>' .
-			'</table>' .
-			'<table cellpadding="0" cellspacing="0"><tr>' .
-			'<td style="padding-right:10px"><a href="' . esc_url( $orders_url ) . '" style="display:inline-block;background:#111827;color:#fff;padding:11px 22px;border-radius:7px;text-decoration:none;font-size:13px;font-weight:600">View Orders</a></td>' .
-			'<td><a href="' . esc_url( $pepban_url ) . '" style="display:inline-block;background:#dc2626;color:#fff;padding:11px 22px;border-radius:7px;text-decoration:none;font-size:13px;font-weight:600">View in PepBan</a></td>' .
-			'</tr></table>' .
-			'</td></tr>' .
-			'<tr><td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;padding:16px 36px;text-align:center">' .
-			'<p style="margin:0;font-size:12px;color:#9ca3af">This alert was sent by the PepBan plugin on ' . esc_html( $site_name ) . '. You receive one alert per customer per hour.</p>' .
-			'</td></tr></table></td></tr></table></body></html>';
-
-		$sent = wp_mail( $to, $subject, $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
-		if ( ! $sent ) {
-			error_log( 'PepBan: store alert wp_mail() failed for recipient ' . $to . ' (customer: ' . $email . ')' );
-		}
 	}
 
 	private static function get_customer_ip() {

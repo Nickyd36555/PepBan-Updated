@@ -71,14 +71,18 @@ class PepBan_Client_API {
 
 	// ── Convenience wrappers ─────────────────────────────────────────────────────
 
-	public static function check_customer( string $email, string $phone = '', string $first_name = '', string $last_name = '', string $ip = '' ) {
-		return self::post( '/check', array_filter( array(
+	public static function check_customer( string $email, string $phone = '', string $first_name = '', string $last_name = '', string $ip = '', array $extra = array() ) {
+		$data = array_filter( array(
 			'email'      => $email,
 			'phone'      => $phone,
 			'first_name' => $first_name,
 			'last_name'  => $last_name,
 			'ip_address' => $ip,
-		) ) );
+		) );
+		if ( ! empty( $extra ) ) {
+			$data = array_merge( $data, $extra );
+		}
+		return self::post( '/check', $data );
 	}
 
 	public static function report_customer( array $data ) {

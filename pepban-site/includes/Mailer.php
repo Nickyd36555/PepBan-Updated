@@ -400,6 +400,54 @@ class Mailer {
 		);
 	}
 
+	public static function storeAlert(string $to, string $customer_email, array $response, string $site_url): void {
+		$customer     = $response['customer'] ?? [];
+		$name         = trim(($customer['first_name'] ?? '') . ' ' . ($customer['last_name'] ?? '')) ?: 'Unknown';
+		$reason       = $customer['reason'] ?? 'N/A';
+		$report_count = (int) ($response['report_count'] ?? 1);
+		$store_count  = (int) ($response['store_count']  ?? 1);
+		$site_name    = $site_url ?: 'your store';
+		$orders_url   = rtrim(SITE_URL, '/') . '/admin/banned?q=' . urlencode($customer_email);
+
+		$plain =
+			"A banned customer attempted checkout on {$site_name}.\n\n" .
+			"Email:   {$customer_email}\n" .
+			"Name:    {$name}\n" .
+			"Reason:  {$reason}\n" .
+			"Reports: {$report_count} report(s) across {$store_count} store(s)\n\n" .
+			"View record: {$orders_url}\n\n— PepBan";
+
+		$html =
+			'<!DOCTYPE html><html><head><meta charset="UTF-8"></head>' .
+			'<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif">' .
+			'<table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:40px 20px"><tr><td align="center">' .
+			'<table width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%">' .
+			'<tr><td style="background:#0c0c1e;border-radius:10px 10px 0 0;padding:24px 36px">' .
+			'<span style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em">Pep<span style="color:#dc2626">Ban</span></span>' .
+			'<span style="float:right;background:#dc2626;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px">Alert</span>' .
+			'</td></tr>' .
+			'<tr><td style="background:#fff;padding:36px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb">' .
+			'<h2 style="margin:0 0 6px;font-size:18px;font-weight:700;color:#111827">Banned customer attempted checkout</h2>' .
+			'<p style="margin:0 0 24px;font-size:14px;color:#6b7280">on <strong style="color:#374151">' . htmlspecialchars($site_name) . '</strong></p>' .
+			'<table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:24px">' .
+			'<tr style="background:#f9fafb"><td style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;width:130px">Email</td>' .
+			'<td style="padding:10px 16px;font-size:14px;color:#111827;font-weight:600">' . htmlspecialchars($customer_email) . '</td></tr>' .
+			'<tr><td style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;border-top:1px solid #f3f4f6">Name</td>' .
+			'<td style="padding:10px 16px;font-size:14px;color:#374151;border-top:1px solid #f3f4f6">' . htmlspecialchars($name) . '</td></tr>' .
+			'<tr style="background:#fef2f2"><td style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#dc2626;border-top:1px solid #fecaca">Reason</td>' .
+			'<td style="padding:10px 16px;font-size:14px;color:#7f1d1d;border-top:1px solid #fecaca">' . htmlspecialchars($reason) . '</td></tr>' .
+			'<tr><td style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;border-top:1px solid #f3f4f6">Reports</td>' .
+			'<td style="padding:10px 16px;font-size:14px;color:#374151;border-top:1px solid #f3f4f6"><strong>' . $report_count . '</strong> report(s) across <strong>' . $store_count . '</strong> store(s)</td></tr>' .
+			'</table>' .
+			'<a href="' . htmlspecialchars($orders_url) . '" style="display:inline-block;background:#dc2626;color:#fff;padding:11px 22px;border-radius:7px;text-decoration:none;font-size:13px;font-weight:600">View in PepBan &rarr;</a>' .
+			'</td></tr>' .
+			'<tr><td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;padding:16px 36px;text-align:center">' .
+			'<p style="margin:0;font-size:12px;color:#9ca3af">Sent by PepBan. One alert per customer per hour.</p>' .
+			'</td></tr></table></td></tr></table></body></html>';
+
+		self::send($to, '[PepBan] Banned customer attempted checkout', $plain, $html);
+	}
+
 	public static function adminNewSignup(object $client): void {
 		$admin_url = rtrim(SITE_URL, '/') . '/admin/clients';
 		self::send(

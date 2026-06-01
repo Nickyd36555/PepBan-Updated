@@ -38,12 +38,21 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.5.2',
+			'version' => '1.5.3',
 			'date'    => 'June 2025',
 			'latest'  => true,
 			'items'   => [
-				['tag' => 'Fix', 'text' => 'Store owner alert emails were being rejected by receiving mail servers due to a spoofed From header — now sends from your store\'s own domain, which passes SPF/DKIM checks'],
-				['tag' => 'New', 'text' => 'Send Test Alert Email button in PepBan → Settings — confirms email delivery is working on your server before relying on live alerts'],
+				['tag' => 'Fix', 'text' => 'Store owner checkout alerts now sent by the PepBan server (same reliable SMTP as all other PepBan emails) instead of relying on the store\'s own WordPress mail setup'],
+				['tag' => 'Fix', 'text' => 'Customer ban notification email now reliably delivered via PepBan server SMTP'],
+			],
+		],
+		[
+			'version' => '1.5.2',
+			'date'    => 'June 2025',
+			'latest'  => false,
+			'items'   => [
+				['tag' => 'Fix', 'text' => 'Store owner alert emails were being rejected by receiving mail servers due to a spoofed From header'],
+				['tag' => 'New', 'text' => 'Send Test Alert Email button in PepBan → Settings'],
 			],
 		],
 		[

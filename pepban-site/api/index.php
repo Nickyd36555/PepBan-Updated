@@ -17,62 +17,71 @@ if ($segment === 'check' && $method === 'POST') {
 
 	if (!$email) ApiAuth::error('email is required', 422);
 
-	// Check global IP block list first — fastest bail-out
+	$response = ['banned' => false, 'whitelisted' => false, 'report_count' => 0, 'store_count' => 0, 'customer' => null];
+
+	// Check global IP block list first
 	if ($ip && filter_var($ip, FILTER_VALIDATE_IP)) {
-		$blocked_ip = $db->fetch(
-			'SELECT id FROM pepban_blocked_ips WHERE ip_address = ?',
-			[$ip]
-		);
+		$blocked_ip = $db->fetch('SELECT id FROM pepban_blocked_ips WHERE ip_address = ?', [$ip]);
 		if ($blocked_ip) {
-			ApiAuth::json(['banned' => true, 'whitelisted' => false, 'reason' => 'blocked_ip', 'customer' => null]);
+			$response = ['banned' => true, 'whitelisted' => false, 'reason' => 'blocked_ip', 'customer' => null];
 		}
 	}
 
-	$customer = $db->fetch(
-		"SELECT id, email, first_name, last_name, phone, status, reason, reports_count
-		 FROM pepban_banned_customers WHERE email = ? AND status = 'active'",
-		[$email]
-	);
-
-	// Check blocked domain even if not in banned_customers
-	$email_domain = strtolower(substr(strrchr($email, '@'), 1));
-	$blocked_domain = $db->fetch(
-		'SELECT id FROM pepban_blocked_domains WHERE domain = ?',
-		[$email_domain]
-	);
-	if ($blocked_domain) {
-		ApiAuth::json(['banned' => true, 'whitelisted' => false, 'reason' => 'blocked_domain', 'customer' => null]);
+	// Check blocked domain
+	if (!$response['banned']) {
+		$email_domain   = strtolower(substr(strrchr($email, '@'), 1));
+		$blocked_domain = $db->fetch('SELECT id FROM pepban_blocked_domains WHERE domain = ?', [$email_domain]);
+		if ($blocked_domain) {
+			$response = ['banned' => true, 'whitelisted' => false, 'reason' => 'blocked_domain', 'customer' => null];
+		}
 	}
 
-	if (!$customer) {
-		ApiAuth::json(['banned' => false, 'whitelisted' => false]);
+	// Check banned customers table
+	if (!$response['banned']) {
+		$customer = $db->fetch(
+			"SELECT id, email, first_name, last_name, phone, status, reason, reports_count
+			 FROM pepban_banned_customers WHERE email = ? AND status = 'active'",
+			[$email]
+		);
+
+		if ($customer) {
+			$whitelisted = $db->fetch(
+				'SELECT id FROM pepban_whitelists WHERE customer_id = ? AND client_id = ?',
+				[$customer->id, $auth->id]
+			);
+			$store_count = (int) $db->scalar(
+				'SELECT COUNT(DISTINCT client_id) FROM pepban_ban_reports WHERE customer_id = ?',
+				[$customer->id]
+			);
+			$response = [
+				'banned'       => true,
+				'whitelisted'  => (bool) $whitelisted,
+				'report_count' => (int) $customer->reports_count,
+				'store_count'  => $store_count,
+				'customer'     => [
+					'id'         => $customer->id,
+					'email'      => $customer->email,
+					'first_name' => $customer->first_name,
+					'last_name'  => $customer->last_name,
+					'phone'      => $customer->phone,
+					'reason'     => $customer->reason,
+				],
+			];
+		}
 	}
 
-	// Check per-site whitelist
-	$whitelisted = $db->fetch(
-		'SELECT id FROM pepban_whitelists WHERE customer_id = ? AND client_id = ?',
-		[$customer->id, $auth->id]
-	);
+	// Send store owner alert via server SMTP — plugin passes notify_store=true with a rate-limited transient
+	if ($response['banned'] && !$response['whitelisted'] && !empty($body->notify_store)) {
+		$alert_to = trim($body->alert_email ?? '');
+		if (!$alert_to || !filter_var($alert_to, FILTER_VALIDATE_EMAIL)) {
+			$alert_to = $auth->owner_email ?? '';
+		}
+		if ($alert_to) {
+			Mailer::storeAlert($alert_to, $email, $response, $auth->site_url ?? '');
+		}
+	}
 
-	$store_count = (int) $db->scalar(
-		'SELECT COUNT(DISTINCT client_id) FROM pepban_ban_reports WHERE customer_id = ?',
-		[$customer->id]
-	);
-
-	ApiAuth::json([
-		'banned'       => true,
-		'whitelisted'  => (bool) $whitelisted,
-		'report_count' => (int) $customer->reports_count,
-		'store_count'  => $store_count,
-		'customer'     => [
-			'id'         => $customer->id,
-			'email'      => $customer->email,
-			'first_name' => $customer->first_name,
-			'last_name'  => $customer->last_name,
-			'phone'      => $customer->phone,
-			'reason'     => $customer->reason,
-		],
-	]);
+	ApiAuth::json($response);
 }
 
 // ── POST /api/v1/report ───────────────────────────────────────────────────────
