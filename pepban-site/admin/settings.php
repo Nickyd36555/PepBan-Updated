@@ -59,10 +59,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		file_put_contents(__DIR__ . '/../config.local.php', implode("\n", $lines));
 
 		if ($act === 'save_and_test') {
-			// Re-load the constants we just wrote so the test uses the new SMTP config
+			// Re-load the constants we just wrote so the test uses the new SMTP config.
+			// Parse var_export() output safely — no eval().
 			foreach ($lines as $line) {
 				if (preg_match("/define\('(SMTP_HOST|SMTP_PORT|SMTP_USER|SMTP_PASS|SMTP_SECURE|MAIL_FROM|MAIL_FROM_NAME)',\s*(.+)\);/", $line, $m)) {
-					if (!defined($m[1])) define($m[1], eval('return ' . $m[2] . ';'));
+					if (!defined($m[1])) {
+						$raw = trim($m[2]);
+						if (preg_match("/^'(.*)'$/s", $raw, $qm)) {
+							$val = str_replace("\\'", "'", $qm[1]);
+						} elseif (is_numeric($raw)) {
+							$val = (int) $raw;
+						} elseif ($raw === 'true') {
+							$val = true;
+						} elseif ($raw === 'false') {
+							$val = false;
+						} else {
+							$val = $raw;
+						}
+						define($m[1], $val);
+					}
 				}
 			}
 			$to = post('test_to') ?: ADMIN_EMAIL;

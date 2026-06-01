@@ -11,9 +11,10 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 		$errors[] = 'Too many requests. Please wait a minute and try again.';
 	} else {
 
-	$name    = trim( $_POST['contact_name']    ?? '' );
-	$email   = trim( $_POST['contact_email']   ?? '' );
-	$subject = trim( $_POST['contact_subject'] ?? '' );
+	// Strip CR/LF to prevent email header injection
+	$name    = str_replace( ["\r", "\n"], '', trim( $_POST['contact_name']    ?? '' ) );
+	$email   = str_replace( ["\r", "\n"], '', trim( $_POST['contact_email']   ?? '' ) );
+	$subject = str_replace( ["\r", "\n"], '', trim( $_POST['contact_subject'] ?? '' ) );
 	$message = trim( $_POST['contact_message'] ?? '' );
 
 	if ( empty( $name ) )    $errors[] = 'Name is required.';

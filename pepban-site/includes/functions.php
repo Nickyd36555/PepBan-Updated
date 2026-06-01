@@ -102,9 +102,23 @@ function check_rate_limit(string $identifier): bool {
 	$dir  = sys_get_temp_dir() . '/pepban_rl/';
 	if (!is_dir($dir)) mkdir($dir, 0700, true);
 	$file = $dir . md5($identifier) . '_' . floor(time() / 60);
-	$count = file_exists($file) ? (int) file_get_contents($file) : 0;
-	if ($count >= RATE_LIMIT_PER_MINUTE) return false;
-	file_put_contents($file, $count + 1, LOCK_EX);
+
+	// Atomic read-increment-write using an exclusive lock held across both operations.
+	$fh = @fopen($file, 'c+');
+	if (!$fh) return true; // fail open if filesystem is unavailable
+	flock($fh, LOCK_EX);
+	$count = (int) fread($fh, 20);
+	if ($count >= RATE_LIMIT_PER_MINUTE) {
+		flock($fh, LOCK_UN);
+		fclose($fh);
+		return false;
+	}
+	fseek($fh, 0);
+	fwrite($fh, $count + 1);
+	ftruncate($fh, ftell($fh));
+	flock($fh, LOCK_UN);
+	fclose($fh);
+
 	// Clean stale files occasionally
 	if (mt_rand(1, 50) === 1) {
 		foreach (glob($dir . '*') as $f) {
