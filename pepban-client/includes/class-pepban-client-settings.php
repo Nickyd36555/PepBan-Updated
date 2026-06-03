@@ -121,6 +121,7 @@ class PepBan_Client_Settings {
 			'check_billing_address'=> ! empty( $_POST['check_billing_address'] ),
 			'auto_report_on_flag'    => ! empty( $_POST['auto_report_on_flag'] ),
 			'notify_customer_on_ban'  => ! empty( $_POST['notify_customer_on_ban'] ),
+			'reveal_reporter'         => ! empty( $_POST['reveal_reporter'] ),
 			'show_ban_notice_admin'   => ! empty( $_POST['show_ban_notice_admin'] ),
 			'notify_store_on_attempt' => ! empty( $_POST['notify_store_on_attempt'] ),
 			'alert_email'             => sanitize_email( wp_unslash( $_POST['alert_email'] ?? '' ) ),

@@ -80,6 +80,11 @@ $connection_status = PepBan_Client_Settings::test_connection();
 				<td><label><input type="checkbox" name="notify_customer_on_ban" value="1" <?php checked( $settings['notify_customer_on_ban'] ?? false ); ?>> Send the customer an email when they are reported to PepBan</label>
 				<p class="description">When enabled, PepBan will send the customer a notice explaining they have been flagged, with a link to submit a dispute. Disabled by default — enable only if you want customers informed immediately.</p></td>
 			</tr>
+			<tr>
+				<th>Reveal Store Identity</th>
+				<td><label><input type="checkbox" name="reveal_reporter" value="1" <?php checked( $settings['reveal_reporter'] ?? false ); ?>> Include my store name in the ban notification email sent to the customer</label>
+				<p class="description">When unchecked (default), ban notifications are sent anonymously — the customer is not told which store reported them. Check this to include your store name and URL in the notification.</p></td>
+			</tr>
 		</table>
 
 		<h2>Admin Notices</h2>

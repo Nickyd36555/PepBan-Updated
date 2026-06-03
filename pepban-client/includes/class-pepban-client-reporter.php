@@ -58,10 +58,6 @@ class PepBan_Client_Reporter {
 				<textarea id="pepban-reason-<?php echo esc_attr( $order_id ); ?>" name="pepban_reason"
 					rows="3" style="width:100%;margin:6px 0"
 					placeholder="e.g. Chargeback, fraud, abuse…"></textarea>
-				<label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-weight:normal">
-					<input type="checkbox" name="pepban_reveal_reporter" value="1">
-					Show my store name in the ban notification
-				</label>
 				<button type="button" class="button button-primary pepban-report-btn" style="width:100%"
 					data-order-id="<?php echo esc_attr( $order_id ); ?>"
 					data-nonce="<?php echo esc_attr( wp_create_nonce( 'pepban_report_' . $order_id ) ); ?>">
@@ -123,7 +119,7 @@ class PepBan_Client_Reporter {
 			$billing['country']   ?? '',
 		) ) );
 
-		$reveal   = ! empty( $_POST['reveal_reporter'] );
+		$reveal   = (bool) PepBan_Client_Settings::get( 'reveal_reporter', false );
 		$reporter = $reveal ? get_bloginfo( 'name' ) . ' (' . home_url() . ')' : '';
 
 		$data = array(
