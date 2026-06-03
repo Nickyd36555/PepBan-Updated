@@ -38,9 +38,17 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.5.5',
+			'version' => '1.5.6',
 			'date'    => 'June 2025',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Fix', 'text' => 'Block message no longer displays as raw HTML tags on checkout — WooCommerce was double-wrapping the error when both a notice and a RouteException were queued simultaneously'],
+			],
+		],
+		[
+			'version' => '1.5.5',
+			'date'    => 'June 2025',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Fix', 'text' => 'Send Test Alert Email now sends through the PepBan server (same delivery path as real checkout alerts) — previously used WordPress mail, which gave misleading pass/fail results'],
 			],

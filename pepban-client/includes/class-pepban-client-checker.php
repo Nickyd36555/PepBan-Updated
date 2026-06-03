@@ -112,7 +112,6 @@ class PepBan_Client_Checker {
 			$order->update_status( 'failed', 'Blocked by PepBan — banned customer.' );
 			$order->save();
 
-			wc_add_notice( $message, 'error' );
 			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', $message, 400 );
 		}
 	}
