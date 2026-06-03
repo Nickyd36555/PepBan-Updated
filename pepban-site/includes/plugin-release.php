@@ -38,9 +38,17 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.5.4',
+			'version' => '1.5.5',
 			'date'    => 'June 2025',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Fix', 'text' => 'Send Test Alert Email now sends through the PepBan server (same delivery path as real checkout alerts) — previously used WordPress mail, which gave misleading pass/fail results'],
+			],
+		],
+		[
+			'version' => '1.5.4',
+			'date'    => 'June 2025',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Fix', 'text' => 'Customer ban notification now fires correctly when Auto-Report on Block is enabled — the auto-report now respects the Notify Customer on Ban setting'],
 			],

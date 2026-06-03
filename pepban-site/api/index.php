@@ -276,6 +276,39 @@ if ($segment === 'blocked-ips' && $method === 'GET') {
 	ApiAuth::json(['blocked_ips' => $list]);
 }
 
+// ── POST /api/v1/test-alert ───────────────────────────────────────────────────
+if ($segment === 'test-alert' && $method === 'POST') {
+	$body     = ApiAuth::body();
+	$alert_to = trim($body->alert_email ?? '');
+	if (!$alert_to || !filter_var($alert_to, FILTER_VALIDATE_EMAIL)) {
+		$alert_to = $auth->owner_email ?? '';
+	}
+	if (!$alert_to) ApiAuth::error('No alert email configured', 422);
+
+	$fake_response = [
+		'banned'       => true,
+		'whitelisted'  => false,
+		'report_count' => 3,
+		'store_count'  => 2,
+		'customer'     => [
+			'id'         => 0,
+			'email'      => 'test-customer@example.com',
+			'first_name' => 'Test',
+			'last_name'  => 'Customer',
+			'phone'      => '',
+			'reason'     => 'This is a test alert — your store alerts are working correctly.',
+		],
+	];
+
+	try {
+		Mailer::storeAlert($alert_to, 'test-customer@example.com', $fake_response, $auth->site_url ?? '');
+		ApiAuth::json(['success' => true, 'sent_to' => $alert_to]);
+	} catch (Throwable $e) {
+		error_log('PepBan test-alert error: ' . $e->getMessage());
+		ApiAuth::error('Failed to send test email: ' . $e->getMessage(), 500);
+	}
+}
+
 // ── GET /api/v1/plugin/info ───────────────────────────────────────────────────
 if ($segment === 'plugin/info' && $method === 'GET') {
 	require_once __DIR__ . '/../includes/plugin-release.php';
