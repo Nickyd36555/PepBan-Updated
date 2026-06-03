@@ -84,6 +84,12 @@ if (str_starts_with($path, '/api/')) {
 	exit;
 }
 
+// ── Favicon ───────────────────────────────────────────────────────────────────
+if ($path === '/favicon.ico' || $path === '/favicon.png') {
+	require __DIR__ . '/favicon.php';
+	exit;
+}
+
 // ── Plugin download ───────────────────────────────────────────────────────────
 if ($path === '/download/client') {
 	require __DIR__ . '/download/client.php';
