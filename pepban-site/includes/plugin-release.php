@@ -38,11 +38,19 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.5.7',
+			'version' => '1.5.8',
 			'date'    => 'June 2025',
 			'latest'  => true,
 			'items'   => [
-				['tag' => 'New', 'text' => 'Optional store identity disclosure — when reporting a customer, check "Show my store name in the ban notification" to include your store name in the email sent to the banned customer; unchecked reports remain anonymous'],
+				['tag' => 'Improved', 'text' => 'Reveal Store Identity option moved from the per-report order box to PepBan → Settings for a consistent global preference'],
+			],
+		],
+		[
+			'version' => '1.5.7',
+			'date'    => 'June 2025',
+			'latest'  => false,
+			'items'   => [
+				['tag' => 'New', 'text' => 'Optional store identity disclosure — enable Reveal Store Identity in settings to include your store name in the ban notification email sent to the customer; off by default keeps reports anonymous'],
 			],
 		],
 		[
