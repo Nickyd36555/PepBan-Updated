@@ -121,9 +121,8 @@ class Database {
 			KEY status (status)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
-		// Generate static PNG favicon so Nginx serves it directly without going through PHP
-		$favicon_png = __DIR__ . '/../favicon.png';
-		$favicon_ico = __DIR__ . '/../favicon.ico';
+		// Generate static PNG favicon into assets/images so Nginx serves it as a static file
+		$favicon_png = __DIR__ . '/../assets/images/favicon.png';
 		if (!file_exists($favicon_png) && function_exists('imagecreatetruecolor')) {
 			$size = 64;
 			$img  = imagecreatetruecolor($size, $size);
@@ -141,7 +140,6 @@ class Database {
 			$f = 5;
 			imagestring($img, $f, (int)(($size - 2 * imagefontwidth($f)) / 2), (int)(($size - imagefontheight($f)) / 2), 'PB', $white);
 			imagepng($img, $favicon_png);
-			copy($favicon_png, $favicon_ico);
 			imagedestroy($img);
 		}
 	}

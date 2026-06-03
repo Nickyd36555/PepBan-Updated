@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= e($page_title ?? SITE_NAME) ?></title>
-<link rel="icon" type="image/png" sizes="64x64" href="<?= url('favicon.png') ?>">
+<link rel="icon" type="image/png" sizes="64x64" href="<?= url('assets/images/favicon.png') ?>">
 <link rel="icon" type="image/svg+xml" href="<?= url('assets/images/icon.svg') ?>">
-<link rel="shortcut icon" href="<?= url('favicon.png') ?>"><?php
+<link rel="shortcut icon" href="<?= url('assets/images/favicon.png') ?>"><?php
 // If a PNG logo exists use it as the apple-touch-icon (higher quality on iOS)
 foreach (['logo.png','logo.jpg','logo.webp'] as $_fi) {
   if (file_exists(__DIR__ . '/../assets/images/' . $_fi)) {
