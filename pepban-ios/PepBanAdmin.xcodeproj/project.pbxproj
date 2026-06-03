@@ -1,0 +1,362 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B01000000000000000000B01 /* PepBanAdminApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01000000000000000000F01 /* PepBanAdminApp.swift */; };
+		B02000000000000000000B02 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02000000000000000000F02 /* APIClient.swift */; };
+		B03000000000000000000B03 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F03000000000000000000F03 /* AuthManager.swift */; };
+		B04000000000000000000B04 /* DashboardStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04000000000000000000F04 /* DashboardStats.swift */; };
+		B05000000000000000000B05 /* BannedCustomer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05000000000000000000F05 /* BannedCustomer.swift */; };
+		B06000000000000000000B06 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06000000000000000000F06 /* Client.swift */; };
+		B07000000000000000000B07 /* AuditEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07000000000000000000F07 /* AuditEntry.swift */; };
+		B08000000000000000000B08 /* Dispute.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08000000000000000000F08 /* Dispute.swift */; };
+		B09000000000000000000B09 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09000000000000000000F09 /* LoginView.swift */; };
+		B0A000000000000000000B0A /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A000000000000000000F0A /* MainTabView.swift */; };
+		B0B000000000000000000B0B /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B000000000000000000F0B /* DashboardView.swift */; };
+		B0C000000000000000000B0C /* BannedListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C000000000000000000F0C /* BannedListView.swift */; };
+		B0D000000000000000000B0D /* BannedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0D000000000000000000F0D /* BannedDetailView.swift */; };
+		B0E000000000000000000B0E /* AddBanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E000000000000000000F0E /* AddBanView.swift */; };
+		B0F000000000000000000B0F /* ClientsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F000000000000000000F0F /* ClientsListView.swift */; };
+		B10000000000000000000B10 /* ClientDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000F10 /* ClientDetailView.swift */; };
+		B11000000000000000000B11 /* DisputesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11000000000000000000F11 /* DisputesView.swift */; };
+		B12000000000000000000B12 /* AuditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F12000000000000000000F12 /* AuditView.swift */; };
+		B13000000000000000000B13 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F13000000000000000000F13 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		6E7F8A9B0C1D2E3F4A5B6C7D /* PepBanAdmin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PepBanAdmin.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F01000000000000000000F01 /* PepBanAdminApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PepBanAdminApp.swift; sourceTree = "<group>"; };
+		F02000000000000000000F02 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		F03000000000000000000F03 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		F04000000000000000000F04 /* DashboardStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardStats.swift; sourceTree = "<group>"; };
+		F05000000000000000000F05 /* BannedCustomer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannedCustomer.swift; sourceTree = "<group>"; };
+		F06000000000000000000F06 /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		F07000000000000000000F07 /* AuditEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuditEntry.swift; sourceTree = "<group>"; };
+		F08000000000000000000F08 /* Dispute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dispute.swift; sourceTree = "<group>"; };
+		F09000000000000000000F09 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		F0A000000000000000000F0A /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		F0B000000000000000000F0B /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		F0C000000000000000000F0C /* BannedListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannedListView.swift; sourceTree = "<group>"; };
+		F0D000000000000000000F0D /* BannedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannedDetailView.swift; sourceTree = "<group>"; };
+		F0E000000000000000000F0E /* AddBanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddBanView.swift; sourceTree = "<group>"; };
+		F0F000000000000000000F0F /* ClientsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientsListView.swift; sourceTree = "<group>"; };
+		F10000000000000000000F10 /* ClientDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientDetailView.swift; sourceTree = "<group>"; };
+		F11000000000000000000F11 /* DisputesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisputesView.swift; sourceTree = "<group>"; };
+		F12000000000000000000F12 /* AuditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuditView.swift; sourceTree = "<group>"; };
+		F13000000000000000000F13 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9D0E1F2A3B4C5D6E7F8A9B0C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2C3D4E5F6A7B8C9D0E1F2A3B = {
+			isa = PBXGroup;
+			children = (
+				7C6E7F8A9B0C1D2E3F4A5B6C /* PepBanAdmin */,
+				3D4E5F6A7B8C9D0E1F2A3B4C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3D4E5F6A7B8C9D0E1F2A3B4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6E7F8A9B0C1D2E3F4A5B6C7D /* PepBanAdmin.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4E5F6A7B8C9D0E1F2A3B4C5D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F02000000000000000000F02 /* APIClient.swift */,
+				F03000000000000000000F03 /* AuthManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		5F6A7B8C9D0E1F2A3B4C5D6E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F04000000000000000000F04 /* DashboardStats.swift */,
+				F05000000000000000000F05 /* BannedCustomer.swift */,
+				F06000000000000000000F06 /* Client.swift */,
+				F07000000000000000000F07 /* AuditEntry.swift */,
+				F08000000000000000000F08 /* Dispute.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		6A7B8C9D0E1F2A3B4C5D6E7F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F09000000000000000000F09 /* LoginView.swift */,
+				F0A000000000000000000F0A /* MainTabView.swift */,
+				F0B000000000000000000F0B /* DashboardView.swift */,
+				F0C000000000000000000F0C /* BannedListView.swift */,
+				F0D000000000000000000F0D /* BannedDetailView.swift */,
+				F0E000000000000000000F0E /* AddBanView.swift */,
+				F0F000000000000000000F0F /* ClientsListView.swift */,
+				F10000000000000000000F10 /* ClientDetailView.swift */,
+				F11000000000000000000F11 /* DisputesView.swift */,
+				F12000000000000000000F12 /* AuditView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		7C6E7F8A9B0C1D2E3F4A5B6C /* PepBanAdmin */ = {
+			isa = PBXGroup;
+			children = (
+				F01000000000000000000F01 /* PepBanAdminApp.swift */,
+				F13000000000000000000F13 /* Assets.xcassets */,
+				4E5F6A7B8C9D0E1F2A3B4C5D /* Services */,
+				5F6A7B8C9D0E1F2A3B4C5D6E /* Models */,
+				6A7B8C9D0E1F2A3B4C5D6E7F /* Views */,
+			);
+			path = PepBanAdmin;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1A2B3C4D5E6F7A8B9C0D1E2F /* PepBanAdmin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5D6E7F8A9B0C1D2E3F4A5B6C /* Build configuration list for PBXNativeTarget "PepBanAdmin" */;
+			buildPhases = (
+				7B8C9D0E1F2A3B4C5D6E7F8A /* Sources */,
+				8C9D0E1F2A3B4C5D6E7F8A9B /* Resources */,
+				9D0E1F2A3B4C5D6E7F8A9B0C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PepBanAdmin;
+			productName = PepBanAdmin;
+			productReference = 6E7F8A9B0C1D2E3F4A5B6C7D /* PepBanAdmin.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7D3F8A2B1C4E5F6A7B8C9D0E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				ORGANIZATIONNAME = PepBan;
+				TargetAttributes = {
+					1A2B3C4D5E6F7A8B9C0D1E2F = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 4C5D6E7F8A9B0C1D2E3F4A5B /* Build configuration list for PBXProject "PepBanAdmin" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2C3D4E5F6A7B8C9D0E1F2A3B;
+			productRefGroup = 3D4E5F6A7B8C9D0E1F2A3B4C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1A2B3C4D5E6F7A8B9C0D1E2F /* PepBanAdmin */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8C9D0E1F2A3B4C5D6E7F8A9B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B13000000000000000000B13 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7B8C9D0E1F2A3B4C5D6E7F8A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B01000000000000000000B01 /* PepBanAdminApp.swift in Sources */,
+				B02000000000000000000B02 /* APIClient.swift in Sources */,
+				B03000000000000000000B03 /* AuthManager.swift in Sources */,
+				B04000000000000000000B04 /* DashboardStats.swift in Sources */,
+				B05000000000000000000B05 /* BannedCustomer.swift in Sources */,
+				B06000000000000000000B06 /* Client.swift in Sources */,
+				B07000000000000000000B07 /* AuditEntry.swift in Sources */,
+				B08000000000000000000B08 /* Dispute.swift in Sources */,
+				B09000000000000000000B09 /* LoginView.swift in Sources */,
+				B0A000000000000000000B0A /* MainTabView.swift in Sources */,
+				B0B000000000000000000B0B /* DashboardView.swift in Sources */,
+				B0C000000000000000000B0C /* BannedListView.swift in Sources */,
+				B0D000000000000000000B0D /* BannedDetailView.swift in Sources */,
+				B0E000000000000000000B0E /* AddBanView.swift in Sources */,
+				B0F000000000000000000B0F /* ClientsListView.swift in Sources */,
+				B10000000000000000000B10 /* ClientDetailView.swift in Sources */,
+				B11000000000000000000B11 /* DisputesView.swift in Sources */,
+				B12000000000000000000B12 /* AuditView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0E1F2A3B4C5D6E7F8A9B0C1D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		1F2A3B4C5D6E7F8A9B0C1D2E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2A3B4C5D6E7F8A9B0C1D2E3F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.pepban.admin";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		3B4C5D6E7F8A9B0C1D2E3F4A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.pepban.admin";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4C5D6E7F8A9B0C1D2E3F4A5B /* Build configuration list for PBXProject "PepBanAdmin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E1F2A3B4C5D6E7F8A9B0C1D /* Debug */,
+				1F2A3B4C5D6E7F8A9B0C1D2E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5D6E7F8A9B0C1D2E3F4A5B6C /* Build configuration list for PBXNativeTarget "PepBanAdmin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A3B4C5D6E7F8A9B0C1D2E3F /* Debug */,
+				3B4C5D6E7F8A9B0C1D2E3F4A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 7D3F8A2B1C4E5F6A7B8C9D0E /* Project object */;
+}

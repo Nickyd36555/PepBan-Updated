@@ -5,9 +5,232 @@
 $method  = $_SERVER['REQUEST_METHOD'];
 $path    = current_path(); // e.g. /api/v1/check
 $segment = preg_replace('#^/api/v1/?#', '', $path); // e.g. "check"
-
-$auth    = ApiAuth::authenticate();
 $db      = Database::get();
+
+// ── Admin API routes (Bearer-token auth, no API key needed) ───────────────────
+if (str_starts_with($segment, 'admin')) {
+	require_once __DIR__ . '/../includes/AdminApiAuth.php';
+	$aseg = ltrim(substr($segment, 5), '/'); // strip "admin" and leading slash
+
+	// POST /api/v1/admin/login ─────────────────────────────────────────────────
+	if ($aseg === 'login' && $method === 'POST') {
+		$body = AdminApiAuth::body();
+		$pw   = trim($body->password ?? '');
+		if (!$pw || !password_verify($pw, ADMIN_PASSWORD_HASH)) {
+			AdminApiAuth::error('Invalid credentials', 401);
+		}
+		$token = bin2hex(random_bytes(32));
+		$hash  = hash('sha256', $token);
+		$exp   = date('Y-m-d H:i:s', strtotime('+30 days'));
+		$db->insert('pepban_admin_tokens', [
+			'token_hash' => $hash,
+			'created_at' => date('Y-m-d H:i:s'),
+			'expires_at' => $exp,
+		]);
+		AdminApiAuth::json(['token' => $token, 'expires_at' => $exp]);
+	}
+
+	// All remaining admin routes require a valid token
+	AdminApiAuth::require();
+
+	// POST /api/v1/admin/logout ────────────────────────────────────────────────
+	if ($aseg === 'logout' && $method === 'POST') {
+		$hash = hash('sha256', AdminApiAuth::getToken());
+		$db->query("DELETE FROM pepban_admin_tokens WHERE token_hash = ?", [$hash]);
+		AdminApiAuth::json(['success' => true]);
+	}
+
+	// GET /api/v1/admin/dashboard ──────────────────────────────────────────────
+	if ($aseg === 'dashboard' && $method === 'GET') {
+		AdminApiAuth::json([
+			'active_bans'    => (int) $db->scalar("SELECT COUNT(*) FROM pepban_banned_customers WHERE status = 'active'"),
+			'active_clients' => (int) $db->scalar("SELECT COUNT(*) FROM pepban_clients WHERE subscription_status = 'active'"),
+			'total_reports'  => (int) $db->scalar("SELECT COUNT(*) FROM pepban_ban_reports"),
+			'new_bans_30d'   => (int) $db->scalar("SELECT COUNT(*) FROM pepban_banned_customers WHERE date_added >= DATE_SUB(NOW(), INTERVAL 30 DAY)"),
+			'open_disputes'  => (int) $db->scalar("SELECT COUNT(*) FROM pepban_disputes WHERE status = 'open'"),
+		]);
+	}
+
+	// GET /api/v1/admin/banned ─────────────────────────────────────────────────
+	if ($aseg === 'banned' && $method === 'GET') {
+		$p      = AdminApiAuth::paginate((int) ($_GET['page'] ?? 1));
+		$search = trim($_GET['search'] ?? '');
+		$status = trim($_GET['status'] ?? 'active');
+		$where  = $status ? "WHERE status = ?" : "WHERE 1=1";
+		$params = $status ? [$status] : [];
+		if ($search) {
+			$like    = '%' . $search . '%';
+			$where  .= " AND (email LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR phone LIKE ?)";
+			$params  = array_merge($params, [$like, $like, $like, $like]);
+		}
+		$total = (int) $db->scalar("SELECT COUNT(*) FROM pepban_banned_customers $where", $params);
+		$rows  = $db->fetchAll(
+			"SELECT id, email, first_name, last_name, phone, status, reason, reports_count, store_count, date_added, flagged_for_review
+			 FROM pepban_banned_customers $where ORDER BY date_added DESC LIMIT {$p['limit']} OFFSET {$p['offset']}",
+			$params
+		);
+		AdminApiAuth::json(['customers' => $rows, 'total' => $total, 'page' => $p['page'], 'pages' => (int) ceil($total / $p['limit'])]);
+	}
+
+	// GET /api/v1/admin/banned/{id} ────────────────────────────────────────────
+	if (preg_match('#^banned/(\d+)$#', $aseg, $m) && $method === 'GET') {
+		$id  = (int) $m[1];
+		$row = $db->fetch("SELECT * FROM pepban_banned_customers WHERE id = ?", [$id]);
+		if (!$row) AdminApiAuth::error('Not found', 404);
+		$reports = $db->fetchAll(
+			"SELECT r.id, r.site_url, r.reason, r.order_id, r.date_reported, c.owner_name
+			 FROM pepban_ban_reports r LEFT JOIN pepban_clients c ON c.id = r.client_id
+			 WHERE r.customer_id = ? ORDER BY r.date_reported DESC LIMIT 20",
+			[$id]
+		);
+		AdminApiAuth::json(['customer' => $row, 'reports' => $reports]);
+	}
+
+	// PATCH /api/v1/admin/banned/{id} ──────────────────────────────────────────
+	if (preg_match('#^banned/(\d+)$#', $aseg, $m) && $method === 'PATCH') {
+		$id   = (int) $m[1];
+		$body = AdminApiAuth::body();
+		$upd  = [];
+		if (isset($body->status))      $upd['status']       = $body->status;
+		if (isset($body->admin_notes)) $upd['admin_notes']   = $body->admin_notes;
+		if (isset($body->reason))      $upd['reason']        = $body->reason;
+		if (!$upd) AdminApiAuth::error('Nothing to update', 422);
+		$upd['last_updated'] = date('Y-m-d H:i:s');
+		$db->update('pepban_banned_customers', $upd, ['id' => $id]);
+		if (isset($body->status)) {
+			$customer = $db->fetch("SELECT email FROM pepban_banned_customers WHERE id = ?", [$id]);
+			$db->insert('pepban_audit_log', ['actor' => 'admin', 'action' => 'status_change', 'target_type' => 'customer', 'target_id' => $id, 'details' => ($customer->email ?? '') . ' → ' . $body->status, 'created_at' => date('Y-m-d H:i:s')]);
+		}
+		AdminApiAuth::json(['success' => true]);
+	}
+
+	// POST /api/v1/admin/banned ────────────────────────────────────────────────
+	if ($aseg === 'banned' && $method === 'POST') {
+		$body  = AdminApiAuth::body();
+		$email = strtolower(trim($body->email ?? ''));
+		if (!$email) AdminApiAuth::error('email is required', 422);
+		$existing = $db->fetch("SELECT id FROM pepban_banned_customers WHERE email = ?", [$email]);
+		if ($existing) AdminApiAuth::error('Customer already in database', 409);
+		$id = $db->insert('pepban_banned_customers', [
+			'email'              => $email,
+			'first_name'         => trim($body->first_name ?? ''),
+			'last_name'          => trim($body->last_name ?? ''),
+			'phone'              => trim($body->phone ?? ''),
+			'billing_address'    => trim($body->billing_address ?? ''),
+			'ip_address'         => trim($body->ip_address ?? ''),
+			'reason'             => trim($body->reason ?? ''),
+			'reported_by_site'   => 'admin',
+			'reported_by_client' => 0,
+			'date_added'         => date('Y-m-d H:i:s'),
+			'last_updated'       => date('Y-m-d H:i:s'),
+			'status'             => 'active',
+			'admin_notes'        => '',
+			'reports_count'      => 1,
+		]);
+		$db->insert('pepban_audit_log', ['actor' => 'admin', 'action' => 'ban_add', 'target_type' => 'customer', 'target_id' => $id, 'details' => $email . ' (iOS)', 'created_at' => date('Y-m-d H:i:s')]);
+		AdminApiAuth::json(['success' => true, 'id' => $id], 201);
+	}
+
+	// GET /api/v1/admin/clients ────────────────────────────────────────────────
+	if ($aseg === 'clients' && $method === 'GET') {
+		$p      = AdminApiAuth::paginate((int) ($_GET['page'] ?? 1));
+		$search = trim($_GET['search'] ?? '');
+		$status = trim($_GET['status'] ?? '');
+		$where  = $status ? "WHERE subscription_status = ?" : "WHERE 1=1";
+		$params = $status ? [$status] : [];
+		if ($search) {
+			$like    = '%' . $search . '%';
+			$where  .= " AND (owner_name LIKE ? OR owner_email LIKE ? OR site_url LIKE ?)";
+			$params  = array_merge($params, [$like, $like, $like]);
+		}
+		$total = (int) $db->scalar("SELECT COUNT(*) FROM pepban_clients $where", $params);
+		$rows  = $db->fetchAll(
+			"SELECT id, owner_name, owner_email, site_url, subscription_status, date_registered, last_active
+			 FROM pepban_clients $where ORDER BY date_registered DESC LIMIT {$p['limit']} OFFSET {$p['offset']}",
+			$params
+		);
+		AdminApiAuth::json(['clients' => $rows, 'total' => $total, 'page' => $p['page'], 'pages' => (int) ceil($total / $p['limit'])]);
+	}
+
+	// GET /api/v1/admin/clients/{id} ───────────────────────────────────────────
+	if (preg_match('#^clients/(\d+)$#', $aseg, $m) && $method === 'GET') {
+		$id     = (int) $m[1];
+		$client = $db->fetch("SELECT id, owner_name, owner_email, site_url, subscription_status, date_registered, last_active, activated_at, admin_notes FROM pepban_clients WHERE id = ?", [$id]);
+		if (!$client) AdminApiAuth::error('Not found', 404);
+		AdminApiAuth::json([
+			'client'          => $client,
+			'report_count'    => (int) $db->scalar("SELECT COUNT(*) FROM pepban_ban_reports WHERE client_id = ?", [$id]),
+			'whitelist_count' => (int) $db->scalar("SELECT COUNT(*) FROM pepban_whitelists WHERE client_id = ?", [$id]),
+			'recent_reports'  => $db->fetchAll(
+				"SELECT r.date_reported, r.reason, b.email, b.first_name, b.last_name
+				 FROM pepban_ban_reports r JOIN pepban_banned_customers b ON b.id = r.customer_id
+				 WHERE r.client_id = ? ORDER BY r.date_reported DESC LIMIT 10",
+				[$id]
+			),
+		]);
+	}
+
+	// POST /api/v1/admin/clients/{id}/activate ─────────────────────────────────
+	if (preg_match('#^clients/(\d+)/activate$#', $aseg, $m) && $method === 'POST') {
+		$id = (int) $m[1];
+		$db->update('pepban_clients', ['subscription_status' => 'active', 'activated_at' => date('Y-m-d H:i:s')], ['id' => $id]);
+		AdminApiAuth::json(['success' => true]);
+	}
+
+	// POST /api/v1/admin/clients/{id}/deactivate ───────────────────────────────
+	if (preg_match('#^clients/(\d+)/deactivate$#', $aseg, $m) && $method === 'POST') {
+		$id = (int) $m[1];
+		$db->update('pepban_clients', ['subscription_status' => 'inactive'], ['id' => $id]);
+		AdminApiAuth::json(['success' => true]);
+	}
+
+	// GET /api/v1/admin/disputes ───────────────────────────────────────────────
+	if ($aseg === 'disputes' && $method === 'GET') {
+		$p      = AdminApiAuth::paginate((int) ($_GET['page'] ?? 1));
+		$status = trim($_GET['status'] ?? 'open');
+		$where  = $status ? "WHERE status = ?" : "WHERE 1=1";
+		$params = $status ? [$status] : [];
+		$total = (int) $db->scalar("SELECT COUNT(*) FROM pepban_disputes $where", $params);
+		$rows  = $db->fetchAll(
+			"SELECT * FROM pepban_disputes $where ORDER BY date_added DESC LIMIT {$p['limit']} OFFSET {$p['offset']}",
+			$params
+		);
+		AdminApiAuth::json(['disputes' => $rows, 'total' => $total, 'page' => $p['page'], 'pages' => (int) ceil($total / $p['limit'])]);
+	}
+
+	// POST /api/v1/admin/disputes/{id}/resolve ─────────────────────────────────
+	if (preg_match('#^disputes/(\d+)/resolve$#', $aseg, $m) && $method === 'POST') {
+		$id      = (int) $m[1];
+		$dispute = $db->fetch("SELECT email FROM pepban_disputes WHERE id = ?", [$id]);
+		$db->update('pepban_disputes', ['status' => 'resolved'], ['id' => $id]);
+		if ($dispute) {
+			$db->query("UPDATE pepban_banned_customers SET status = 'inactive', last_updated = NOW() WHERE email = ?", [$dispute->email]);
+		}
+		AdminApiAuth::json(['success' => true]);
+	}
+
+	// POST /api/v1/admin/disputes/{id}/dismiss ─────────────────────────────────
+	if (preg_match('#^disputes/(\d+)/dismiss$#', $aseg, $m) && $method === 'POST') {
+		$id = (int) $m[1];
+		$db->update('pepban_disputes', ['status' => 'dismissed'], ['id' => $id]);
+		AdminApiAuth::json(['success' => true]);
+	}
+
+	// GET /api/v1/admin/audit ──────────────────────────────────────────────────
+	if ($aseg === 'audit' && $method === 'GET') {
+		$p     = AdminApiAuth::paginate((int) ($_GET['page'] ?? 1), 50);
+		$total = (int) $db->scalar("SELECT COUNT(*) FROM pepban_audit_log");
+		$rows  = $db->fetchAll(
+			"SELECT * FROM pepban_audit_log ORDER BY created_at DESC LIMIT {$p['limit']} OFFSET {$p['offset']}"
+		);
+		AdminApiAuth::json(['entries' => $rows, 'total' => $total, 'page' => $p['page'], 'pages' => (int) ceil($total / $p['limit'])]);
+	}
+
+	AdminApiAuth::error('Admin endpoint not found', 404);
+}
+
+// ── Store API routes — require API key auth ────────────────────────────────────
+$auth = ApiAuth::authenticate();
 
 // ── POST /api/v1/check ────────────────────────────────────────────────────────
 if ($segment === 'check' && $method === 'POST') {

@@ -121,6 +121,16 @@ class Database {
 			KEY status (status)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
+		// Admin app session tokens
+		$db->query("CREATE TABLE IF NOT EXISTS pepban_admin_tokens (
+			id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			token_hash   VARCHAR(64)  NOT NULL UNIQUE,
+			created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			last_used_at DATETIME     DEFAULT NULL,
+			expires_at   DATETIME     NOT NULL,
+			KEY expires_at (expires_at)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
 		// Generate static PNG favicon into assets/images so Nginx serves it as a static file
 		$favicon_png = __DIR__ . '/../assets/images/favicon.png';
 		if (!file_exists($favicon_png) && function_exists('imagecreatetruecolor')) {
