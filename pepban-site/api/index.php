@@ -132,7 +132,8 @@ if ($segment === 'report' && $method === 'POST') {
 	}
 
 	if (!empty($body->notify_customer)) {
-		Mailer::customerBanned($email, trim($first_name . ' ' . $last_name), $ban_reason);
+		$reporter_name = trim($body->reporter_name ?? '');
+		Mailer::customerBanned($email, trim($first_name . ' ' . $last_name), $ban_reason, $reporter_name);
 	}
 
 	// Insert report record

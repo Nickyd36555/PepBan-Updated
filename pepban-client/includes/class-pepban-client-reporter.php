@@ -58,6 +58,10 @@ class PepBan_Client_Reporter {
 				<textarea id="pepban-reason-<?php echo esc_attr( $order_id ); ?>" name="pepban_reason"
 					rows="3" style="width:100%;margin:6px 0"
 					placeholder="e.g. Chargeback, fraud, abuse…"></textarea>
+				<label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-weight:normal">
+					<input type="checkbox" name="pepban_reveal_reporter" value="1">
+					Show my store name in the ban notification
+				</label>
 				<button type="button" class="button button-primary pepban-report-btn" style="width:100%"
 					data-order-id="<?php echo esc_attr( $order_id ); ?>"
 					data-nonce="<?php echo esc_attr( wp_create_nonce( 'pepban_report_' . $order_id ) ); ?>">
@@ -119,6 +123,9 @@ class PepBan_Client_Reporter {
 			$billing['country']   ?? '',
 		) ) );
 
+		$reveal   = ! empty( $_POST['reveal_reporter'] );
+		$reporter = $reveal ? get_bloginfo( 'name' ) . ' (' . home_url() . ')' : '';
+
 		$data = array(
 			'email'           => $order->get_billing_email(),
 			'first_name'      => $order->get_billing_first_name(),
@@ -129,6 +136,7 @@ class PepBan_Client_Reporter {
 			'reason'          => $reason,
 			'order_id'        => (string) $order_id,
 			'notify_customer' => (bool) PepBan_Client_Settings::get( 'notify_customer_on_ban', false ),
+			'reporter_name'   => $reporter,
 		);
 
 		$result = PepBan_Client_API::report_customer( $data );

@@ -38,9 +38,17 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.5.6',
+			'version' => '1.5.7',
 			'date'    => 'June 2025',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'New', 'text' => 'Optional store identity disclosure — when reporting a customer, check "Show my store name in the ban notification" to include your store name in the email sent to the banned customer; unchecked reports remain anonymous'],
+			],
+		],
+		[
+			'version' => '1.5.6',
+			'date'    => 'June 2025',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Fix', 'text' => 'Block message no longer displays as raw HTML tags on checkout — WooCommerce was double-wrapping the error when both a notice and a RouteException were queued simultaneously'],
 			],

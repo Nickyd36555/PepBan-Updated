@@ -7,7 +7,8 @@ jQuery(function ($) {
 		var orderId   = $btn.data('order-id');
 		var nonce     = $btn.data('nonce');
 		var $box      = $('#pepban-report-box');
-		var reason    = $box.find('textarea[name="pepban_reason"]').val().trim();
+		var reason          = $box.find('textarea[name="pepban_reason"]').val().trim();
+		var revealReporter  = $box.find('input[name="pepban_reveal_reporter"]').is(':checked') ? 1 : 0;
 
 		if (!reason) {
 			alert('Please enter a reason for the ban.');
@@ -17,10 +18,11 @@ jQuery(function ($) {
 		$btn.prop('disabled', true).text('Reporting…');
 
 		$.post(ajaxurl, {
-			action:   'pepban_report_customer',
-			order_id: orderId,
-			reason:   reason,
-			nonce:    nonce,
+			action:          'pepban_report_customer',
+			order_id:        orderId,
+			reason:          reason,
+			reveal_reporter: revealReporter,
+			nonce:           nonce,
 		}, function (res) {
 			if (res.success) {
 				var customerId = res.data.customer_id;

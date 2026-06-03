@@ -204,16 +204,22 @@ class Mailer {
 
 	// ── Customer-facing emails ────────────────────────────────────────────────────
 
-	public static function customerBanned(string $email, string $name, string $reason): void {
+	public static function customerBanned(string $email, string $name, string $reason, string $reporter = ''): void {
 		$dispute_url = rtrim(SITE_URL, '/') . '/dispute';
 		$support     = defined('SUPPORT_EMAIL') ? SUPPORT_EMAIL : ADMIN_EMAIL;
 		$greeting    = $name ? "Hi {$name}," : 'Hello,';
 		$first       = $name ? htmlspecialchars(explode(' ', trim($name))[0]) : 'there';
 
+		$reporter_plain = $reporter ? "Reported by:\n  {$reporter}\n\n" : '';
+		$reporter_html  = $reporter
+			? self::notice('Reported by', htmlspecialchars($reporter), '#f9fafb', '#6b7280', '#374151')
+			: '';
+
 		$plain =
 			"{$greeting}\n\n" .
 			"Your account has been flagged and you may be blocked from completing purchases at stores in the PepBan network.\n\n" .
 			"Reason on file:\n  {$reason}\n\n" .
+			$reporter_plain .
 			"If you believe this is a mistake, submit a dispute for review:\n  {$dispute_url}\n\n" .
 			"— PepBan";
 
@@ -222,6 +228,7 @@ class Mailer {
 			self::p("Hi {$first},") .
 			self::p('Your account has been flagged and you may be blocked from completing purchases at stores in the <strong style="color:#111827">PepBan</strong> network.') .
 			self::notice('Reason on file', htmlspecialchars($reason), '#fef2f2', '#dc2626', '#7f1d1d') .
+			$reporter_html .
 			self::p('If you believe this is a mistake, you can submit a dispute for review. We investigate every case and respond within 3&ndash;5 business days.') .
 			self::btn($dispute_url, 'Submit a Dispute &rarr;') .
 			self::hr() .
