@@ -23,67 +23,30 @@ require __DIR__ . '/../templates/layout.php';
 
 <section class="pb-section" id="features">
   <div class="pb-section-inner">
-    <h2 class="pb-section-title">Everything the plugin does for you</h2>
-    <div class="pb-features-grid">
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128683;</div>
-        <h3>Real-Time Checkout Blocking</h3>
-        <p>Every order is checked against the shared ban database the moment a customer hits checkout — before any money changes hands.</p>
+    <div class="pb-feat-header">
+      <h2>Everything you need to <em>protect your store</em></h2>
+      <p>Built specifically for WooCommerce peptide stores. Install the plugin and you're protected in minutes.</p>
+    </div>
+    <div class="pb-feat-grid">
+      <div class="pb-feat-item">
+        <span class="pb-feat-label">01 — Network</span>
+        <h3>Centralized Ban List</h3>
+        <p>One shared database across all member stores. A ban from any store protects every other store instantly.</p>
       </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#127758;</div>
-        <h3>Global Ban Database</h3>
-        <p>Tap into a growing network of peptide stores. A ban reported by one member protects every other store automatically.</p>
+      <div class="pb-feat-item">
+        <span class="pb-feat-label">02 — Blocking</span>
+        <h3>Real-Time Checkout Protection</h3>
+        <p>Customers are checked at checkout before the order is placed. Banned customers are blocked before they cost you a cent.</p>
       </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128196;</div>
-        <h3>Local Blacklist &amp; Whitelist</h3>
-        <p>Ban customers at your store only, or whitelist a globally-banned customer you trust — full local control alongside network rules.</p>
+      <div class="pb-feat-item">
+        <span class="pb-feat-label">03 — Reporting</span>
+        <h3>One-Click Reporting</h3>
+        <p>Report a problem customer directly from your WooCommerce order screen. No forms to fill, no emails to send.</p>
       </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128229;</div>
-        <h3>Bulk CSV Import</h3>
-        <p>Already have a list of bad actors? Import them in one shot via CSV and they're blocked immediately across every store.</p>
-      </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128274;</div>
-        <h3>IP &amp; Domain Blocking</h3>
-        <p>Block by IP address or email domain, not just individual addresses — stop repeat offenders who create new accounts.</p>
-      </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128260;</div>
-        <h3>Auto-Updates via WordPress</h3>
-        <p>New versions land in your WordPress dashboard automatically. No manual downloads, no version lag, no maintenance headaches.</p>
-      </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128276;</div>
-        <h3>Checkout Attempt Alerts</h3>
-        <p>Get an instant email the moment a flagged customer tries to check out on your store — with their details and reason on file, so you're never caught off guard.</p>
-      </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128681;</div>
-        <h3>One-Click Order Reporting</h3>
-        <p>Spot a scammer after the fact? Report them to the entire PepBan network directly from the WooCommerce order screen — no extra steps, no separate dashboard.</p>
-      </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128231;</div>
-        <h3>Customer Ban Notification</h3>
-        <p>Optionally notify the banned customer by email when they're added to the network, with a link to submit a dispute — reducing chargebacks and support requests.</p>
-      </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128172;</div>
-        <h3>Ban Dispute Link</h3>
-        <p>Add a dispute URL to the checkout block message so customers know exactly where to appeal — keeps your inbox clear and gives legitimate cases a fair path forward.</p>
-      </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128257;</div>
-        <h3>Auto-Report on Block</h3>
-        <p>When a banned customer is stopped at checkout, the plugin automatically re-reports them to the network — no manual step needed, keeping the shared database accurate across every store.</p>
-      </div>
-      <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#128680;</div>
-        <h3>Order Ban Warning</h3>
-        <p>A red alert banner on the WooCommerce order edit screen flags orders placed by customers in the ban database — showing total reports and how many stores have flagged them.</p>
+      <div class="pb-feat-item">
+        <span class="pb-feat-label">04 — Control</span>
+        <h3>Per-Site Whitelisting</h3>
+        <p>Need to allow a banned customer at your store? Whitelist them locally without affecting any other member stores.</p>
       </div>
     </div>
   </div>
