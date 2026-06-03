@@ -419,7 +419,7 @@ class Mailer {
 		$report_count = (int) ($response['report_count'] ?? 1);
 		$store_count  = (int) ($response['store_count']  ?? 1);
 		$site_name    = $site_url ?: 'your store';
-		$orders_url   = rtrim(SITE_URL, '/') . '/admin/banned?q=' . urlencode($customer_email);
+		$orders_url   = rtrim(SITE_URL, '/') . '/portal';
 
 		$plain =
 			"A banned customer attempted checkout on {$site_name}.\n\n" .
@@ -427,7 +427,7 @@ class Mailer {
 			"Name:    {$name}\n" .
 			"Reason:  {$reason}\n" .
 			"Reports: {$report_count} report(s) across {$store_count} store(s)\n\n" .
-			"View record: {$orders_url}\n\n— PepBan";
+			"PepBan portal: {$orders_url}\n\n— PepBan";
 
 		$html =
 			'<!DOCTYPE html><html><head><meta charset="UTF-8"></head>' .
@@ -451,7 +451,7 @@ class Mailer {
 			'<tr><td style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;border-top:1px solid #f3f4f6">Reports</td>' .
 			'<td style="padding:10px 16px;font-size:14px;color:#374151;border-top:1px solid #f3f4f6"><strong>' . $report_count . '</strong> report(s) across <strong>' . $store_count . '</strong> store(s)</td></tr>' .
 			'</table>' .
-			'<a href="' . htmlspecialchars($orders_url) . '" style="display:inline-block;background:#dc2626;color:#fff;padding:11px 22px;border-radius:7px;text-decoration:none;font-size:13px;font-weight:600">View in PepBan &rarr;</a>' .
+			'<a href="' . htmlspecialchars($orders_url) . '" style="display:inline-block;background:#dc2626;color:#fff;padding:11px 22px;border-radius:7px;text-decoration:none;font-size:13px;font-weight:600">Go to PepBan Portal &rarr;</a>' .
 			'</td></tr>' .
 			'<tr><td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;padding:16px 36px;text-align:center">' .
 			'<p style="margin:0;font-size:12px;color:#9ca3af">Sent by PepBan. One alert per customer per hour.</p>' .
