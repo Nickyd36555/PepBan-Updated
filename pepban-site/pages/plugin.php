@@ -55,6 +55,26 @@ require __DIR__ . '/../templates/layout.php';
         <h3>Auto-Updates via WordPress</h3>
         <p>New versions land in your WordPress dashboard automatically. No manual downloads, no version lag, no maintenance headaches.</p>
       </div>
+      <div class="pb-feature-card">
+        <div class="pb-feature-icon">&#128276;</div>
+        <h3>Checkout Attempt Alerts</h3>
+        <p>Get an instant email the moment a flagged customer tries to check out on your store — with their details and reason on file, so you're never caught off guard.</p>
+      </div>
+      <div class="pb-feature-card">
+        <div class="pb-feature-icon">&#128681;</div>
+        <h3>One-Click Order Reporting</h3>
+        <p>Spot a scammer after the fact? Report them to the entire PepBan network directly from the WooCommerce order screen — no extra steps, no separate dashboard.</p>
+      </div>
+      <div class="pb-feature-card">
+        <div class="pb-feature-icon">&#9993;</div>
+        <h3>Customer Ban Notification</h3>
+        <p>Optionally notify the banned customer by email when they're added to the network, with a link to submit a dispute — reducing chargebacks and support requests.</p>
+      </div>
+      <div class="pb-feature-card">
+        <div class="pb-feature-icon">&#9878;</div>
+        <h3>Ban Dispute Link</h3>
+        <p>Add a dispute URL to the checkout block message so customers know exactly where to appeal — keeps your inbox clear and gives legitimate cases a fair path forward.</p>
+      </div>
     </div>
   </div>
 </section>
