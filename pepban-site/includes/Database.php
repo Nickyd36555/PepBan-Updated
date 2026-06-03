@@ -120,5 +120,29 @@ class Database {
 			KEY email  (email),
 			KEY status (status)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+		// Generate static PNG favicon so Nginx serves it directly without going through PHP
+		$favicon_png = __DIR__ . '/../favicon.png';
+		$favicon_ico = __DIR__ . '/../favicon.ico';
+		if (!file_exists($favicon_png) && function_exists('imagecreatetruecolor')) {
+			$size = 64;
+			$img  = imagecreatetruecolor($size, $size);
+			imagealphablending($img, false);
+			imagesavealpha($img, true);
+			$t = imagecolorallocatealpha($img, 0, 0, 0, 127);
+			imagefill($img, 0, 0, $t);
+			$bg    = imagecolorallocate($img, 12, 12, 30);
+			$red   = imagecolorallocate($img, 220, 38, 38);
+			$dark  = imagecolorallocate($img, 185, 28, 28);
+			$white = imagecolorallocate($img, 255, 255, 255);
+			imagefilledrectangle($img, 0, 0, 63, 63, $bg);
+			imagefilledpolygon($img, [32,8, 52,16, 56,36, 32,58, 8,36, 12,16], $red);
+			imagefilledpolygon($img, [32,14, 48,21, 51,36, 32,53, 13,36, 16,21], $dark);
+			$f = 5;
+			imagestring($img, $f, (int)(($size - 2 * imagefontwidth($f)) / 2), (int)(($size - imagefontheight($f)) / 2), 'PB', $white);
+			imagepng($img, $favicon_png);
+			copy($favicon_png, $favicon_ico);
+			imagedestroy($img);
+		}
 	}
 }
