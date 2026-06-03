@@ -239,8 +239,15 @@ $recent_reports = Database::get()->fetchAll(
 	<p>Latest updates to the PepBan plugin.</p>
 </div>
 <?php
-$tag_css = ['New' => 'new', 'Fix' => 'fix', 'Improved' => 'improvement'];
-foreach (pepban_plugin_changelog() as $release):
+$tag_css     = ['New' => 'new', 'Fix' => 'fix', 'Improved' => 'improvement'];
+$_cl_all     = pepban_plugin_changelog();
+$_cl_per     = 10;
+$_cl_total   = count($_cl_all);
+$_cl_pages   = (int) ceil($_cl_total / $_cl_per);
+$_cl_page    = max(1, min($_cl_pages, (int) ($_GET['cl_page'] ?? 1)));
+$_cl_slice   = array_slice($_cl_all, ($_cl_page - 1) * $_cl_per, $_cl_per);
+
+foreach ($_cl_slice as $release):
 ?>
 <div class="pepban-regen-section" style="padding-top:16px;padding-bottom:16px;border-top:1px solid var(--border)">
 	<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
@@ -264,6 +271,36 @@ foreach (pepban_plugin_changelog() as $release):
 	</ul>
 </div>
 <?php endforeach; ?>
+
+<?php if ($_cl_pages > 1): ?>
+<div class="pepban-regen-section" style="padding-top:20px;padding-bottom:20px;border-top:1px solid var(--border)">
+	<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+		<?php if ($_cl_page > 1): ?>
+		<a href="<?= url('/portal?cl_page=' . ($_cl_page - 1) . '#changelog') ?>"
+		   style="display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;color:var(--text-muted);text-decoration:none;padding:6px 14px;border:1px solid var(--border);border-radius:8px;transition:border-color .15s,color .15s"
+		   onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'"
+		   onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+			&#8592; Newer
+		</a>
+		<?php else: ?>
+		<span></span>
+		<?php endif; ?>
+
+		<span style="font-size:.82rem;color:var(--text-muted)">Page <?= $_cl_page ?> of <?= $_cl_pages ?></span>
+
+		<?php if ($_cl_page < $_cl_pages): ?>
+		<a href="<?= url('/portal?cl_page=' . ($_cl_page + 1) . '#changelog') ?>"
+		   style="display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;color:var(--text-muted);text-decoration:none;padding:6px 14px;border:1px solid var(--border);border-radius:8px;transition:border-color .15s,color .15s"
+		   onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'"
+		   onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+			Older &#8594;
+		</a>
+		<?php else: ?>
+		<span></span>
+		<?php endif; ?>
+	</div>
+</div>
+<?php endif; ?>
 
 <div class="pepban-portal-footer">
 	<span>PepBan &copy; <?= date('Y') ?></span>
