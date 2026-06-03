@@ -66,22 +66,22 @@ require __DIR__ . '/../templates/layout.php';
         <p>Spot a scammer after the fact? Report them to the entire PepBan network directly from the WooCommerce order screen — no extra steps, no separate dashboard.</p>
       </div>
       <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#9993;</div>
+        <div class="pb-feature-icon">&#128231;</div>
         <h3>Customer Ban Notification</h3>
         <p>Optionally notify the banned customer by email when they're added to the network, with a link to submit a dispute — reducing chargebacks and support requests.</p>
       </div>
       <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#9878;</div>
+        <div class="pb-feature-icon">&#128172;</div>
         <h3>Ban Dispute Link</h3>
         <p>Add a dispute URL to the checkout block message so customers know exactly where to appeal — keeps your inbox clear and gives legitimate cases a fair path forward.</p>
       </div>
       <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#9889;</div>
+        <div class="pb-feature-icon">&#128257;</div>
         <h3>Auto-Report on Block</h3>
         <p>When a banned customer is stopped at checkout, the plugin automatically re-reports them to the network — no manual step needed, keeping the shared database accurate across every store.</p>
       </div>
       <div class="pb-feature-card">
-        <div class="pb-feature-icon">&#9888;</div>
+        <div class="pb-feature-icon">&#128680;</div>
         <h3>Order Ban Warning</h3>
         <p>A red alert banner on the WooCommerce order edit screen flags orders placed by customers in the ban database — showing total reports and how many stores have flagged them.</p>
       </div>
