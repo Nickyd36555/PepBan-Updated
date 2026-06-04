@@ -174,6 +174,8 @@ if (str_starts_with($segment, 'admin')) {
 	if (preg_match('#^clients/(\d+)/activate$#', $aseg, $m) && $method === 'POST') {
 		$id = (int) $m[1];
 		$db->update('pepban_clients', ['subscription_status' => 'active', 'activated_at' => date('Y-m-d H:i:s')], ['id' => $id]);
+		$client = $db->fetch('SELECT * FROM pepban_clients WHERE id = ?', [$id]);
+		if ($client) Mailer::activated($client);
 		AdminApiAuth::json(['success' => true]);
 	}
 
