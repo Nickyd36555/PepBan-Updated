@@ -38,9 +38,17 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.5.8',
+			'version' => '1.5.9',
 			'date'    => 'June 2025',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Fix', 'text' => 'Alert Email Address field no longer exposes the WordPress admin email as placeholder text — prevents the store owner\'s email from showing in the settings UI'],
+			],
+		],
+		[
+			'version' => '1.5.8',
+			'date'    => 'June 2025',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Improved', 'text' => 'Reveal Store Identity option moved from the per-report order box to PepBan → Settings for a consistent global preference'],
 			],

@@ -103,8 +103,8 @@ $connection_status = PepBan_Client_Settings::test_connection();
 				<td>
 					<input type="email" name="alert_email" id="alert_email" class="regular-text"
 						value="<?php echo esc_attr( $settings['alert_email'] ?? '' ); ?>"
-						placeholder="<?php echo esc_attr( get_bloginfo( 'admin_email' ) ); ?>">
-					<p class="description">Where to send checkout attempt alerts. Leave blank to use the WordPress admin email (<?php echo esc_html( get_bloginfo( 'admin_email' ) ); ?>).</p>
+						placeholder="your@email.com">
+					<p class="description">Where to send checkout attempt alerts. Leave blank to use the WordPress admin email.</p>
 				</td>
 			</tr>
 		</table>
