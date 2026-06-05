@@ -1,5 +1,5 @@
 <?php
-$page_title = 'PepBan — Stop Peptide Scammers';
+$page_title = 'PepBan — Shared Fraud Protection for the Peptide Industry';
 require __DIR__ . '/../templates/layout.php';
 ?>
 
@@ -20,8 +20,9 @@ require __DIR__ . '/../templates/layout.php';
 
     <div class="pb-hero-content">
       <div class="pb-hero-badge">Network Live</div>
-      <h1 class="pb-hero-title">Stop Peptide Scammers<br><span>Dead In Their Tracks</span></h1>
-      <p class="pb-hero-sub">PepBan is the centralized ban list shared across peptide stores. One report protects every member store automatically.</p>
+      <h1 class="pb-hero-title">Shared Fraud Protection<br><span>for the Peptide Industry</span></h1>
+      <p class="pb-hero-sub">One Report. Every Store Protected.</p>
+      <p class="pb-hero-sub" style="margin-top:8px;font-size:.95em;opacity:.8">PepBan is the centralized ban list shared across peptide stores. One report protects every member store automatically.</p>
       <div class="pb-hero-actions">
         <a href="<?= url('/signup') ?>" class="pb-btn pb-btn-primary pb-btn-lg">Get Protected Now</a>
         <a href="<?= url('/#how-it-works') ?>" class="pb-btn pb-btn-ghost pb-btn-lg">See How It Works</a>
