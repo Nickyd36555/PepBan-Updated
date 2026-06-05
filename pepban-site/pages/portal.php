@@ -145,8 +145,8 @@ $recent_reports = Database::get()->fetchAll(
 		</div>
 	</div>
 	<?php if ($recent_reports): ?>
-	<div class="pepban-card-body-flush">
-		<table style="width:100%;border-collapse:collapse;font-size:.88rem">
+	<div class="pepban-card-body-flush" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+		<table style="width:100%;min-width:520px;border-collapse:collapse;font-size:.88rem">
 			<thead>
 				<tr style="border-bottom:1px solid var(--border)">
 					<th style="padding:10px 24px;text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)">Email</th>
