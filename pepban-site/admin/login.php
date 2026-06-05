@@ -11,10 +11,12 @@ if (!$locked_out && $_SERVER['REQUEST_METHOD'] === 'POST') {
 	$email = post('email');
 	$pass  = post('password');
 	if ($email === ADMIN_EMAIL && password_verify($pass, ADMIN_PASSWORD_HASH)) {
+		Mailer::adminLoginAlert(true, $visitor_ip, $email);
 		Auth::loginAdmin();
 		redirect('/admin/dashboard');
 	}
 	login_rate_limit($visitor_ip, true); // record failure
+	Mailer::adminLoginAlert(false, $visitor_ip, $email);
 	$error = true;
 }
 ?>

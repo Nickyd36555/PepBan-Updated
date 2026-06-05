@@ -497,4 +497,38 @@ class Mailer {
 			self::send(ADMIN_EMAIL, '[PepBan Error] ' . $subject, $body);
 		} catch (Throwable $e) {}
 	}
+
+	public static function adminLoginAlert(bool $success, string $ip, string $email_attempted): void {
+		$label     = $success ? 'Successful Login' : 'Failed Login Attempt';
+		$color     = $success ? '#22c55e' : '#ef4444';
+		$time      = date('Y-m-d H:i:s T');
+		$ua        = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 150);
+		$subject   = $success
+			? '[PepBan Admin] Successful login — ' . $time
+			: '[PepBan Admin] Failed login attempt — ' . $time;
+
+		$plain =
+			"PepBan Admin — {$label}\n\n" .
+			"Time:    {$time}\n" .
+			"IP:      {$ip}\n" .
+			"Email:   {$email_attempted}\n" .
+			"Browser: {$ua}\n\n" .
+			"If this was not you, change your admin password immediately.\n\n— PepBan";
+
+		$html = self::wrap(
+			self::notice('Admin panel', $label, $success ? '#f0fdf4' : '#fef2f2', $color, $success ? '#166534' : '#991b1b') .
+			self::h1($success ? 'Admin login detected' : 'Failed login attempt') .
+			self::p('Someone just ' . ($success ? 'successfully logged in to' : 'attempted to log in to') . ' the PepBan admin panel.') .
+			self::notice('Time',    $time,             '#f9fafb', '#6b7280', '#374151') .
+			self::notice('IP',      $ip,               '#f9fafb', '#6b7280', '#374151') .
+			self::notice('Email',   htmlspecialchars($email_attempted), '#f9fafb', '#6b7280', '#374151') .
+			self::notice('Browser', htmlspecialchars($ua), '#f9fafb', '#6b7280', '#374151') .
+			self::p('<strong>If this was not you, change your admin password immediately.</strong>'),
+			$color
+		);
+
+		try {
+			self::send('admin@pepban.com', $subject, $plain, $html);
+		} catch (Throwable $e) {}
+	}
 }
