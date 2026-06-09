@@ -4,3 +4,8 @@ Thumbs.db
 node_modules/
 vendor/
 *.zip
+
+# Server secrets — never commit these
+pepban-site/config.local.php
+pepban-site/.db_migrated_*
+pepban-site/.last_alert
