@@ -132,6 +132,11 @@ require __DIR__ . '/../templates/layout.php';
         <h3>Order Ban Warning</h3>
         <p>A red alert banner on the WooCommerce order edit screen flags orders placed by customers in the ban database — showing total reports and how many stores have flagged them.</p>
       </div>
+      <div class="pb-feature-card">
+        <div class="pb-feature-icon">&#128064;</div>
+        <h3>Customer Watch Notes</h3>
+        <p>Flag customers without banning them. Add internal notes by email — shown as an orange warning on every order screen — so staff can track patterns like repeat non-delivery claims before escalating to a ban.</p>
+      </div>
     </div>
   </div>
 </section>
