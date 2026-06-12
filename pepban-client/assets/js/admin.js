@@ -316,6 +316,38 @@ jQuery(function ($) {
 		});
 	});
 
+	// ── Watch notes: save from order meta box ───────────────────────────────
+	$(document).on('click', '.pepban-save-watch-notes-btn', function () {
+		var $btn    = $(this);
+		var orderId = $btn.data('order-id');
+		var email   = $btn.data('email');
+		var nonce   = $btn.data('nonce');
+		var notes   = $('#pepban-watch-notes-text').val();
+		var $status = $('#pepban-watch-notes-status');
+
+		$btn.prop('disabled', true).text('Saving…');
+		$status.hide();
+
+		$.post(ajaxurl, {
+			action:   'pepban_save_watch_notes',
+			order_id: orderId,
+			email:    email,
+			notes:    notes,
+			nonce:    nonce,
+		}, function (res) {
+			if (res.success) {
+				$status.text(res.data.message + ' (' + res.data.updated + ')').css('color', '#00a32a').show();
+				$('#pepban-watch-notes-text').css('border-color', notes.trim() ? '#f59e0b' : '#ddd');
+			} else {
+				$status.text('Error: ' + (res.data || 'Unknown error.')).css('color', '#d63638').show();
+			}
+		}).fail(function () {
+			$status.text('Request failed. Please try again.').css('color', '#d63638').show();
+		}).always(function () {
+			$btn.prop('disabled', false).text('Save Watch Note');
+		});
+	});
+
 	// ── Remove from whitelist page ───────────────────────────────────────────
 	$(document).on('click', '.pepban-remove-whitelist', function () {
 		if (!confirm('Remove this customer from your site whitelist? They will be blocked again at checkout.')) return;
