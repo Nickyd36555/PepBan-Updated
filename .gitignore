@@ -9,3 +9,5 @@ vendor/
 pepban-site/config.local.php
 pepban-site/.db_migrated_*
 pepban-site/.last_alert
+pepban-site/.rollback_version
+pepban-site/releases/

@@ -18,11 +18,16 @@ class PepBan_Client_Updater {
 		$info = self::get_remote_info();
 		if ( ! $info || empty( $info['version'] ) ) return $transient;
 
-		if ( version_compare( $info['version'], PEPBAN_CLIENT_VERSION, '>' ) ) {
+		$hub_version  = $info['version'];
+		$is_rollback  = ! empty( $info['rollback'] );
+		$needs_change = version_compare( $hub_version, PEPBAN_CLIENT_VERSION, '>' )
+		             || ( $is_rollback && version_compare( $hub_version, PEPBAN_CLIENT_VERSION, '<' ) );
+
+		if ( $needs_change ) {
 			$transient->response[ self::PLUGIN_FILE ] = (object) array(
 				'slug'        => self::PLUGIN_SLUG,
 				'plugin'      => self::PLUGIN_FILE,
-				'new_version' => $info['version'],
+				'new_version' => $hub_version,
 				'url'         => $info['details_url'] ?? 'https://pepban.com',
 				'package'     => $info['download_url'] ?? '',
 			);

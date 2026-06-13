@@ -545,8 +545,15 @@ if ($segment === 'plugin/info' && $method === 'GET') {
 	require_once __DIR__ . '/../includes/plugin-release.php';
 	$bucket = (string) floor(time() / (12 * 3600));
 	$token  = hash_hmac('sha256', 'dl:' . $bucket, SECRET_KEY);
+
+	$rollback_file = __DIR__ . '/../.rollback_version';
+	$rollback_ver  = file_exists($rollback_file) ? trim(file_get_contents($rollback_file)) : '';
+	$is_rollback   = $rollback_ver && preg_match('/^\d+\.\d+\.\d+$/', $rollback_ver);
+	$serve_version = $is_rollback ? $rollback_ver : PEPBAN_PLUGIN_VERSION;
+
 	ApiAuth::json([
-		'version'      => PEPBAN_PLUGIN_VERSION,
+		'version'      => $serve_version,
+		'rollback'     => (bool) $is_rollback,
 		'download_url' => rtrim(SITE_URL, '/') . '/download/client?token=' . $token,
 		'details_url'  => rtrim(SITE_URL, '/') . '/portal',
 		'description'  => pepban_plugin_description(),
