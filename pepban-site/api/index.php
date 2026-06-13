@@ -14,10 +14,22 @@ if (str_starts_with($segment, 'admin')) {
 
 	// POST /api/v1/admin/login ─────────────────────────────────────────────────
 	if ($aseg === 'login' && $method === 'POST') {
+		require_once __DIR__ . '/../includes/Totp.php';
 		$body = AdminApiAuth::body();
 		$pw   = trim($body->password ?? '');
 		if (!$pw || !password_verify($pw, ADMIN_PASSWORD_HASH)) {
 			AdminApiAuth::error('Invalid credentials', 401);
+		}
+		// Enforce TOTP if enabled
+		$totp_row = $db->fetch('SELECT * FROM pepban_admin_totp WHERE id = 1 AND enabled = 1');
+		if ($totp_row) {
+			$code = trim($body->totp_code ?? '');
+			if (!$code) {
+				AdminApiAuth::error('totp_required', 401);
+			}
+			if (!Totp::verify($totp_row->secret, $code)) {
+				AdminApiAuth::error('Invalid two-factor authentication code', 401);
+			}
 		}
 		$token = bin2hex(random_bytes(32));
 		$hash  = hash('sha256', $token);

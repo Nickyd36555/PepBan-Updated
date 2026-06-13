@@ -32,6 +32,19 @@ struct ClientDetailView: View {
                                 .foregroundStyle(statusColor(c.subscriptionStatus))
                                 .fontWeight(.medium)
                         }
+                        HStack {
+                            Text("Email verified")
+                            Spacer()
+                            if let verifiedAt = c.emailVerifiedAt {
+                                Label(shortDate(verifiedAt), systemImage: "checkmark.circle.fill")
+                                    .foregroundStyle(.green)
+                                    .font(.footnote)
+                            } else {
+                                Label("Not verified", systemImage: "exclamationmark.circle.fill")
+                                    .foregroundStyle(.orange)
+                                    .font(.footnote)
+                            }
+                        }
                         LabeledContent("Reports", value: "\(r.reportCount)")
                         LabeledContent("Whitelisted", value: "\(r.whitelistCount) customers")
                         LabeledContent("Joined", value: shortDate(c.dateRegistered))
@@ -40,6 +53,14 @@ struct ClientDetailView: View {
                         }
                         if let last = c.lastActive {
                             LabeledContent("Last active", value: shortDate(last))
+                        }
+                    }
+
+                    if let notes = c.adminNotes, !notes.isEmpty {
+                        Section("Admin Notes") {
+                            Text(notes)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
                         }
                     }
 

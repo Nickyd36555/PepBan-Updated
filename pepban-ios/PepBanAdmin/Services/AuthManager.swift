@@ -16,8 +16,8 @@ class AuthManager {
         }
     }
 
-    func login(password: String) async throws {
-        let result = try await APIClient.shared.login(password: password)
+    func login(password: String, totpCode: String? = nil) async throws {
+        let result = try await APIClient.shared.login(password: password, totpCode: totpCode)
         token = result.token
         APIClient.shared.token = result.token
         isAuthenticated = true

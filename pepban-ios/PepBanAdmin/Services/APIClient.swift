@@ -5,13 +5,15 @@ enum APIError: LocalizedError {
     case http(Int, String)
     case decode(Error)
     case network(Error)
+    case totpRequired
 
     var errorDescription: String? {
         switch self {
-        case .invalidURL:       return "Invalid URL"
+        case .invalidURL:         return "Invalid URL"
         case .http(let c, let m): return "Server error \(c): \(m)"
-        case .decode(let e):    return "Parse error: \(e.localizedDescription)"
-        case .network(let e):   return e.localizedDescription
+        case .decode(let e):      return "Parse error: \(e.localizedDescription)"
+        case .network(let e):     return e.localizedDescription
+        case .totpRequired:       return "Two-factor authentication required"
         }
     }
 }
@@ -83,16 +85,25 @@ class APIClient {
 
     // MARK: - Auth
 
-    struct LoginBody: Encodable { let password: String }
+    struct LoginBody: Encodable {
+        let password: String
+        let totpCode: String?
+    }
     struct LoginResponse: Decodable { let token: String; let expiresAt: String }
     struct SuccessResponse: Decodable { let success: Bool }
     struct ErrorEnvelope: Decodable { let error: String }
 
-    func login(password: String) async throws -> LoginResponse {
+    func login(password: String, totpCode: String? = nil) async throws -> LoginResponse {
         let savedToken = token
         token = ""
         defer { if token.isEmpty { token = savedToken } }
-        return try await request("login", method: "POST", body: LoginBody(password: password), requiresAuth: false)
+        do {
+            return try await request("login", method: "POST",
+                                     body: LoginBody(password: password, totpCode: totpCode),
+                                     requiresAuth: false)
+        } catch APIError.http(401, "totp_required") {
+            throw APIError.totpRequired
+        }
     }
 
     func logout() async throws {

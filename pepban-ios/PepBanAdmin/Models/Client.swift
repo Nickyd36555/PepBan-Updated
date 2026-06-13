@@ -27,6 +27,7 @@ struct ClientDetail: Decodable {
     let lastActive: String?
     let activatedAt: String?
     let adminNotes: String?
+    let emailVerifiedAt: String?
 }
 
 struct RecentReport: Decodable {
