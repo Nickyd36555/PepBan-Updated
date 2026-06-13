@@ -131,6 +131,30 @@ class Database {
 			KEY expires_at (expires_at)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
+		// Admin TOTP — single-row config for the one admin account
+		$db->query("CREATE TABLE IF NOT EXISTS pepban_admin_totp (
+			id       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			secret   VARCHAR(64)  NOT NULL DEFAULT '',
+			enabled  TINYINT(1)   NOT NULL DEFAULT 0,
+			setup_at DATETIME     DEFAULT NULL
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+		$db->query("INSERT IGNORE INTO pepban_admin_totp (id, secret, enabled) VALUES (1, '', 0)");
+
+		// Email verification columns on pepban_clients
+		$rows3 = $db->fetchAll(
+			"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+			 WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pepban_clients'"
+		);
+		$cols3 = array_column(array_map(fn($r) => (array)$r, $rows3), 'COLUMN_NAME');
+		if (!in_array('email_verified_at', $cols3, true)) {
+			$db->query("ALTER TABLE pepban_clients
+				ADD COLUMN email_verified_at       DATETIME    DEFAULT NULL,
+				ADD COLUMN email_verify_token      VARCHAR(64) DEFAULT NULL,
+				ADD COLUMN email_verify_expires_at DATETIME    DEFAULT NULL");
+			// Existing accounts with an API key hash are already verified — backfill
+			$db->query("UPDATE pepban_clients SET email_verified_at = created_at WHERE api_key_hash != '' AND api_key_hash IS NOT NULL AND email_verified_at IS NULL");
+		}
+
 		// Generate static PNG favicon into assets/images so Nginx serves it as a static file
 		$favicon_png = __DIR__ . '/../assets/images/favicon.png';
 		if (!file_exists($favicon_png) && function_exists('imagecreatetruecolor')) {

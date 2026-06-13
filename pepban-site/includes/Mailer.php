@@ -370,6 +370,29 @@ class Mailer {
 		self::send($client->owner_email, 'PepBan — Your Account is Active', $plain, $html);
 	}
 
+	public static function emailVerification(object $client, string $token): void {
+		$link  = rtrim(SITE_URL, '/') . '/verify-email?token=' . urlencode($token);
+		$first = htmlspecialchars(explode(' ', trim($client->owner_name))[0]);
+
+		$plain =
+			"Hi {$client->owner_name},\n\n" .
+			"Thanks for signing up for PepBan! Please verify your email address to activate your account and receive your API key.\n\n" .
+			"Verify your email:\n  {$link}\n\n" .
+			"This link expires in 24 hours.\n\n" .
+			"— PepBan";
+
+		$html = self::wrap(
+			self::h1('Verify your email address') .
+			self::p("Hi {$first},") .
+			self::p('Thanks for signing up for PepBan! Click the button below to verify your email address and get your API key.') .
+			self::btn($link, 'Verify Email &rarr;') .
+			self::hr() .
+			self::p('This link expires in <strong style="color:#111827">24 hours</strong>. If you didn&rsquo;t create a PepBan account, you can safely ignore this email.', 'font-size:13px;color:#6b7280')
+		);
+
+		self::send($client->owner_email, 'PepBan — Verify your email address', $plain, $html);
+	}
+
 	public static function passwordReset(string $email, string $token): void {
 		$link = url('/reset-password') . '?token=' . urlencode($token);
 

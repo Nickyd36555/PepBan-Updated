@@ -54,6 +54,16 @@ class Auth {
 		if (!self::isAdmin()) redirect('/admin/login');
 	}
 
+	// ── Admin TOTP pending (password OK, TOTP not yet verified) ───────────────
+
+	public static function setPendingTotp(): void {
+		$_SESSION['pb_admin_totp_pending'] = true;
+	}
+
+	public static function isPendingTotp(): bool {
+		return !empty($_SESSION['pb_admin_totp_pending']);
+	}
+
 	// ── Shared ────────────────────────────────────────────────────────────────
 
 	public static function logout(): void {
@@ -96,5 +106,26 @@ class Auth {
 	public static function deleteResetToken(string $token): void {
 		$hash = hash_hmac('sha256', $token, SECRET_KEY);
 		Database::get()->query('DELETE FROM pepban_password_resets WHERE token_hash = ?', [$hash]);
+	}
+
+	// ── Email verification tokens ─────────────────────────────────────────────
+
+	public static function createEmailToken(int $client_id): string {
+		$db    = Database::get();
+		$token = bin2hex(random_bytes(32));
+		$hash  = hash_hmac('sha256', $token, SECRET_KEY);
+		$db->query(
+			'UPDATE pepban_clients SET email_verify_token = ?, email_verify_expires_at = ? WHERE id = ?',
+			[$hash, date('Y-m-d H:i:s', strtotime('+24 hours')), $client_id]
+		);
+		return $token;
+	}
+
+	public static function verifyEmailToken(string $token): ?object {
+		$hash = hash_hmac('sha256', $token, SECRET_KEY);
+		return Database::get()->fetch(
+			'SELECT * FROM pepban_clients WHERE email_verify_token = ? AND email_verify_expires_at > NOW()',
+			[$hash]
+		);
 	}
 }

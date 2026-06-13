@@ -11,6 +11,11 @@ if (!$locked_out && $_SERVER['REQUEST_METHOD'] === 'POST') {
 	$email = post('email');
 	$pass  = post('password');
 	if ($email === ADMIN_EMAIL && password_verify($pass, ADMIN_PASSWORD_HASH)) {
+		$totp_row = Database::get()->fetch('SELECT * FROM pepban_admin_totp WHERE id = 1 AND enabled = 1');
+		if ($totp_row) {
+			Auth::setPendingTotp();
+			redirect('/admin/totp-verify');
+		}
 		Mailer::adminLoginAlert(true, $visitor_ip, $email);
 		Auth::loginAdmin();
 		redirect('/admin/dashboard');

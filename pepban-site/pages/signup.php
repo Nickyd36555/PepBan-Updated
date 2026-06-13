@@ -35,38 +35,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	}
 
 	if (empty($errors)) {
-		$db       = Database::get();
-		$raw_key  = generate_api_key();
-		$status   = AUTO_APPROVE_CLIENTS ? 'active' : 'inactive';
+		$db = Database::get();
 
 		$id = $db->insert('pepban_clients', [
 			'owner_name'          => $name,
 			'owner_email'         => $email,
 			'password_hash'       => password_hash($pass, PASSWORD_DEFAULT),
 			'site_url'            => $site,
-			'api_key_hash'        => password_hash($raw_key, PASSWORD_DEFAULT),
-			'api_key_prefix'      => substr($raw_key, 0, 8),
-			'subscription_status' => $status,
+			'api_key_hash'        => '',
+			'api_key_prefix'      => '',
+			'subscription_status' => 'inactive',
 			'created_at'          => date('Y-m-d H:i:s'),
-			'activated_at'        => $status === 'active' ? date('Y-m-d H:i:s') : null,
+			'activated_at'        => null,
 			'admin_notes'         => '',
 		]);
 
-		$client = $db->fetch('SELECT * FROM pepban_clients WHERE id = ?', [$id]);
-		Mailer::welcome($client, $raw_key);
+		$client       = $db->fetch('SELECT * FROM pepban_clients WHERE id = ?', [$id]);
+		$verify_token = Auth::createEmailToken($id);
+		Mailer::emailVerification($client, $verify_token);
 		Mailer::adminNewSignup($client);
 
-		// Store key in session to show once on portal
-		$_SESSION['new_api_key'] = $raw_key;
-
-		Auth::loginClient($client);
-		redirect('/portal', ['registered' => '1']);
+		redirect('/signup', ['verify' => '1']);
 	}
 	} // end rate limit check
 }
 
 $page_title = 'Sign Up — ' . SITE_NAME;
 require __DIR__ . '/../templates/layout.php';
+
+// Show "check your email" confirmation after successful signup
+if (!empty($_GET['verify'])):
+?>
+<div class="pepban-public" style="min-height:60vh;display:flex;align-items:center;justify-content:center">
+<div style="max-width:440px;width:100%;text-align:center;padding:40px 20px">
+	<div style="font-size:52px;margin-bottom:16px">&#128231;</div>
+	<h1 style="font-size:26px;margin:0 0 12px">Check your email</h1>
+	<p style="color:#6b7280;font-size:16px;line-height:1.6;margin:0 0 28px">We've sent a verification link to your email address. Click it to activate your account and get your API key.</p>
+	<p style="color:#9ca3af;font-size:13px">Didn't get it? Check your spam folder, or <a href="<?= url('/verify-email') ?>" style="color:#dc2626">request a new link</a>.</p>
+</div>
+</div>
+<?php
+require __DIR__ . '/../templates/layout-end.php';
+exit;
+endif;
 ?>
 
 <div class="pepban-public">

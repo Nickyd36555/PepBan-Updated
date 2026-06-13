@@ -50,7 +50,7 @@ register_shutdown_function(function () {
 });
 
 // Run schema migrations once per deploy (flag file prevents repeat queries)
-$_migration_flag = __DIR__ . '/.db_migrated_v11';
+$_migration_flag = __DIR__ . '/.db_migrated_v12';
 if (!file_exists($_migration_flag)) {
 	try { Database::maybe_migrate(); file_put_contents($_migration_flag, date('c')); } catch (Throwable $e) {}
 }
@@ -102,8 +102,9 @@ if (str_starts_with($path, '/admin')) {
 	$admin_path = preg_replace('/[^a-z0-9_-]/i', '', $admin_path);
 
 	// Login/logout don't require auth
-	if ($admin_path === 'login')  { require __DIR__ . '/admin/login.php';  exit; }
-	if ($admin_path === 'logout') { require __DIR__ . '/admin/logout.php'; exit; }
+	if ($admin_path === 'login')       { require __DIR__ . '/admin/login.php';       exit; }
+	if ($admin_path === 'logout')      { require __DIR__ . '/admin/logout.php';      exit; }
+	if ($admin_path === 'totp-verify') { require __DIR__ . '/admin/totp-verify.php'; exit; }
 
 	Auth::requireAdmin();
 
@@ -132,6 +133,7 @@ $routes = [
 	'/dispute'          => 'pages/dispute.php',
 	'/forgot-password'  => 'pages/forgot-password.php',
 	'/reset-password'   => 'pages/reset-password.php',
+	'/verify-email'     => 'pages/verify-email.php',
 	'/privacy'          => 'pages/privacy.php',
 	'/terms'            => 'pages/terms.php',
 ];
