@@ -20,7 +20,7 @@ if (!defined('DB_CHARSET')) define('DB_CHARSET', 'utf8mb4');
 if (!defined('SITE_URL'))   define('SITE_URL',  'https://your-domain.com');
 if (!defined('SITE_NAME'))  define('SITE_NAME', 'PepBan');
 if (!defined('PEPBAN_VERSION'))        define('PEPBAN_VERSION',        '1.0.0');
-if (!defined('PEPBAN_PLUGIN_VERSION')) define('PEPBAN_PLUGIN_VERSION', '1.6.0');
+if (!defined('PEPBAN_PLUGIN_VERSION')) define('PEPBAN_PLUGIN_VERSION', '1.6.1');
 
 if (!defined('ADMIN_EMAIL'))         define('ADMIN_EMAIL',         'admin@pepban.com');
 if (!defined('SUPPORT_EMAIL'))       define('SUPPORT_EMAIL',       'admin@pepban.com');

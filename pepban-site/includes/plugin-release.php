@@ -38,9 +38,17 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.6.0',
+			'version' => '1.6.1',
 			'date'    => 'June 2026',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Improved', 'text' => 'Ban reason field now shows a clear notice that the reason entered is visible to all PepBan member stores — encouraging factual, professional reporting'],
+			],
+		],
+		[
+			'version' => '1.6.0',
+			'date'    => 'June 2026',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'New', 'text' => 'Watch Notes — add internal notes to any customer by email; shown as an orange banner on every order edit screen and on the WordPress user profile, helping store staff track patterns like repeat non-delivery claims without issuing a ban'],
 			],
