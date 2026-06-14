@@ -51,6 +51,9 @@ $type_labels = array( 'email' => 'Email', 'ip' => 'IP Address', 'address' => 'Ad
 				<th style="padding:8px 0"><label for="pepban-bl-reason">Reason</label></th>
 				<td style="padding:8px 0">
 					<input type="text" id="pepban-bl-reason" class="regular-text" placeholder="Optional">
+					<p class="description" style="margin-top:6px;color:#b45309;background:#fffbeb;border:1px solid #fcd34d;border-radius:4px;padding:5px 8px;line-height:1.5">
+						&#128274; <strong>Shared if reported.</strong> This reason stays on your site only — but if you click <em>Report to PepBan</em>, it becomes visible to all member stores.
+					</p>
 				</td>
 			</tr>
 		</table>

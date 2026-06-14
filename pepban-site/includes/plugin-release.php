@@ -38,9 +38,17 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.6.1',
+			'version' => '1.6.2',
 			'date'    => 'June 2026',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Improved', 'text' => 'Blacklist page reason field now shows the same shared-reason warning as the order report box — clarifying that reasons stay local until Report to PepBan is clicked'],
+			],
+		],
+		[
+			'version' => '1.6.1',
+			'date'    => 'June 2026',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Improved', 'text' => 'Ban reason field now shows a clear notice that the reason entered is visible to all PepBan member stores — encouraging factual, professional reporting'],
 			],
