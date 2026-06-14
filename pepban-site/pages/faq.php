@@ -97,6 +97,14 @@ require __DIR__ . '/../templates/layout.php';
         <div class="pb-faq-answer">Once the plugin is installed, a "Report to PepBan" button appears on each order in your WooCommerce admin. Click the button, select the reason (fraud, chargeback, abuse, etc.), and confirm. The customer is immediately added to the shared ban list and all member stores are protected.</div>
       </div>
 
+      <div class="pb-faq-item">
+        <button class="pb-faq-question" type="button">
+          Can other stores see the reason I enter when banning a customer?
+          <svg class="pb-faq-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="pb-faq-answer">Yes. The ban reason you enter is stored in the shared PepBan database and is visible to every member store when that customer appears on one of their orders. This is intentional — context helps other stores understand why someone is flagged. Because of this, keep reasons factual and professional (e.g. "Fraudulent chargeback" or "Threatening messages") and avoid including personal opinions, full verbatim quotes, or anything you wouldn't want shared across the network.</div>
+      </div>
+
       <!-- Blocked customers -->
       <div class="pb-faq-item">
         <button class="pb-faq-question" type="button">

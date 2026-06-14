@@ -58,6 +58,9 @@ class PepBan_Client_Reporter {
 				<textarea id="pepban-reason-<?php echo esc_attr( $order_id ); ?>" name="pepban_reason"
 					rows="3" style="width:100%;margin:6px 0"
 					placeholder="e.g. Chargeback, fraud, abuse…"></textarea>
+				<p style="margin:0 0 8px;font-size:11px;color:#b45309;background:#fffbeb;border:1px solid #fcd34d;border-radius:4px;padding:6px 8px;line-height:1.5">
+					&#128274; <strong>Shared with all member stores.</strong> The reason you enter is visible to every PepBan member store when they view an order from this customer. Keep it factual and professional.
+				</p>
 				<button type="button" class="button button-primary pepban-report-btn" style="width:100%"
 					data-order-id="<?php echo esc_attr( $order_id ); ?>"
 					data-nonce="<?php echo esc_attr( wp_create_nonce( 'pepban_report_' . $order_id ) ); ?>">
