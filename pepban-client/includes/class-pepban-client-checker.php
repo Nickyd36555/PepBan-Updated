@@ -218,7 +218,7 @@ class PepBan_Client_Checker {
 	}
 
 	private static function api_check( string $email, string $phone, string $first = '', string $last = '', string $ip = '' ) {
-		$key = md5( $email . '|' . $phone );
+		$key = hash( 'sha256', $email . '|' . $phone );
 		if ( ! isset( self::$check_cache[ $key ] ) ) {
 			$extra = array();
 
@@ -263,16 +263,21 @@ class PepBan_Client_Checker {
 	}
 
 	private static function get_customer_ip() {
-		foreach ( array( 'HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR' ) as $key ) {
-			if ( ! empty( $_SERVER[ $key ] ) ) {
-				$ip = sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) );
-				// X-Forwarded-For can be a comma-separated list
-				if ( strpos( $ip, ',' ) !== false ) {
-					$ip = trim( explode( ',', $ip )[0] );
-				}
-				if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) return $ip;
-			}
+		$remote = $_SERVER['REMOTE_ADDR'] ?? '';
+
+		// Only trust CF-Connecting-IP when the connection actually comes from Cloudflare
+		if ( ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) && PepBan_Client_IP_Blocker::is_cloudflare_ip_public( $remote ) ) {
+			$ip = sanitize_text_field( wp_unslash( trim( explode( ',', $_SERVER['HTTP_CF_CONNECTING_IP'] )[0] ) ) );
+			if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) return $ip;
 		}
+
+		// X-Forwarded-For only when REMOTE_ADDR is a private/loopback address (local reverse proxy)
+		if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) && filter_var( $remote, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) === false ) {
+			$ip = sanitize_text_field( wp_unslash( trim( explode( ',', $_SERVER['HTTP_X_FORWARDED_FOR'] )[0] ) ) );
+			if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) return $ip;
+		}
+
+		if ( filter_var( $remote, FILTER_VALIDATE_IP ) ) return $remote;
 		return '';
 	}
 }

@@ -207,6 +207,17 @@ class PepBan_Client_Blacklist {
 			wp_send_json_error( 'File upload failed (error ' . ( $_FILES['csv_file']['error'] ?? 'none' ) . ').' );
 		}
 
+		if ( $_FILES['csv_file']['size'] > 1048576 ) {
+			wp_send_json_error( 'File too large. Maximum upload size is 1 MB.' );
+		}
+
+		$finfo    = finfo_open( FILEINFO_MIME_TYPE );
+		$mime     = $finfo ? finfo_file( $finfo, $_FILES['csv_file']['tmp_name'] ) : '';
+		if ( $finfo ) finfo_close( $finfo );
+		if ( $mime && ! in_array( $mime, array( 'text/plain', 'text/csv', 'application/csv', 'application/octet-stream' ), true ) ) {
+			wp_send_json_error( 'Invalid file type. Please upload a CSV file.' );
+		}
+
 		$handle = fopen( $_FILES['csv_file']['tmp_name'], 'r' );
 		if ( ! $handle ) wp_send_json_error( 'Could not read file.' );
 
@@ -312,7 +323,7 @@ class PepBan_Client_Blacklist {
 	}
 
 	public static function download_template() {
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( 'Unauthorized', 403 );
 		}
 		check_admin_referer( 'pepban_download_template' );

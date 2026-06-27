@@ -38,9 +38,22 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.6.2',
+			'version' => '1.6.3',
 			'date'    => 'June 2026',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Fix', 'text' => 'Security hardening: IP ban bypass via spoofable proxy headers closed — CF-Connecting-IP now only trusted when the connection originates from a verified Cloudflare IP range'],
+				['tag' => 'Fix', 'text' => 'Security hardening: plugin update package URL now validated to ensure it originates from pepban.com before installation'],
+				['tag' => 'Fix', 'text' => 'Security hardening: whitelist button after reporting a customer now uses a correctly scoped nonce'],
+				['tag' => 'Fix', 'text' => 'Security hardening: nonce and capability checks moved to the top of all AJAX handlers before any input is read'],
+				['tag' => 'Fix', 'text' => 'Watch Notes: billing email now taken from the order record server-side rather than from the POST body'],
+				['tag' => 'Improved', 'text' => 'CSV import now rejects files larger than 1 MB and validates MIME type before parsing'],
+			],
+		],
+		[
+			'version' => '1.6.2',
+			'date'    => 'June 2026',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Improved', 'text' => 'Blacklist page reason field now shows the same shared-reason warning as the order report box — clarifying that reasons stay local until Report to PepBan is clicked'],
 			],

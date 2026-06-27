@@ -1,6 +1,16 @@
 /* PepBan Client admin scripts */
 jQuery(function ($) {
 
+	function escHtml(str) {
+		return String(str)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
+	}
+
+
 	// ── Report customer from order screen ────────────────────────────────────
 	$(document).on('click', '.pepban-report-btn', function () {
 		var $btn      = $(this);
@@ -23,20 +33,24 @@ jQuery(function ($) {
 			nonce:    nonce,
 		}, function (res) {
 			if (res.success) {
-				var customerId = res.data.customer_id;
-				var reportedAt = res.data.reported_at;
-				$box.html(
-					'<p style="color:#00a32a">&#10003; ' + res.data.message + '</p>' +
-					'<p>Reported on: <strong>' + reportedAt + '</strong></p>' +
-					(customerId ? '<p>PepBan Customer ID: <strong>' + customerId + '</strong></p>' +
-						'<button type="button" class="button pepban-whitelist-btn" ' +
-						'data-order-id="' + orderId + '" ' +
-						'data-customer-id="' + customerId + '" ' +
-						'data-nonce="' + nonce + '">' +
-						'Whitelist on This Site</button>' : '')
-				);
+				var customerId     = res.data.customer_id;
+				var reportedAt     = res.data.reported_at;
+				var whitelistNonce = res.data.whitelist_nonce || '';
+				var html = '<p style="color:#00a32a">&#10003; ' + escHtml(res.data.message) + '</p>' +
+					'<p>Reported on: <strong>' + escHtml(reportedAt) + '</strong></p>';
+				if (customerId) {
+					html += '<p>PepBan Customer ID: <strong>' + escHtml(customerId) + '</strong></p>';
+					if (whitelistNonce) {
+						html += '<button type="button" class="button pepban-whitelist-btn" ' +
+							'data-order-id="' + escHtml(orderId) + '" ' +
+							'data-customer-id="' + escHtml(customerId) + '" ' +
+							'data-nonce="' + escHtml(whitelistNonce) + '">' +
+							'Whitelist on This Site</button>';
+					}
+				}
+				$box.html(html);
 			} else {
-				alert('Error: ' + (res.data || 'Unknown error.'));
+				alert('Error: ' + escHtml(res.data || 'Unknown error.'));
 				$btn.prop('disabled', false).text('Report to PepBan');
 			}
 		}).fail(function () {
@@ -63,9 +77,9 @@ jQuery(function ($) {
 			nonce:       nonce,
 		}, function (res) {
 			if (res.success) {
-				$btn.replaceWith('<p style="color:#00a32a">&#10003; ' + res.data + '</p>');
+				$btn.replaceWith('<p style="color:#00a32a">&#10003; ' + escHtml(res.data) + '</p>');
 			} else {
-				alert('Error: ' + (res.data || 'Unknown error.'));
+				alert('Error: ' + escHtml(res.data || 'Unknown error.'));
 				$btn.prop('disabled', false).text('Whitelist on This Site');
 			}
 		});
@@ -88,11 +102,11 @@ jQuery(function ($) {
 		}, function (res) {
 			$result.show();
 			if (res.success) {
-				$result.html('<p style="color:#00a32a">&#10003; ' + res.data.message + ' — ' + res.data.email + ' (' + (res.data.name || 'Unknown') + ')</p>');
+				$result.html('<p style="color:#00a32a">&#10003; ' + escHtml(res.data.message) + ' — ' + escHtml(res.data.email) + ' (' + escHtml(res.data.name || 'Unknown') + ')</p>');
 				$('#pepban-whitelist-email').val('');
 				setTimeout(function () { location.reload(); }, 1500);
 			} else {
-				$result.html('<p style="color:#d63638">&#10007; ' + (res.data || 'Unknown error.') + '</p>');
+				$result.html('<p style="color:#d63638">&#10007; ' + escHtml(res.data || 'Unknown error.') + '</p>');
 			}
 		}).fail(function () {
 			$result.show().html('<p style="color:#d63638">&#10007; Request failed. Please try again.</p>');
@@ -134,10 +148,10 @@ jQuery(function ($) {
 				if (done < entries.length) return;
 				$result.show();
 				if (errors.length) {
-					$result.html('<p style="color:#d63638">&#10007; ' + errors.join('; ') + '</p>');
+					$result.html('<p style="color:#d63638">&#10007; ' + escHtml(errors.join('; ')) + '</p>');
 					$btn.prop('disabled', false).text(btnText);
 				} else {
-					$result.html('<p style="color:#00a32a">&#10003; Added ' + succeeded + ' entr' + (succeeded === 1 ? 'y' : 'ies') + '.</p>');
+					$result.html('<p style="color:#00a32a">&#10003; Added ' + escHtml(succeeded) + ' entr' + (succeeded === 1 ? 'y' : 'ies') + '.</p>');
 					$(clearIds).val('');
 					setTimeout(function () { location.reload(); }, 1200);
 				}
@@ -244,12 +258,12 @@ jQuery(function ($) {
 		}, function (res) {
 			$result.show();
 			if (res.success) {
-				$result.html('<p style="color:#00a32a">&#10003; ' + res.data.message + '</p>');
+				$result.html('<p style="color:#00a32a">&#10003; ' + escHtml(res.data.message) + '</p>');
 				$('#pepban-domain-input').val('');
 				$('#pepban-domain-reason').val('');
 				setTimeout(function () { location.reload(); }, 1200);
 			} else {
-				$result.html('<p style="color:#d63638">&#10007; ' + (res.data || 'Error.') + '</p>');
+				$result.html('<p style="color:#d63638">&#10007; ' + escHtml(res.data || 'Error.') + '</p>');
 			}
 		}).fail(function () {
 			$result.show().html('<p style="color:#d63638">&#10007; Request failed.</p>');
@@ -303,10 +317,10 @@ jQuery(function ($) {
 			success: function (res) {
 				$btn.prop('disabled', false).text('Import CSV');
 				if (res.success) {
-					$res.html('<span style="color:#00a32a">&#10003; ' + res.data.message + '</span>').show();
+					$res.html('<span style="color:#00a32a">&#10003; ' + escHtml(res.data.message) + '</span>').show();
 					if (res.data.added > 0) setTimeout(function() { location.reload(); }, 1200);
 				} else {
-					$res.html('<span style="color:#d63638">&#10007; ' + (res.data || 'Import failed.') + '</span>').show();
+					$res.html('<span style="color:#d63638">&#10007; ' + escHtml(res.data || 'Import failed.') + '</span>').show();
 				}
 			},
 			error: function () {

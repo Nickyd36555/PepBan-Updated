@@ -127,10 +127,8 @@ class PepBan_Client_WatchNotes {
 
 	public static function ajax_save() {
 		$order_id = absint( $_POST['order_id'] ?? 0 );
-		$email    = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
-		$notes    = sanitize_textarea_field( wp_unslash( $_POST['notes'] ?? '' ) );
 
-		if ( ! $order_id || ! $email ) {
+		if ( ! $order_id ) {
 			wp_send_json_error( 'Invalid request.' );
 		}
 
@@ -140,6 +138,18 @@ class PepBan_Client_WatchNotes {
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_send_json_error( 'Unauthorized.' );
+		}
+
+		// Derive email from order rather than trusting $_POST
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			wp_send_json_error( 'Order not found.' );
+		}
+		$email = $order->get_billing_email();
+		$notes = sanitize_textarea_field( wp_unslash( $_POST['notes'] ?? '' ) );
+
+		if ( ! $email ) {
+			wp_send_json_error( 'No billing email on order.' );
 		}
 
 		$saved_by = wp_get_current_user()->user_login;

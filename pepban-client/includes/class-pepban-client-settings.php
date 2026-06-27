@@ -50,7 +50,8 @@ class PepBan_Client_Settings {
 		}
 
 		wp_update_plugins();
-		wp_safe_redirect( admin_url( 'admin.php?page=pepban-client&pepban_update_checked=1' ) );
+		set_transient( 'pepban_update_checked_notice', 1, 60 );
+		wp_safe_redirect( admin_url( 'admin.php?page=pepban-client' ) );
 		exit;
 	}
 

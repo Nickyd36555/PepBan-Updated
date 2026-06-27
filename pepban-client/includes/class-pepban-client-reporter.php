@@ -153,9 +153,10 @@ class PepBan_Client_Reporter {
 		$order->save();
 
 		wp_send_json_success( array(
-			'message'     => $result['is_new'] ?? true ? 'Customer added to PepBan.' : 'Existing ban updated.',
-			'customer_id' => $result['customer_id'] ?? 0,
-			'reported_at' => current_time( 'mysql' ),
+			'message'         => $result['is_new'] ?? true ? 'Customer added to PepBan.' : 'Existing ban updated.',
+			'customer_id'     => $result['customer_id'] ?? 0,
+			'reported_at'     => current_time( 'mysql' ),
+			'whitelist_nonce' => wp_create_nonce( 'pepban_whitelist_' . $order_id ),
 		) );
 	}
 }

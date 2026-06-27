@@ -24,12 +24,17 @@ class PepBan_Client_Updater {
 		             || ( $is_rollback && version_compare( $hub_version, PEPBAN_CLIENT_VERSION, '<' ) );
 
 		if ( $needs_change ) {
+			$download_url = $info['download_url'] ?? '';
+			// Reject any download URL that doesn't come from pepban.com
+			if ( $download_url && strpos( $download_url, 'https://pepban.com/' ) !== 0 ) {
+				$download_url = '';
+			}
 			$transient->response[ self::PLUGIN_FILE ] = (object) array(
 				'slug'        => self::PLUGIN_SLUG,
 				'plugin'      => self::PLUGIN_FILE,
 				'new_version' => $hub_version,
 				'url'         => $info['details_url'] ?? 'https://pepban.com',
-				'package'     => $info['download_url'] ?? '',
+				'package'     => $download_url,
 			);
 		} else {
 			// Let WordPress know this plugin is up to date

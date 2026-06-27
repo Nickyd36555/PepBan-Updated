@@ -138,9 +138,10 @@ $connection_status = PepBan_Client_Settings::test_connection();
 			echo ' &mdash; <span style="color:#00a32a">Up to date</span>';
 		}
 	?></p>
-	<?php if ( ! empty( $_GET['pepban_update_checked'] ) ) : ?>
-		<div class="notice notice-success inline"><p>Update check complete.</p></div>
-	<?php endif; ?>
+	<?php if ( get_transient( 'pepban_update_checked_notice' ) ) {
+		delete_transient( 'pepban_update_checked_notice' );
+		echo '<div class="notice notice-success inline"><p>Update check complete.</p></div>';
+	} ?>
 	<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 		<?php wp_nonce_field( 'pepban_force_update_check' ); ?>
 		<input type="hidden" name="action" value="pepban_client_check_for_update">
