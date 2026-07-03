@@ -15,9 +15,14 @@ if (str_starts_with($segment, 'admin')) {
 	// POST /api/v1/admin/login ─────────────────────────────────────────────────
 	if ($aseg === 'login' && $method === 'POST') {
 		require_once __DIR__ . '/../includes/Totp.php';
+		$api_ip = get_visitor_ip();
+		if (!login_rate_limit($api_ip)) {
+			AdminApiAuth::error('Too many login attempts. Try again later.', 429);
+		}
 		$body = AdminApiAuth::body();
 		$pw   = trim($body->password ?? '');
 		if (!$pw || !password_verify($pw, ADMIN_PASSWORD_HASH)) {
+			login_rate_limit($api_ip, true);
 			AdminApiAuth::error('Invalid credentials', 401);
 		}
 		// Enforce TOTP if enabled
@@ -469,35 +474,10 @@ if ($segment === 'blocked-domains' && $method === 'GET') {
 	ApiAuth::json(['blocked_domains' => $rows]);
 }
 
-// ── POST /api/v1/blocked-domains/add ─────────────────────────────────────────
-if ($segment === 'blocked-domains/add' && $method === 'POST') {
-	$body   = ApiAuth::body();
-	$domain = strtolower(trim(ltrim($body->domain ?? '', '@')));
-	$reason = trim($body->reason ?? '');
-
-	if (!$domain) ApiAuth::error('domain is required', 422);
-
-	try {
-		$db->insert('pepban_blocked_domains', [
-			'domain'     => $domain,
-			'reason'     => $reason,
-			'date_added' => date('Y-m-d H:i:s'),
-		]);
-		ApiAuth::json(['success' => true, 'domain' => $domain]);
-	} catch (Exception $e) {
-		ApiAuth::error('Domain already blocked or invalid.', 409);
-	}
-}
-
-// ── POST /api/v1/blocked-domains/remove ──────────────────────────────────────
-if ($segment === 'blocked-domains/remove' && $method === 'POST') {
-	$body   = ApiAuth::body();
-	$domain = strtolower(trim(ltrim($body->domain ?? '', '@')));
-
-	if (!$domain) ApiAuth::error('domain is required', 422);
-
-	$db->query('DELETE FROM pepban_blocked_domains WHERE domain = ?', [$domain]);
-	ApiAuth::json(['success' => true]);
+// ── POST /api/v1/blocked-domains/add|remove — admin-only ─────────────────────
+// Clients can READ the domain list but cannot modify it; only the admin panel can.
+if (in_array($segment, ['blocked-domains/add', 'blocked-domains/remove'], true) && $method === 'POST') {
+	ApiAuth::error('Forbidden', 403);
 }
 
 // ── GET /api/v1/blocked-ips ───────────────────────────────────────────────────
@@ -509,12 +489,9 @@ if ($segment === 'blocked-ips' && $method === 'GET') {
 
 // ── POST /api/v1/test-alert ───────────────────────────────────────────────────
 if ($segment === 'test-alert' && $method === 'POST') {
-	$body     = ApiAuth::body();
-	$alert_to = trim($body->alert_email ?? '');
-	if (!$alert_to || !filter_var($alert_to, FILTER_VALIDATE_EMAIL)) {
-		$alert_to = $auth->owner_email ?? '';
-	}
-	if (!$alert_to) ApiAuth::error('No alert email configured', 422);
+	// Always send to the authenticated client's own email — never to a caller-supplied address
+	$alert_to = trim($auth->owner_email ?? '');
+	if (!$alert_to) ApiAuth::error('No alert email on account', 422);
 
 	$fake_response = [
 		'banned'       => true,

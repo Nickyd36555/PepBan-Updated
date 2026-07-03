@@ -84,6 +84,54 @@ function generate_api_key(): string {
 	return 'pbk_' . bin2hex(random_bytes(20));
 }
 
+// ── Trusted IP detection ─────────────────────────────────────────────────────
+// Only trust proxy headers when the connection comes from a known Cloudflare IP range
+// or a private/loopback address (local reverse proxy). Falls back to REMOTE_ADDR.
+
+function get_visitor_ip(): string {
+    $remote = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+
+    if (!empty($_SERVER['HTTP_CF_CONNECTING_IP']) && _is_cloudflare_ip($remote)) {
+        $ip = trim(explode(',', $_SERVER['HTTP_CF_CONNECTING_IP'])[0]);
+        if (filter_var($ip, FILTER_VALIDATE_IP)) return $ip;
+    }
+
+    // X-Forwarded-For only when REMOTE_ADDR is a private/loopback (local proxy)
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) && !filter_var($remote, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+        $ip = trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
+        if (filter_var($ip, FILTER_VALIDATE_IP)) return $ip;
+    }
+
+    return filter_var($remote, FILTER_VALIDATE_IP) ? $remote : '127.0.0.1';
+}
+
+function _is_cloudflare_ip(string $ip): bool {
+    static $ranges = [
+        '173.245.48.0/20','103.21.244.0/22','103.22.200.0/22','103.31.4.0/22',
+        '141.101.64.0/18','108.162.192.0/18','190.93.240.0/20','188.114.96.0/20',
+        '197.234.240.0/22','198.41.128.0/17','162.158.0.0/15','104.16.0.0/13',
+        '104.24.0.0/14','172.64.0.0/13','131.0.72.0/22',
+        '2400:cb00::/32','2606:4700::/32','2803:f800::/32','2405:b500::/32',
+        '2405:8100::/32','2a06:98c0::/29','2c0f:f248::/32',
+    ];
+    foreach ($ranges as $cidr) {
+        [$subnet, $bits] = explode('/', $cidr);
+        if (strpos($ip, ':') !== false) {
+            if (strpos($subnet, ':') === false) continue;
+            $a = inet_pton($ip); $b = inet_pton($subnet);
+            if ($a === false || $b === false) continue;
+            $mask = str_repeat("\xff", (int)($bits / 8));
+            if ($bits % 8) $mask .= chr(0xff & (0xff << (8 - $bits % 8)));
+            $mask = str_pad($mask, strlen($a), "\x00");
+            if (($a & $mask) === ($b & $mask)) return true;
+        } else {
+            if (strpos($subnet, ':') !== false) continue;
+            if ((ip2long($ip) & ~((1 << (32 - (int)$bits)) - 1)) === ip2long($subnet)) return true;
+        }
+    }
+    return false;
+}
+
 // ── Rate limiting (file-based, no Redis needed) ───────────────────────────────
 
 // Login brute-force: max 10 failed attempts per 15 minutes per IP.

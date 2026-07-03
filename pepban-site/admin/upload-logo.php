@@ -5,7 +5,7 @@ $msg = '';
 $type = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-	if (empty($_POST['_csrf']) || $_POST['_csrf'] !== ($_SESSION['csrf_token'] ?? '')) {
+	if (empty($_POST['_csrf']) || !hash_equals($_SESSION['csrf_token'] ?? '', $_POST['_csrf'])) {
 		$msg = 'Invalid CSRF token.'; $type = 'error';
 	} elseif (empty($_FILES['logo']) || $_FILES['logo']['error'] !== UPLOAD_ERR_OK) {
 		$msg = 'Upload failed (error code ' . ($_FILES['logo']['error'] ?? 'none') . ').'; $type = 'error';

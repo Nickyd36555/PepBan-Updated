@@ -12,26 +12,37 @@ $totp_row = $db->fetch('SELECT * FROM pepban_admin_totp WHERE id = 1 AND enabled
 
 // TOTP was disabled between sessions — complete login without it
 if (!$totp_row) {
-	unset($_SESSION['pb_admin_totp_pending']);
-	$ip = trim(explode(',', $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1')[0]);
-	Mailer::adminLoginAlert(true, $ip, ADMIN_EMAIL);
+	unset($_SESSION['pb_admin_totp_pending'], $_SESSION['pb_totp_attempts']);
+	Mailer::adminLoginAlert(true, get_visitor_ip(), ADMIN_EMAIL);
 	Auth::loginAdmin();
 	redirect('/admin/dashboard');
 }
 
 $error = false;
-$ip    = trim(explode(',', $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1')[0]);
+$ip    = get_visitor_ip();
+
+// Lock out after 5 wrong TOTP codes — require re-login
+if (!isset($_SESSION['pb_totp_attempts'])) $_SESSION['pb_totp_attempts'] = 0;
+if ($_SESSION['pb_totp_attempts'] >= 5) {
+	session_destroy();
+	redirect('/admin/login');
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	verify_csrf();
 	$code = post('totp_code');
 	if (Totp::verify($totp_row->secret, $code)) {
-		unset($_SESSION['pb_admin_totp_pending']);
+		unset($_SESSION['pb_admin_totp_pending'], $_SESSION['pb_totp_attempts']);
 		Mailer::adminLoginAlert(true, $ip, ADMIN_EMAIL);
 		Auth::loginAdmin();
 		redirect('/admin/dashboard');
 	}
-	// Record the failed attempt (password was already good, so only log here)
+	$_SESSION['pb_totp_attempts']++;
+	if ($_SESSION['pb_totp_attempts'] >= 5) {
+		Mailer::adminLoginAlert(false, $ip, ADMIN_EMAIL . ' [TOTP locked — 5 failed codes]');
+		session_destroy();
+		redirect('/admin/login');
+	}
 	Mailer::adminLoginAlert(false, $ip, ADMIN_EMAIL . ' [TOTP failed]');
 	$error = true;
 }

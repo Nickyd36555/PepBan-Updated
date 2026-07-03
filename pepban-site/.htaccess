@@ -11,6 +11,7 @@ RewriteEngine On
 # Block direct access to sensitive utility scripts
 RewriteRule ^install\.php$           - [F,L]
 RewriteRule ^reset-admin-hash\.php$  - [F,L]
+RewriteRule ^cron/                   - [F,L]
 
 # Block direct access to sensitive files/dirs
 RewriteRule ^(includes|templates|config\.php|config\.local\.php)(/|$) - [F,L]

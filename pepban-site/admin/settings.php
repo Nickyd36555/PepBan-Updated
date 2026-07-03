@@ -29,7 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$lines[] = "define('SUPPORT_EMAIL', " . var_export(post('support_email'), true) . ');';
 
 		$new_hash = post('admin_password_new');
-		if ($new_hash !== '') {
+		if ($new_hash !== '' && strlen($new_hash) < 12) {
+			$error = 'Admin password must be at least 12 characters.';
+		} elseif ($new_hash !== '') {
 			$lines[] = "define('ADMIN_PASSWORD_HASH', " . var_export(password_hash($new_hash, PASSWORD_DEFAULT), true) . ');';
 		} else {
 			$lines[] = "define('ADMIN_PASSWORD_HASH', " . var_export(ADMIN_PASSWORD_HASH, true) . ');';

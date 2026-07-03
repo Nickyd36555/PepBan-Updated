@@ -56,6 +56,31 @@ class ApiAuth {
 		$sig       = $_SERVER['HTTP_X_PEPBAN_SIG']       ?? '';
 		$timestamp = $_SERVER['HTTP_X_PEPBAN_TIMESTAMP'] ?? '';
 
+		if (!$sig || !$timestamp) {
+			self::respond(401, ['success' => false, 'message' => 'Missing request signature.']);
+		}
+
+		// Reject timestamps outside a ±5-minute window — prevents replay attacks
+		$ts_diff = abs(time() - (int) $timestamp);
+		if ($ts_diff > 300) {
+			self::respond(401, ['success' => false, 'message' => 'Request timestamp expired.']);
+		}
+
+		// Reconstruct the exact string the plugin signed:
+		// timestamp + "\n" + METHOD + "\n" + /api/v1{path} + "\n" + sha256(body)
+		$body_raw  = (string) file_get_contents('php://input');
+		$path      = current_path();
+		$sig_data  = implode("\n", [
+			$timestamp,
+			strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET'),
+			$path,
+			hash('sha256', $body_raw),
+		]);
+		$expected  = hash_hmac('sha256', $sig_data, $raw_key);
+		if (!hash_equals($expected, $sig)) {
+			self::respond(401, ['success' => false, 'message' => 'Invalid request signature.']);
+		}
+
 
 		// ── Domain locking ────────────────────────────────────────────────────────
 		$req_site = $_SERVER['HTTP_X_PEPBAN_SITE'] ?? '';
