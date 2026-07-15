@@ -38,9 +38,17 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
+			'version' => '1.6.4',
+			'date'    => 'July 2026',
+			'latest'  => true,
+			'items'   => [
+				['tag' => 'New', 'text' => 'Customer Lookup — search any email address from PepBan → Customer Lookup to instantly see their network ban status, watch notes, and local blacklist status in one place'],
+			],
+		],
+		[
 			'version' => '1.6.3',
 			'date'    => 'June 2026',
-			'latest'  => true,
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Improved', 'text' => 'Internal reliability and stability improvements'],
 			],
