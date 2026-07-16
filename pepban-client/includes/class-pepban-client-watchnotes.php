@@ -22,7 +22,9 @@ class PepBan_Client_WatchNotes {
 		add_action( 'edit_user_profile_update',   array( __CLASS__, 'save_profile_field' ) );
 
 		// AJAX save from order meta box
-		add_action( 'wp_ajax_pepban_save_watch_notes', array( __CLASS__, 'ajax_save' ) );
+		add_action( 'wp_ajax_pepban_save_watch_notes',           array( __CLASS__, 'ajax_save' ) );
+		// AJAX save directly by email (Customer Lookup page)
+		add_action( 'wp_ajax_pepban_save_watch_notes_by_email',  array( __CLASS__, 'ajax_save_by_email' ) );
 	}
 
 	// ── Storage helpers ───────────────────────────────────────────────────────
@@ -190,6 +192,33 @@ class PepBan_Client_WatchNotes {
 			</tr>
 		</table>
 		<?php
+	}
+
+	// ── AJAX save directly by email (Customer Lookup page) ───────────────────────
+
+	public static function ajax_save_by_email() {
+		if ( ! check_ajax_referer( 'pepban_client_nonce', 'nonce', false ) ) {
+			wp_send_json_error( 'Security check failed.' );
+		}
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( 'Unauthorized.' );
+		}
+
+		$email = strtolower( trim( sanitize_email( wp_unslash( $_POST['email'] ?? '' ) ) ) );
+		$notes = sanitize_textarea_field( wp_unslash( $_POST['notes'] ?? '' ) );
+
+		if ( ! $email || ! is_email( $email ) ) {
+			wp_send_json_error( 'Invalid email address.' );
+		}
+
+		$saved_by = wp_get_current_user()->user_login;
+		self::save( $email, $notes, $saved_by );
+
+		wp_send_json_success( array(
+			'message' => $notes ? 'Watch note saved.' : 'Watch note cleared.',
+			'updated' => current_time( 'mysql' ),
+			'by'      => $saved_by,
+		) );
 	}
 
 	public static function save_profile_field( $user_id ) {

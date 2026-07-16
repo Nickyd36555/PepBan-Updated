@@ -38,9 +38,17 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.6.4',
+			'version' => '1.6.5',
 			'date'    => 'July 2026',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'Improved', 'text' => 'Customer Lookup now lets you save or clear a watch note and add or remove a local blacklist entry directly from the search results — no need to navigate to a separate page'],
+			],
+		],
+		[
+			'version' => '1.6.4',
+			'date'    => 'July 2026',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'New', 'text' => 'Customer Lookup — search any email address from PepBan → Customer Lookup to instantly see their network ban status, watch notes, and local blacklist status in one place'],
 			],
