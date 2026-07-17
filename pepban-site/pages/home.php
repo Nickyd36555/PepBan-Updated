@@ -137,6 +137,11 @@ require __DIR__ . '/../templates/layout.php';
         <h3>Customer Watch Notes</h3>
         <p>Flag customers without banning them. Add internal notes by email — shown as an orange warning on every order screen — so staff can track patterns like repeat non-delivery claims before escalating to a ban.</p>
       </div>
+      <div class="pb-feature-card">
+        <div class="pb-feature-icon">&#128269;</div>
+        <h3>Customer Lookup</h3>
+        <p>Search any email address from a single screen and instantly see their network ban status, watch notes, and local blacklist status — then add or update a watch note or blacklist entry without leaving the page.</p>
+      </div>
     </div>
   </div>
 </section>

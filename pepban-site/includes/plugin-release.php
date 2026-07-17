@@ -18,6 +18,10 @@ function pepban_plugin_description(): string {
 		. '<li>Bulk CSV import — add multiple bans to your local blacklist at once</li>'
 		. '<li>Global IP and domain blocking — hub-level bans checked at every checkout</li>'
 		. '<li>Order admin notice shows how many stores have reported the customer</li>'
+		. '<li>Customer Watch Notes — add internal staff notes to any customer by email; shown as an orange banner on every order from that customer</li>'
+		. '<li>Customer Lookup — search any email to see network ban status, watch notes, and local blacklist status, and take action from a single screen</li>'
+		. '<li>Checkout attempt alerts — get an email the moment a flagged customer tries to check out on your store</li>'
+		. '<li>Auto-report on block — automatically re-reports blocked customers back to the network</li>'
 		. '<li>Automatic updates delivered directly from pepban.com</li>'
 		. '</ul>';
 }
