@@ -166,10 +166,11 @@ jQuery(function ($) {
 			{ type: 'email',   value: $('#pepban-bl-email').val().trim() },
 			{ type: 'ip',      value: $('#pepban-bl-ip').val().trim() },
 			{ type: 'address', value: addr },
+			{ type: 'phone',   value: $('#pepban-bl-phone').val().trim() },
 		].filter(function (e) { return e.value !== ''; });
 		submitEntries(entries, 'pepban_blacklist_add', $('#pepban-bl-reason').val().trim(),
 			$(this), $('#pepban-bl-result'), 'Add to Blacklist',
-			'#pepban-bl-email, #pepban-bl-ip, #pepban-bl-street, #pepban-bl-city, #pepban-bl-state, #pepban-bl-zip, #pepban-bl-reason');
+			'#pepban-bl-email, #pepban-bl-ip, #pepban-bl-phone, #pepban-bl-street, #pepban-bl-city, #pepban-bl-state, #pepban-bl-zip, #pepban-bl-reason');
 	});
 
 	// ── Customer whitelist page ──────────────────────────────────────────────

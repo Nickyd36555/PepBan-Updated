@@ -5,7 +5,7 @@ class PepBan_Client_Blacklist {
 
 	const OPTION_KEY          = 'pepban_client_customer_blacklist';
 	const WHITELIST_OPTION_KEY = 'pepban_client_local_whitelist';
-	const VALID_TYPES         = array( 'email', 'ip', 'address' );
+	const VALID_TYPES         = array( 'email', 'ip', 'address', 'phone' );
 
 	public static function init() {
 		add_action( 'wp_ajax_pepban_blacklist_add',        array( __CLASS__, 'ajax_add' ) );
@@ -41,6 +41,22 @@ class PepBan_Client_Blacklist {
 		$ip = trim( $ip );
 		foreach ( self::get_all() as $e ) {
 			if ( self::entry_type( $e ) === 'ip' && self::entry_value( $e ) === $ip ) return true;
+		}
+		return false;
+	}
+
+	public static function normalize_phone( string $phone ): string {
+		return preg_replace( '/[^0-9]/', '', $phone );
+	}
+
+	public static function is_blocked_phone( string $phone ): bool {
+		$normalized = self::normalize_phone( $phone );
+		if ( strlen( $normalized ) < 7 ) return false;
+		foreach ( self::get_all() as $e ) {
+			if ( self::entry_type( $e ) === 'phone' ) {
+				$stored = self::normalize_phone( self::entry_value( $e ) );
+				if ( $stored && $stored === $normalized ) return true;
+			}
 		}
 		return false;
 	}
@@ -157,6 +173,9 @@ class PepBan_Client_Blacklist {
 			if ( ! is_email( $value ) ) wp_send_json_error( 'Invalid email address.' );
 		} elseif ( $type === 'ip' ) {
 			if ( ! filter_var( $value, FILTER_VALIDATE_IP ) ) wp_send_json_error( 'Invalid IP address.' );
+		} elseif ( $type === 'phone' ) {
+			$value = self::normalize_phone( $value );
+			if ( strlen( $value ) < 7 ) wp_send_json_error( 'Invalid phone number — must contain at least 7 digits.' );
 		}
 
 		$customers = self::get_all();
@@ -262,6 +281,13 @@ class PepBan_Client_Blacklist {
 					$skipped++;
 					continue;
 				}
+			} elseif ( $type === 'phone' ) {
+				$value = self::normalize_phone( $value );
+				if ( strlen( $value ) < 7 ) {
+					$errors[] = "Row {$row_num}: invalid phone (need at least 7 digits)";
+					$skipped++;
+					continue;
+				}
 			}
 
 			$key = $type . ':' . strtolower( $value );
@@ -334,7 +360,9 @@ class PepBan_Client_Blacklist {
 			. "ip,192.168.1.100,Repeated abuse attempts\n"
 			. "ip,10.0.0.55,Fraudulent orders\n"
 			. "address,123 Fake Street,Suspicious billing address\n"
-			. "address,Springfield IL 62701,Block entire city or zip\n";
+			. "address,Springfield IL 62701,Block entire city or zip\n"
+			. "phone,5551234567,Chargeback fraud — phone block\n"
+			. "phone,15559876543,Repeat offender\n";
 
 		header( 'Content-Type: text/csv; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="pepban-import-template.csv"' );

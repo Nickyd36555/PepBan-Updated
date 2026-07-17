@@ -98,6 +98,11 @@ require __DIR__ . '/../templates/layout.php';
         <p>Block by IP address or email domain, not just individual addresses — stop repeat offenders who create new accounts.</p>
       </div>
       <div class="pb-feature-card">
+        <div class="pb-feature-icon">&#128222;</div>
+        <h3>Phone Number Blocking</h3>
+        <p>Block customers by phone number on your local blacklist — checked at checkout alongside email, IP, and billing address so they can't slip through with a new account.</p>
+      </div>
+      <div class="pb-feature-card">
         <div class="pb-feature-icon">&#128260;</div>
         <h3>Auto-Updates via WordPress</h3>
         <p>New versions land in your WordPress dashboard automatically. No manual downloads, no version lag, no maintenance headaches.</p>

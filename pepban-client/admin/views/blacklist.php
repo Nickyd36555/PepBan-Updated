@@ -10,7 +10,7 @@ $entries = array_map( function( $e ) {
 	return $e;
 }, $customers );
 
-$type_labels = array( 'email' => 'Email', 'ip' => 'IP Address', 'address' => 'Address' );
+$type_labels = array( 'email' => 'Email', 'ip' => 'IP Address', 'address' => 'Address', 'phone' => 'Phone' );
 ?>
 <div class="wrap pepban-wrap">
 	<h1>Customer Blacklist</h1>
@@ -33,6 +33,13 @@ $type_labels = array( 'email' => 'Email', 'ip' => 'IP Address', 'address' => 'Ad
 				<th style="padding:8px 0"><label for="pepban-bl-ip">IP Address</label></th>
 				<td style="padding:8px 0">
 					<input type="text" id="pepban-bl-ip" class="regular-text" placeholder="192.168.1.1">
+				</td>
+			</tr>
+			<tr>
+				<th style="padding:8px 0"><label for="pepban-bl-phone">Phone Number</label></th>
+				<td style="padding:8px 0">
+					<input type="tel" id="pepban-bl-phone" class="regular-text" placeholder="+1 555 123 4567">
+					<p class="description" style="margin-top:4px">Digits only are stored — dashes, spaces, and + are stripped automatically.</p>
 				</td>
 			</tr>
 			<tr>
@@ -67,7 +74,7 @@ $type_labels = array( 'email' => 'Email', 'ip' => 'IP Address', 'address' => 'Ad
 		<h3 style="margin-top:0;margin-bottom:4px">Bulk Import via CSV</h3>
 		<p class="description" style="margin-top:0;margin-bottom:12px">
 			CSV columns: <code>type, value, reason</code> &mdash; or single-column list of emails.<br>
-			Valid types: <code>email</code>, <code>ip</code>, <code>address</code><br>
+			Valid types: <code>email</code>, <code>ip</code>, <code>address</code>, <code>phone</code><br>
 			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=pepban_download_template' ), 'pepban_download_template' ) ); ?>" style="font-weight:600">&#11015; Download example CSV template</a>
 		</p>
 		<input type="file" id="pepban-bl-csv-file" accept=".csv,text/csv"

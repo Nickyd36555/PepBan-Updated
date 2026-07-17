@@ -110,12 +110,17 @@ jQuery(function ($) {
 			} else {
 				html += '<tr><td colspan="2" style="color:#888;padding-bottom:6px">Not on local blacklist.</td></tr>';
 				html += '<tr><td colspan="2" style="padding-top:4px">'
-					+ '<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">'
+					+ '<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px">'
 					+ '<div style="flex:1;min-width:200px"><label style="font-size:11px;color:#666;display:block;margin-bottom:4px">Reason (optional)</label>'
 					+ '<input type="text" id="pepban-lookup-bl-reason" class="regular-text" style="width:100%" placeholder="e.g. Chargeback fraud"></div>'
-					+ '<button class="button button-secondary pepban-lookup-bl-add" data-email="' + escHtml(d.email) + '">Add to Blacklist</button>'
+					+ '<button class="button button-secondary pepban-lookup-bl-add" data-email="' + escHtml(d.email) + '">Add Email to Blacklist</button>'
 					+ '</div>'
-					+ '<p style="margin:6px 0 0;font-size:11px;color:#b45309;background:#fffbeb;border:1px solid #fcd34d;border-radius:3px;padding:4px 8px">&#128274; <strong>Local only.</strong> This adds the customer to your site blacklist only. Use <em>Report to PepBan</em> on an order to add them to the global network.</p>'
+					+ '<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">'
+					+ '<div style="flex:1;min-width:200px"><label style="font-size:11px;color:#666;display:block;margin-bottom:4px">Also block by phone number</label>'
+					+ '<input type="tel" id="pepban-lookup-bl-phone" class="regular-text" style="width:100%" placeholder="e.g. +1 555 123 4567"></div>'
+					+ '<button class="button button-secondary pepban-lookup-bl-add-phone" data-email="' + escHtml(d.email) + '">Add Phone to Blacklist</button>'
+					+ '</div>'
+					+ '<p style="margin:8px 0 0;font-size:11px;color:#b45309;background:#fffbeb;border:1px solid #fcd34d;border-radius:3px;padding:4px 8px">&#128274; <strong>Local only.</strong> This adds the customer to your site blacklist only. Use <em>Report to PepBan</em> on an order to add them to the global network.</p>'
 					+ '<span class="pepban-lookup-bl-status" style="font-size:12px;display:none;margin-top:6px;display:none"></span>'
 					+ '</td></tr>';
 			}
@@ -164,7 +169,7 @@ jQuery(function ($) {
 		$(this).closest('td').find('.pepban-lookup-save-note').trigger('click');
 	});
 
-	// ── Add to local blacklist ────────────────────────────────────────────────
+	// ── Add email to local blacklist ──────────────────────────────────────────
 	$(document).on('click', '.pepban-lookup-bl-add', function () {
 		var $btn    = $(this);
 		var email   = $btn.data('email');
@@ -183,11 +188,39 @@ jQuery(function ($) {
 				setTimeout(function () { doLookup(); }, 800);
 			} else {
 				$status.text('Error: ' + escHtml(res.data || 'Unknown error.')).css('color','#d63638').show();
-				$btn.prop('disabled', false).text('Add to Blacklist');
+				$btn.prop('disabled', false).text('Add Email to Blacklist');
 			}
 		}).fail(function () {
 			$status.text('Request failed.').css('color','#d63638').show();
-			$btn.prop('disabled', false).text('Add to Blacklist');
+			$btn.prop('disabled', false).text('Add Email to Blacklist');
+		});
+	});
+
+	// ── Add phone to local blacklist ──────────────────────────────────────────
+	$(document).on('click', '.pepban-lookup-bl-add-phone', function () {
+		var $btn    = $(this);
+		var phone   = $('#pepban-lookup-bl-phone').val().trim();
+		var reason  = $('#pepban-lookup-bl-reason').val().trim();
+		var $status = $btn.closest('td').find('.pepban-lookup-bl-status');
+		if (!phone) { alert('Please enter a phone number.'); return; }
+		$btn.prop('disabled', true).text('Adding…');
+		$.post(pepbanClient.ajaxurl, {
+			action: 'pepban_blacklist_add',
+			type:   'phone',
+			value:  phone,
+			reason: reason,
+			nonce:  pepbanClient.nonce,
+		}, function (res) {
+			if (res.success) {
+				$status.text('Phone added to local blacklist.').css('color','#00a32a').show();
+				$('#pepban-lookup-bl-phone').val('');
+			} else {
+				$status.text('Error: ' + escHtml(res.data || 'Unknown error.')).css('color','#d63638').show();
+				$btn.prop('disabled', false).text('Add Phone to Blacklist');
+			}
+		}).fail(function () {
+			$status.text('Request failed.').css('color','#d63638').show();
+			$btn.prop('disabled', false).text('Add Phone to Blacklist');
 		});
 	});
 

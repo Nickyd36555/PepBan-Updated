@@ -53,6 +53,7 @@ class PepBan_Client_Checker {
 		if ( $email   && PepBan_Client_Blacklist::is_blocked( $email ) )            { wc_add_notice( self::get_block_message(), 'error' ); return; }
 		if ( $ip      && PepBan_Client_Blacklist::is_blocked_ip( $ip ) )            { wc_add_notice( self::get_block_message(), 'error' ); return; }
 		if ( $address && PepBan_Client_Blacklist::is_blocked_address( $address ) )  { wc_add_notice( self::get_block_message(), 'error' ); return; }
+		if ( $phone   && PepBan_Client_Blacklist::is_blocked_phone( $phone ) )      { wc_add_notice( self::get_block_message(), 'error' ); return; }
 		if ( $email   && PepBan_Client_Domains::is_blocked( $email ) )              { wc_add_notice( self::get_block_message(), 'error' ); return; }
 
 		$result = self::api_check( $email, $phone, $first_name, $last_name, $ip );
@@ -96,6 +97,7 @@ class PepBan_Client_Checker {
 		if ( $email   && PepBan_Client_Blacklist::is_blocked( $email ) )           { $blocked = true; }
 		elseif ( $ip  && PepBan_Client_Blacklist::is_blocked_ip( $ip ) )           { $blocked = true; }
 		elseif ( $address && PepBan_Client_Blacklist::is_blocked_address( $address ) ) { $blocked = true; }
+		elseif ( $phone && PepBan_Client_Blacklist::is_blocked_phone( $phone ) )   { $blocked = true; }
 		elseif ( $email && PepBan_Client_Domains::is_blocked( $email ) )           { $blocked = true; }
 		else {
 			$result = self::api_check( $email, $phone );
@@ -130,6 +132,11 @@ class PepBan_Client_Checker {
 			return;
 		}
 
+		if ( $phone && PepBan_Client_Blacklist::is_blocked_phone( $phone ) ) {
+			$errors->add( 'pepban_blocked', self::get_block_message() );
+			return;
+		}
+
 		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
 			$errors->add( 'pepban_blocked', self::get_block_message() );
 			return;
@@ -156,6 +163,10 @@ class PepBan_Client_Checker {
 		if ( empty( $email ) && empty( $phone ) ) return;
 
 		if ( $email && PepBan_Client_Domains::is_blocked( $email ) ) {
+			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', self::get_block_message(), 400 );
+		}
+
+		if ( $phone && PepBan_Client_Blacklist::is_blocked_phone( $phone ) ) {
 			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'pepban_banned', self::get_block_message(), 400 );
 		}
 

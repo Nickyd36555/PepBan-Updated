@@ -14,7 +14,7 @@ function pepban_plugin_description(): string {
 		. '<h4>Features</h4><ul>'
 		. '<li>Automatically blocks banned customers at checkout by email, phone, IP, or billing address</li>'
 		. '<li>One-click reporting from the WooCommerce order screen</li>'
-		. '<li>Per-site blacklist and whitelist — block or allow customers on your store only</li>'
+		. '<li>Per-site blacklist and whitelist — block or allow customers on your store only by email, IP, phone, or billing address</li>'
 		. '<li>Bulk CSV import — add multiple bans to your local blacklist at once</li>'
 		. '<li>Global IP and domain blocking — hub-level bans checked at every checkout</li>'
 		. '<li>Order admin notice shows how many stores have reported the customer</li>'
@@ -42,9 +42,19 @@ function pepban_plugin_installation(): string {
 function pepban_plugin_changelog(): array {
 	return [
 		[
-			'version' => '1.6.5',
+			'version' => '1.6.6',
 			'date'    => 'July 2026',
 			'latest'  => true,
+			'items'   => [
+				['tag' => 'New', 'text' => 'Phone number blocking — block customers by phone number on your local blacklist; phone is checked at checkout alongside email, IP, and billing address'],
+				['tag' => 'Improved', 'text' => 'Customer Lookup now includes a phone number field so you can block a customer\'s phone directly from the search results'],
+				['tag' => 'Improved', 'text' => 'Bulk CSV import and the downloadable template now support the phone type'],
+			],
+		],
+		[
+			'version' => '1.6.5',
+			'date'    => 'July 2026',
+			'latest'  => false,
 			'items'   => [
 				['tag' => 'Improved', 'text' => 'Customer Lookup now lets you save or clear a watch note and add or remove a local blacklist entry directly from the search results — no need to navigate to a separate page'],
 			],
