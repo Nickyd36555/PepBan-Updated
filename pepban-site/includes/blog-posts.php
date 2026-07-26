@@ -86,7 +86,7 @@ function pepban_blog_posts(): array {
 <div class="pb-blog-cta">
   <h3>Keep Your Chargeback Ratio Under Control</h3>
   <p>Block known fraudsters before they order. Join the PepBan network and stop chargebacks before they happen.</p>
-  <a href="/signup" class="pb-btn pb-btn-primary">Get Protected Free &rarr;</a>
+  <a href="/signup" class="pb-btn pb-btn-primary">Get Protected Now &rarr;</a>
 </div>
 HTML,
 		],
