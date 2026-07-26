@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= e($page_title ?? SITE_NAME) ?></title>
+<?php if (!empty($page_meta_desc)): ?><meta name="description" content="<?= e($page_meta_desc) ?>"><?php endif; ?>
 <link rel="icon" type="image/png" sizes="64x64" href="<?= url('assets/images/favicon.png') ?>">
 <link rel="icon" type="image/svg+xml" href="<?= url('assets/images/icon.svg') ?>">
 <link rel="shortcut icon" href="<?= url('assets/images/favicon.png') ?>"><?php
@@ -42,6 +43,7 @@ foreach (['logo.png','logo.jpg','logo.webp'] as $_fi) {
     <div class="pb-nav-links" id="pb-nav-links">
       <a href="<?= url('/') ?>" class="pb-nav-link">Home</a>
       <a href="<?= url('/#features') ?>" class="pb-nav-link">Features</a>
+      <a href="<?= url('/blog') ?>" class="pb-nav-link">Blog</a>
       <a href="<?= url('/faq') ?>" class="pb-nav-link">FAQ</a>
       <a href="<?= url('/contact') ?>" class="pb-nav-link">Contact</a>
       <a href="<?= url('/dispute') ?>" class="pb-nav-link">Dispute a Ban</a>

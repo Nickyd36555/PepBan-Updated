@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/ApiAuth.php';
 require_once __DIR__ . '/includes/Mailer.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/plugin-release.php';
+require_once __DIR__ . '/includes/blog-posts.php';
 
 Auth::start();
 
@@ -115,6 +116,14 @@ if (str_starts_with($path, '/admin')) {
 		http_response_code(404);
 		require __DIR__ . '/admin/dashboard.php';
 	}
+	exit;
+}
+
+// ── Blog routes ───────────────────────────────────────────────────────────────
+if ($path === '/blog' || str_starts_with($path, '/blog/')) {
+	$blog_slug = $path === '/blog' ? '' : ltrim(substr($path, 5), '/');
+	$blog_slug = preg_replace('/[^a-z0-9-]/', '', $blog_slug);
+	require __DIR__ . '/pages/blog.php';
 	exit;
 }
 
