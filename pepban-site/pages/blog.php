@@ -1,8 +1,10 @@
 <?php
-// $blog_slug is set by the router for single-post view; empty for the index
-$post = isset($blog_slug) && $blog_slug ? pepban_blog_post_by_slug($blog_slug) : null;
+// Derive slug from the URL directly — works whether called from the router variable or the static routes array
+$_blog_path = current_path(); // e.g. /blog or /blog/some-slug
+$blog_slug  = preg_replace('/[^a-z0-9-]/', '', ltrim(substr($_blog_path, 5), '/'));
+$post       = $blog_slug ? pepban_blog_post_by_slug($blog_slug) : null;
 
-if (isset($blog_slug) && $blog_slug && !$post) {
+if ($blog_slug && !$post) {
 	http_response_code(404);
 	require __DIR__ . '/404.php';
 	return;

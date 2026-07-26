@@ -130,6 +130,7 @@ if ($path === '/blog' || str_starts_with($path, '/blog/')) {
 // ── Public routes ─────────────────────────────────────────────────────────────
 $routes = [
 	'/'                 => 'pages/home.php',
+	'/blog'             => 'pages/blog.php',
 	'/plugin'           => 'pages/plugin.php',
 	'/signup'           => 'pages/signup.php',
 	'/login'            => 'pages/login.php',
