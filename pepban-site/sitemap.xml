@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Core pages -->
+  <url><loc>https://pepban.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://pepban.com/plugin</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://pepban.com/signup</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://pepban.com/faq</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pepban.com/changelog</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://pepban.com/contact</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://pepban.com/dispute</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://pepban.com/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://pepban.com/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+
+  <!-- Blog index -->
+  <url><loc>https://pepban.com/blog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+
+  <!-- Blog posts -->
+  <url><loc>https://pepban.com/blog/chargeback-ratio-payment-processor-account-terminated</loc><lastmod>2026-07-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pepban.com/blog/match-list-terminated-merchant-account</loc><lastmod>2026-07-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pepban.com/blog/stop-chargeback-fraud-peptide-store</loc><lastmod>2026-07-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pepban.com/blog/shared-blacklist-peptide-stores</loc><lastmod>2026-07-21</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pepban.com/blog/woocommerce-customer-blacklist-plugin</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pepban.com/blog/peptide-customer-chargeback-red-flags</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+</urlset>

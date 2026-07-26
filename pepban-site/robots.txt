@@ -9,3 +9,5 @@ Disallow: /reset-password
 Disallow: /download/
 
 Allow: /
+
+Sitemap: https://pepban.com/sitemap.xml
