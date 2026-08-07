@@ -71,6 +71,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		admin_flash('success', 'Notes saved.');
 		redirect('/admin/clients?action=view&id=' . $id);
 	}
+
+	if ($act === 'update_client' && $id) {
+		$name  = trim(post('owner_name'));
+		$email = trim(post('owner_email'));
+		$url   = trim(post('site_url'));
+		if (!$name || !$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			admin_flash('error', 'Name and a valid email are required.');
+			redirect('/admin/clients?action=view&id=' . $id);
+		}
+		$db->update('pepban_clients', [
+			'owner_name'  => $name,
+			'owner_email' => $email,
+			'site_url'    => $url,
+		], ['id' => $id]);
+		admin_flash('success', 'Client details updated.');
+		redirect('/admin/clients?action=view&id=' . $id);
+	}
 }
 
 // ── View single client ────────────────────────────────────────────────────────
@@ -158,6 +175,31 @@ if ($action === 'view' && $id) {
 					</form>
 				</div>
 			</div>
+		</div>
+	</div>
+
+	<div class="pb-card">
+		<div class="pb-card-header"><h3>Edit Details</h3></div>
+		<div class="pb-card-body">
+			<form method="post" class="pb-form">
+				<?= csrf_field() ?>
+				<input type="hidden" name="_action" value="update_client">
+				<div class="pb-grid-2">
+					<div class="pb-field">
+						<label>Owner Name</label>
+						<input type="text" name="owner_name" value="<?= e($client->owner_name) ?>" required>
+					</div>
+					<div class="pb-field">
+						<label>Email</label>
+						<input type="email" name="owner_email" value="<?= e($client->owner_email) ?>" required>
+					</div>
+				</div>
+				<div class="pb-field">
+					<label>Site URL</label>
+					<input type="url" name="site_url" value="<?= e($client->site_url) ?>" placeholder="https://your-store.com">
+				</div>
+				<div><button type="submit" class="pb-btn pb-btn-primary">Save Changes</button></div>
+			</form>
 		</div>
 	</div>
 
